@@ -7,7 +7,7 @@ from mocap.data.cmu import CMUHandler
 
 Settings = json.load(open('../settings.txt'))
 root = join(Settings['data_root'], 'pak')
-assert isdir(root)
+assert isdir(root), root
 
 subsampling = 10
 subjects = ['94']
