@@ -60,7 +60,8 @@ class SequenceVisualizer:
              lcolor='#099487', rcolor='#F51836',
              noaxis=False, noclear=False,
              toggle_color=False,
-             plot_cbc=None, last_frame=None):
+             plot_cbc=None, last_frame=None,
+             plot_jid=False):
         """
         # 002540
         # 099487
@@ -77,6 +78,7 @@ class SequenceVisualizer:
         :param noaxis:
         :param plot_cbc: def plot_cvc(ax, seq, t):
         :param last_frame:
+        :param plot_jid:
         :return:
         """
         if last_frame is None:
@@ -127,19 +129,18 @@ class SequenceVisualizer:
                 ax.plot([0, 0], [-10, 10], [0, 0], color='black', alpha=0.5)
                 ax.plot([-10, 10], [0, 0], [0, 0], color='black', alpha=0.5)
             if plot_cbc is None:
-
                 if parallel:
-                    hviz.plot(ax, seq[t], lcolor=lcolor, rcolor=rcolor)
-                    hviz.plot(ax, seq2[t], lcolor=lcolor2, rcolor=rcolor2)
+                    hviz.plot(ax, seq[t], lcolor=lcolor, rcolor=rcolor, plot_jid=plot_jid)
+                    hviz.plot(ax, seq2[t], lcolor=lcolor2, rcolor=rcolor2, plot_jid=plot_jid)
                 elif toggle_color:
                     _lcolor = lcolor if t % 2 == 0 else lcolor2
                     _rcolor = rcolor if t % 2 == 0 else rcolor2
-                    hviz.plot(ax, seq[t], lcolor=_lcolor, rcolor=_rcolor)
+                    hviz.plot(ax, seq[t], lcolor=_lcolor, rcolor=_rcolor, plot_jid=plot_jid)
                 else:  # temporal
                     if t < n:
-                        hviz.plot(ax, seq[t], lcolor=lcolor, rcolor=rcolor)
+                        hviz.plot(ax, seq[t], lcolor=lcolor, rcolor=rcolor, plot_jid=plot_jid)
                     else:
-                        hviz.plot(ax, seq[t], lcolor=lcolor2, rcolor=rcolor2)
+                        hviz.plot(ax, seq[t], lcolor=lcolor2, rcolor=rcolor2, plot_jid=plot_jid)
             else:
                 plot_cbc(ax, seq, t)
 

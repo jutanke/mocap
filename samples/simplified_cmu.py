@@ -16,7 +16,7 @@ cmu = CMUHandler(root, subjects)
 handler = Simplified(cmu)
 
 viz = SequenceVisualizer(data_root=Settings['video_export'],
-                         name='gt_cmu', vmax=2, vmin=-2,
+                         name='gt_cmu', vmax=1, vmin=-1,
                          subsampling=10,
                          with_pauses=True,
                          mark_origin=False,
@@ -27,4 +27,4 @@ print('#videos', len(handler))
 
 seq = handler[0]
 
-viz.plot(seq, noaxis=True)
+viz.plot(seq, noaxis=False, plot_jid=True)
