@@ -4,6 +4,7 @@ from os.path import join, isdir
 sys.path.insert(0, '../')
 from mocap.visualization.sequence import SequenceVisualizer
 from mocap.data.cmu import CMUHandler
+from mocap.data.simplified import Simplified
 
 Settings = json.load(open('../settings.txt'))
 root = join(Settings['data_root'], 'pak')
@@ -12,6 +13,7 @@ assert isdir(root), root
 subsampling = 10
 subjects = ['94']
 cmu = CMUHandler(root, subjects)
+handler = Simplified(cmu)
 
 viz = SequenceVisualizer(data_root=Settings['video_export'],
                          name='gt_cmu', vmax=2, vmin=-2,
@@ -20,10 +22,9 @@ viz = SequenceVisualizer(data_root=Settings['video_export'],
                          mark_origin=False,
                          to_file=False)
 
-print('#videos', len(cmu))
+print('#videos', len(handler))
 
 
-seq = cmu[0]
-seq = cmu.flip_lr(seq)
+seq = handler[0]
 
 viz.plot(seq, noaxis=True)

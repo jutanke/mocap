@@ -3,7 +3,8 @@ from abc import abstractmethod
 
 class MocapHandler:
 
-    def __init__(self, sequences, J, j_root, j_left, j_right, cherrypicking=None):
+    def __init__(self, sequences, J, j_root, j_left,
+                 j_right, cherrypicking=None):
         """
         :param sequences: dict: { key_i: [ n_i x J x 3] }
         :param J:

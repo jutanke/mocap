@@ -89,6 +89,22 @@ def plot(ax, human, plot_jid=False, do_scatter=True, linewidth=2,
               False, False, False,
               True, True, True,
               False]
+    elif n_joints == 14:  # simplified
+        connect = [
+            (0, 1), (1, 2), (0, 3),
+            (3, 4), (4, 5),
+            (0, 6), (6, 7), (7, 8),
+            (3, 9), (9, 10), (10, 11),
+            (9, 12), (12, 6),
+            (12, 13)
+        ]
+        LR = [
+            True, True, True,
+            False, False, False,
+            True, True, True,
+            False, False, False,
+            False, False
+        ]
     else:
         raise NotImplementedError()
 
