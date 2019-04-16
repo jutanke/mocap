@@ -106,3 +106,27 @@ seq = handler[0]
 seq = transformer.global2relative(seq)  # transform to relative repr.
 seq = transformer.relative2global(seq)  # transform back to global rep.
 ```
+
+### Visualization
+A simple visualization pipeline is provided. It allows to either output to the screen or to file, enable/disable certain markers in the scene etc.
+
+```python
+from mocap.visualization.sequence import SequenceVisualizer
+
+viz = SequenceVisualizer(data_root=Settings['video_export'],
+                         name='gt_cmu', vmax=2, vmin=-2,
+                         subsampling=5,
+                         with_pauses=False,
+                         mark_origin=True,
+                         to_file=False)
+
+viz.plot(seq1)  # show a sequence
+
+viz.plot(seq1, plot_jid=True)  # show sequence with joint ids plotted
+
+viz.plot(seq1, noaxis=True)  # draw on a white canvas instead of a grid raster
+
+viz.plot(seq1, seq2)  # draw two consecutive sequences
+
+viz.plot(seq1, seq2=seq2, parallel=True)  # show two sequences in parallel
+```
