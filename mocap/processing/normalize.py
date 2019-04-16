@@ -61,6 +61,21 @@ def apply_euclidean_transform(human, R, t):
     return new_human
 
 
+@nb.njit(nb.void(
+    nb.float32[:, :], nb.float32[:, :]
+), nogil=True)
+def apply_rot_inplace(human, R):
+    """
+    :param human: {Jx3}
+    :param R: {3x3} in SO(3)
+    :return:
+    """
+    J = len(human)
+    for jid in range(J):
+        p = human[jid]
+        human[jid] = R @ p
+
+
 @nb.jit(nb.float32[:, :, :](
     nb.float32[:, :, :], nb.float32[:, :], nb.float32[:, ]
 ), nopython=True, nogil=True)

@@ -74,7 +74,7 @@ class Simplified(MocapHandler):
             J=self.J,
             j_root=-1,
             j_left=0,
-            j_right=4
+            j_right=3
         )
 
     def get_framerate(self, item):
