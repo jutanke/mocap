@@ -38,6 +38,10 @@ Then the library can be installed simply by:
 ```
 pip install git+https://github.com/jutanke/mocap.git
 ```
+or locally by
+```
+python setup.py install
+```
 
 
 ## Data
