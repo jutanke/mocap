@@ -125,7 +125,7 @@ class CMUHandler(MocapHandler):
             return 'cmu_' + str_actors + hash
 
     def flip_lr(self, seq):
-        return switch_lr(seq.copy())
+        return switch_lr(seq)
 
     def get_framerate(self, item):
         """

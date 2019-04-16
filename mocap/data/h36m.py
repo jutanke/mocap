@@ -76,7 +76,7 @@ class Human36mHandler(MocapHandler):
         return 'h36m_' + str_actors + str_actions
 
     def flip_lr(self, seq):
-        return switch_lr(seq.copy())
+        return switch_lr(seq)
 
     def get_framerate(self, item):
         """

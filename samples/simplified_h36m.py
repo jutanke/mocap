@@ -23,6 +23,7 @@ viz = SequenceVisualizer(data_root=Settings['video_export'],
 print('#videos', len(handler))
 
 seq = handler[0]
+seq = handler.flip_lr(seq)
 print(seq.shape)
 
 viz.plot(seq)

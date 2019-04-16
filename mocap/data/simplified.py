@@ -1,7 +1,28 @@
 import numpy as np
+import numba as nb
 from mocap.data.mocap import MocapHandler
 from mocap.data.h36m import Human36mHandler
-from mocap.data.cmu import CMUHandler
+from mocap.data.cmu import CMUHandler, reflect_over_x
+
+
+left = [0, 1, 2, 6, 7, 8]
+right = [3, 4, 5, 9, 10, 11]
+lr = np.array(left + right, np.int64)
+rl = np.array(right + left, np.int64)
+
+
+@nb.njit(nb.float32[:, :, :](
+    nb.float32[:, :, :]
+), nogil=True)
+def switch_lr(seq):
+    """
+    :param seq:
+    :return:
+    """
+    global lr, rl
+    seq = reflect_over_x(seq.copy())
+    seq[:, lr, :] = seq[:, rl, :]
+    return seq
 
 
 class Simplified(MocapHandler):
@@ -68,7 +89,7 @@ class Simplified(MocapHandler):
         :param seq:
         :return:
         """
-        pass
+        return switch_lr(seq)
 
     def get_unique_identifier(self):
         """
