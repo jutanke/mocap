@@ -47,13 +47,40 @@ python setup.py install
 ## Data
 
 ### CMU MoCap 
+```python
+from mocap.data.cmu import CMUHandler
 
+root = '/data/dir/for/cmu_mocap/'
+subjects = ['94']
+cmu = CMUHandler(root, subjects)
+```
 ![human_motion_forecasting_cmu](https://user-images.githubusercontent.com/831215/53401966-1f61ab80-39b1-11e9-927e-f4c8de046e50.png)
 
 ### Human 3.6m
+```python
+from mocap.data.h36m import Human36mHandler
 
+root = '/data/dir/for/h36m/'
+actors = ['S1']
+h36m = Human36mHandler(root, actors)
+```
 ![human36m_definition](https://user-images.githubusercontent.com/831215/53430714-5bb3fc80-39ef-11e9-83c3-6735db878411.png)
 
 ### Simplified
+```python
+from mocap.data.cmu import CMUHandler
+from mocap.data.h36m import Human36mHandler
+from mocap.data.simplified import Simplified
 
+root = '/data/dir/for/h36m/'
+actors = ['S1']
+h36m = Human36mHandler(root, actors)
+
+root = '/data/dir/for/cmu_mocap/'
+subjects = ['94']
+cmu = CMUHandler(root, subjects)
+
+cmu_simple = Simplified(cmu)
+h36m_simple = Simplified(h36m)
+```
 ![mocap_simplified](https://user-images.githubusercontent.com/831215/56189771-109a8b00-6029-11e9-9aed-d5b7278ed644.png)
