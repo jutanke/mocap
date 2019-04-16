@@ -84,3 +84,25 @@ cmu_simple = Simplified(cmu)
 h36m_simple = Simplified(h36m)
 ```
 ![mocap_simplified](https://user-images.githubusercontent.com/831215/56189771-109a8b00-6029-11e9-9aed-d5b7278ed644.png)
+
+### Relative representation
+The default data representation is global joint coordinates. However, we also offer a relative representation where a person is centered at the origin (based on a root joint) and faces forward (based on the hip joints). The displacement (x, y, z) is being recorded between the root joints of temporally adjacent joints and the rotation around the z-axis is also remembered.
+
+```python
+from mocap.data.cmu import CMUHandler
+from mocap.data.simplified import Simplified
+from mocap.processing.relative import Transformer
+
+root = '/data/dir/for/cmu_mocap/'
+subjects = ['94']
+cmu = CMUHandler(root, subjects)
+handler = Simplified(cmu)
+
+transformer = Transformer(j_root=handler.j_root,
+                          j_left=handler.j_left,
+                          j_right=handler.j_right)
+
+seq = handler[0]
+seq = transformer.global2relative(seq)  # transform to relative repr.
+seq = transformer.relative2global(seq)  # transform back to global rep.
+```
