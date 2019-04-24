@@ -4,7 +4,7 @@ from abc import abstractmethod
 class MocapHandler:
 
     def __init__(self, sequences, J, j_root, j_left,
-                 j_right, cherrypicking=None):
+                 j_right, cherrypicking=None, dim=None):
         """
         :param sequences: dict: { key_i: [ n_i x J x 3] }
         :param J:
@@ -12,11 +12,16 @@ class MocapHandler:
         :param j_left:
         :param j_right:
         :param cherrypicking:
+        :param dim: defines the dimension of a single person (e.g. (J x 3)
         """
         self.sequences = sequences
         self.sequences_as_list = list(sequences.values())
         self.sequences_meta = list(sequences.keys())
         self.J = J
+        if dim is None:
+            self.dim = (J, 3)
+        else:
+            self.dim = dim
         self.j_root = j_root
         self.j_left = j_left
         self.j_right = j_right
