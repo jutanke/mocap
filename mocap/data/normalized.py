@@ -7,19 +7,25 @@ class Normalized(MocapHandler):
 
     """
 
-    def __init__(self, proxy_mocap):
+    def __init__(self, proxy_mocap, remove_rotation=False):
         """
         :param proxy_mocap:
+        :param remove_rotation: if {True}: Also remove global rotation
         """
         self.proxy_mocap = proxy_mocap
 
         sequences = {}
 
         for key, seq in proxy_mocap.sequences.items():
-            sequences[key] = norm.remove_translation(seq,
-                                                     proxy_mocap.j_root,
-                                                     proxy_mocap.j_left,
-                                                     proxy_mocap.j_right)
+            if remove_rotation:
+                sequences[key] = norm.remove_rotation_and_translation(
+                    seq, proxy_mocap.j_root,
+                    proxy_mocap.j_left, proxy_mocap.j_right)
+            else:
+                sequences[key] = norm.remove_translation(seq,
+                                                         proxy_mocap.j_root,
+                                                         proxy_mocap.j_left,
+                                                         proxy_mocap.j_right)
 
         super().__init__(
             sequences=sequences,
