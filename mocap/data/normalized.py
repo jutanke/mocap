@@ -13,6 +13,7 @@ class Normalized(MocapHandler):
         :param remove_rotation: if {True}: Also remove global rotation
         """
         self.proxy_mocap = proxy_mocap
+        self.remove_rotation = remove_rotation
 
         sequences = {}
 
@@ -36,7 +37,10 @@ class Normalized(MocapHandler):
         )
 
     def get_unique_identifier(self):
-        return "normalized_" + self.proxy_mocap.get_unique_identifier()
+        idf = "normalized_" + self.proxy_mocap.get_unique_identifier()
+        if self.remove_rotation:
+            idf = "rr_" + idf
+        return idf
 
     def flip_lr(self, seq):
         return self.proxy_mocap.flip_lr(seq)
