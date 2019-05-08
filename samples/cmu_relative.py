@@ -1,3 +1,4 @@
+import numpy as np
 import json
 import sys
 from os.path import join, isdir
@@ -32,8 +33,12 @@ print('#videos', len(handler))
 
 
 seq = handler[0]
-seq = transformer.global2relative(seq)
-seq = transformer.relative2global(seq)
+
+
+seq = np.expand_dims(seq, axis=0)
+
+seq = transformer.batch_global2relative(seq)
+seq = transformer.batch_relative2global(seq)
 
 orig_seq = handler[0]
 orig_seq = norm.normalize_sequence_at_frame(orig_seq,
@@ -42,7 +47,7 @@ orig_seq = norm.normalize_sequence_at_frame(orig_seq,
                                             j_right=handler.j_right,
                                             j_left=handler.j_left)
 
-seq = norm.normalize_sequence_at_frame(seq,
+seq = norm.normalize_sequence_at_frame(np.squeeze(seq),
                                        frame=0,
                                        j_root=handler.j_root,
                                        j_right=handler.j_right,

@@ -53,6 +53,27 @@ def global2relative(seq, J, j_root, j_left, j_right):
 
 @nb.njit(
     nb.float32[:, :, :](
+        nb.float32[:, :, :, :]
+        , nb.int64, nb.int64, nb.int64, nb.int64
+    ), nogil=True)
+def batch_global2relative(seqs, J, j_root, j_left, j_right):
+    """
+    :param seqs: [ batch_size x frames x J x 3]
+    :param J:
+    :param j_root:
+    :param j_left:
+    :param j_right:
+    :return:
+    """
+    batch_size, n_frames, _, _ = seqs.shape
+    result = np.empty((batch_size, n_frames, (J * 3 + 1)), np.float32)
+    for batch in range(batch_size):
+        result[batch] = global2relative(seqs[batch], J, j_root, j_left, j_right)
+    return result
+
+
+@nb.njit(
+    nb.float32[:, :, :](
         nb.float32[:, :],
         nb.int64, nb.int64
     ), nogil=True
@@ -98,6 +119,50 @@ def relative2global(seq, J, j_root):
         else:
             result[frame] = new_human
 
+    return result
+
+
+@nb.njit(
+    nb.float32[:, :, :, :](
+        nb.float32[:, :, :],
+        nb.int64, nb.int64
+    ), nogil=True
+)
+def batch_relative2global(seqs, J, j_root):
+    """
+    :param seqs: [ batch_size x frames x dim ]
+    :param J:
+    :param j_root:
+    :return:
+    """
+    batch_size, n_frames, _ = seqs.shape
+    true_J = J
+    if j_root == -1:
+        true_J = J - 1  # remove fake root
+    result = np.empty((batch_size, n_frames, true_J, 3), np.float32)
+    for batch in range(batch_size):
+        result[batch] = relative2global(seqs[batch], J, j_root)
+
+    return result
+
+
+@nb.njit(
+    nb.float32[:, :, :, :](
+        nb.float32[:, :, :, :], nb.int64, nb.int64
+    ), nogil=True)
+def batch_insert_root_node_as_avg(seqs, j_left, j_right):
+    """
+    :param seqs: {batch_size, n_frames, J, 3}
+    :param j_left:
+    :param j_right:
+    :return:
+    """
+    batch_size, n_frames, J, dim = seqs.shape
+    result = np.empty((batch_size, n_frames, J + 1, dim), np.float32)
+    for batch in range(batch_size):
+        result[batch] = norm.insert_root_node_as_avg(seqs[batch],
+                                                     j_left=j_left,
+                                                     j_right=j_right)
     return result
 
 
@@ -149,6 +214,30 @@ class Transformer:
         return global2relative(seq, J,
                                j_root, j_left, j_right)
 
+    def batch_global2relative(self, seqs):
+        """
+        :param seqs: { batch x n x J x 3 }
+        :return:
+        """
+        if len(seqs.shape) == 3:
+            batch_size, n_frames, _ = len(seqs)
+            seqs = seqs.reshape((batch_size, n_frames, -1, 3))
+        _, _, J, _ = seqs.shape
+        j_root = self.j_root
+        j_left = self.j_left
+        j_right = self.j_right
+        if j_root == -1:
+            seqs = batch_insert_root_node_as_avg(seqs,
+                                                 j_left=j_left,
+                                                 j_right=j_right)
+            j_root = J  # last joint is the root node
+            J += 1
+
+        return batch_global2relative(seqs, J,
+                                     j_root=j_root,
+                                     j_left=j_left,
+                                     j_right=j_right)
+
     def relative2global(self, seq):
         """ converts a sequence from relative coordinates to global
             one
@@ -163,3 +252,16 @@ class Transformer:
         assert int(math.ceil(J)) == int(math.floor(J)), "J=" + str(J)
 
         return relative2global(seq, J, j_root)
+
+    def batch_relative2global(self, seqs):
+        """
+        :param seqs: {batch_size x n x J * 3 + 1}
+        :return:
+        """
+        assert len(seqs.shape) == 3, "<shape mismatch>:" + str(seqs.shape)
+        j_root = self.j_root
+        _, _, dim = seqs.shape
+        J = (dim - 1) / 3
+        assert int(math.ceil(J)) == int(math.floor(J)), "J=" + str(J)
+
+        return batch_relative2global(seqs, int(J), j_root)
