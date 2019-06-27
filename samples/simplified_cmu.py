@@ -7,7 +7,7 @@ from mocap.data.cmu import CMUHandler
 from mocap.data.simplified import Simplified
 
 Settings = json.load(open('../settings.txt'))
-root = join(Settings['data_root'], 'pak')
+root = Settings['data_root']
 assert isdir(root), root
 
 subsampling = 10
@@ -20,7 +20,7 @@ viz = SequenceVisualizer(data_root=Settings['video_export'],
                          subsampling=10,
                          with_pauses=True,
                          mark_origin=False,
-                         to_file=False)
+                         to_file=True)
 
 print('#videos', len(handler))
 
