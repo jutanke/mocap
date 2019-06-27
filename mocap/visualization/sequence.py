@@ -166,18 +166,18 @@ class SequenceVisualizer:
                         if plot_fn1 is None:
                             hviz.plot(ax, seq1[t], lcolor=_lcolor, rcolor=_rcolor, plot_jid=plot_jid)
                         else:
-                            plot_fn1(ax, seq1[t], lcolor=_lcolor, rcolor=_rcolor, plot_jid=plot_jid, T=T1)
+                            plot_fn1(ax, seq1[t], lcolor=_lcolor, rcolor=_rcolor, plot_jid=plot_jid)
                     else:  # temporal
                         if t < n:
                             if plot_fn1 is None:
                                 hviz.plot(ax, seq1[t], lcolor=lcolor, rcolor=rcolor, plot_jid=plot_jid)
                             else:
-                                plot_fn1(ax, seq1[t], lcolor=lcolor, rcolor=rcolor, plot_jid=plot_jid, T=T1)
+                                plot_fn1(ax, seq1[t], lcolor=lcolor, rcolor=rcolor, plot_jid=plot_jid)
                         else:
                             if plot_fn2 is None:
                                 hviz.plot(ax, seq1[t], lcolor=lcolor2, rcolor=rcolor2, plot_jid=plot_jid)
                             else:
-                                plot_fn2(ax, seq2[t], lcolor=lcolor2, rcolor=rcolor2, plot_jid=plot_jid, T=T2)
+                                plot_fn2(ax, seq2[t], lcolor=lcolor2, rcolor=rcolor2, plot_jid=plot_jid)
                 else:
                     plot_cbc(ax, seq1, t)
 
