@@ -177,7 +177,7 @@ class SequenceVisualizer:
                             if plot_fn2 is None:
                                 hviz.plot(ax, seq1[t], lcolor=lcolor2, rcolor=rcolor2, plot_jid=plot_jid)
                             else:
-                                plot_fn2(ax, seq2[t], lcolor=lcolor2, rcolor=rcolor2, plot_jid=plot_jid)
+                                plot_fn2(ax, seq1[t], lcolor=lcolor2, rcolor=rcolor2, plot_jid=plot_jid)
                 else:
                     plot_cbc(ax, seq1, t)
 
