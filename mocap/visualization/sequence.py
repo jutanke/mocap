@@ -97,7 +97,7 @@ class SequenceVisualizer:
                     assert len(seq2) == last_frame
             else:
                 n = len(seq1)
-                seq1 = np.concatenate([seq, seq2], axis=0)
+                seq1 = np.concatenate([seq1, seq2], axis=0)
                 last_frame = len(seq1)
 
         if toggle_color:
