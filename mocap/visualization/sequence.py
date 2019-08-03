@@ -66,6 +66,7 @@ class SequenceVisualizer:
              noaxis=False, noclear=False,
              toggle_color=False,
              plot_cbc=None, last_frame=None,
+             name='',
              plot_jid=False):
         """
         # 002540
@@ -85,6 +86,7 @@ class SequenceVisualizer:
         :param noaxis:
         :param plot_cbc: def plot_cvc(ax, seq, t):
         :param last_frame:
+        :param name: string added to the newly created folder name
         :param plot_jid:
         :return:
         """
@@ -117,7 +119,7 @@ class SequenceVisualizer:
         subsampling = self.subsampling
         to_file = self.to_file
         seq_root = self.seq_root
-        video_dir = join(seq_root, 'seq' + str(counter))
+        video_dir = join(seq_root, 'seq' + str(counter) + name)
         if to_file:
             assert not isdir(video_dir)
             makedirs(video_dir)
