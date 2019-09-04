@@ -66,6 +66,7 @@ class SequenceVisualizer:
              noaxis=False, noclear=False,
              toggle_color=False,
              plot_cbc=None, last_frame=None,
+             definite_cbc=None,
              name='',
              plot_jid=False):
         """
@@ -85,6 +86,7 @@ class SequenceVisualizer:
         :param rcolor2:
         :param noaxis:
         :param plot_cbc: def plot_cvc(ax, seq, t):
+        :param definite_cbc: def plot_cbc(ax, i, t): will be called for sure
         :param last_frame:
         :param name: string added to the newly created folder name
         :param plot_jid:
@@ -132,7 +134,7 @@ class SequenceVisualizer:
             ax = fig.add_subplot(1, n_views, vv+1, projection='3d')
             Axs.append(ax)
 
-        for t in tqdm(range(0, last_frame, subsampling)):
+        for iii, t in enumerate(tqdm(range(0, last_frame, subsampling))):
             for vv, (elev, azim) in enumerate(views):
                 ax = Axs[vv]
                 if not noclear:
@@ -184,6 +186,9 @@ class SequenceVisualizer:
                     plot_cbc(ax, seq1, t)
 
                 ax.set_title('frame ' + str(t + 1))
+                
+                if definite_cbc is not None:
+                    definite_cbc(ax, iii, t)
 
             if to_file:
                 if n_views > 1:
