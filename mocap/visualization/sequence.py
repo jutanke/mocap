@@ -141,6 +141,7 @@ class SequenceVisualizer:
                     ax.clear()
                 if noaxis:
                     ax.axis('off')
+                ax.view_init(elev=elev, azim=azim)
                 ax.set_xlim([vmin, vmax])
                 ax.set_ylim([vmin, vmax])
                 ax.set_zlim([vmin, vmax])
