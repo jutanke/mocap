@@ -1,8 +1,10 @@
+import sys
+sys.path.insert(0, './../..')
 import unittest
 import numpy as np
 import numpy.linalg as la
 import mocap.math.geometry as gm
-from math import pi
+from math import pi  # pylint: disable=no-name-in-module
 
 
 class Test3DRotation(unittest.TestCase):
