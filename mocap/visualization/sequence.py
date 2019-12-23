@@ -5,13 +5,7 @@ from os.path import isdir, join
 from tqdm import tqdm
 from os import makedirs
 import shutil
-import mocap.visualization.human_pose as hviz
-
-# #318BA3
-# #14ABBD
-# #FFAA00
-# #FF6000
-# #FF3800
+import mocap.visualization.humanpose as hviz
 
 
 class SequenceVisualizer:
@@ -33,7 +27,7 @@ class SequenceVisualizer:
         :param to_file: if True write to file
         :param subsampling
         """
-        assert isdir(data_root)
+        assert isdir(data_root), data_root
         self.name = name
         self.with_pauses = with_pauses
         seq_root = join(data_root, name)
@@ -107,7 +101,7 @@ class SequenceVisualizer:
         if toggle_color:
             assert not parallel
             assert seq2 is None
-        
+
         if plot_fn1 is None:
             plot_fn1 = self.plot_fn
         if plot_fn2 is None:
@@ -131,7 +125,7 @@ class SequenceVisualizer:
 
         Axs = []
         for vv in range(n_views):
-            ax = fig.add_subplot(1, n_views, vv+1, projection='3d')
+            ax = fig.add_subplot(1, n_views, vv + 1, projection='3d')
             Axs.append(ax)
 
         for iii, t in enumerate(tqdm(range(0, last_frame, subsampling))):
@@ -154,8 +148,8 @@ class SequenceVisualizer:
                     ax.plot([-10, 10], [0, 0], [0, 0], color='black', alpha=0.5)
                 if plot_cbc is None:
                     if parallel:
-                        T1 = np.array([parallel_distance/2, 0, 0])
-                        T2 = np.array([-parallel_distance/2, 0, 0])
+                        T1 = np.array([parallel_distance / 2, 0, 0])
+                        T2 = np.array([-parallel_distance / 2, 0, 0])
                         if plot_fn1 is None:
                             hviz.plot(ax, seq1[t], lcolor=lcolor, rcolor=rcolor, plot_jid=plot_jid)
                         else:
@@ -187,15 +181,15 @@ class SequenceVisualizer:
                     plot_cbc(ax, seq1, t)
 
                 ax.set_title('frame ' + str(t + 1))
-                
+
                 if definite_cbc is not None:
                     definite_cbc(ax, iii, t)
 
             if to_file:
                 if n_views > 1:
-                    fig.savefig(join(video_dir, 'out%05d.png' % t), 
-                    pad_inches=0,
-                    transparent=False)
+                    fig.savefig(join(video_dir, 'out%05d.png' % t),
+                                pad_inches=0,
+                                transparent=False)
                 else:
                     extent = ax.get_window_extent().transformed(
                         fig.dpi_scale_trans.inverted())

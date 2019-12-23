@@ -1,5 +1,4 @@
 from mpl_toolkits.mplot3d import Axes3D
-from pak.datasets.CMU_MoCap import plot as cmu_plot
 
 
 def plot(ax, human, plot_jid=False, do_scatter=True, linewidth=2,
@@ -7,9 +6,9 @@ def plot(ax, human, plot_jid=False, do_scatter=True, linewidth=2,
     """
     :param ax:
     :param human:
-    :param plot_only_limbs:
     :param plot_jid:
     :param do_scatter:
+    :param linewidth:
     :param lcolor:
     :param rcolor:
     :param alpha:
@@ -38,14 +37,27 @@ def plot(ax, human, plot_jid=False, do_scatter=True, linewidth=2,
             True, True, True, True,
             False, False, False, False
         ]
-    elif n_joints == 31:  # CMU
-        cmu_plot(ax, human,
-             lcolor=lcolor,
-             rcolor=rcolor,
-             alpha=alpha,
-             plot_jid=plot_jid,
-             do_scatter=do_scatter)
-        return
+    elif n_joints == 31:  # CMUmocap
+        raise NotImplementedError("not yet")
+    elif n_joints == 32:  # h36m
+        connect = [
+            (1, 2), (2, 3), (3, 4), (4, 5),
+            (6, 7), (7, 8), (8, 9), (9, 10),
+            (0, 1), (0, 6),
+            (6, 17), (17, 18), (18, 19), (19, 20), (20, 21), (21, 22),
+            (1, 25), (25, 26), (26, 27), (27, 28), (28, 29), (29, 30),
+            (24, 25), (24, 17),
+            (24, 14), (14, 15)
+        ]
+        LR = [
+            False, True, True, True, True,
+            True, False, False, False, False,
+            False, True, True, True, True,
+            True, True, False, False, False,
+            False, False, False, False, True,
+            False, True, True, True, True,
+            True, True
+        ]
     elif n_joints == 18:
         connect = [
             (0, 1), (1, 2), (2, 3),
@@ -132,3 +144,5 @@ def plot(ax, human, plot_jid=False, do_scatter=True, linewidth=2,
     if plot_jid:
         for i, (x, y, z) in enumerate(human):
             ax.text(x, y, z, str(i))
+
+

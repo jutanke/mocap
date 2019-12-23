@@ -4,9 +4,6 @@ import numpy.linalg as la
 from math import pi
 
 
-# === 2 dimensions ===
-
-
 @nb.jit(nb.float32[:, :](
     nb.float32
 ), nopython=True, nogil=True )
@@ -19,7 +16,7 @@ def rot2d(alpha):
         [np.cos(alpha), -np.sin(alpha)],
         [np.sin(alpha), np.cos(alpha)]
     ], np.float32)
-    return R
+    return np.ascontiguousarray(R)
 
 
 @nb.jit(nb.float32[:, ](
@@ -33,6 +30,7 @@ def get_2d_normal(left, right):
     lr = left - right
     lr = lr/la.norm(lr)
     R = rot2d(-pi/2)
+    R = np.ascontiguousarray(R)
     n = R @ lr
     return n
 
@@ -141,7 +139,7 @@ def rot3d(a, b, c):
         [np.sin(c), np.cos(c), 0],
         [0., 0., 1.]
     ], np.float32)
-    return Rx @ Ry @ Rz
+    return np.ascontiguousarray(Rx @ Ry @ Rz)
 
 
 @nb.jit(nb.float32[:, :](
@@ -185,6 +183,8 @@ def apply_rotation(person, R):
     :param R: { 3 x 3 }
     :return:
     """
+    person = np.ascontiguousarray(person)
+    R = np.ascontiguousarray(R)
     person_mu = person - np.mean(person, axis=0)
     person_R = person_mu @ R.T
     return person_R + np.mean(person, axis=0)
