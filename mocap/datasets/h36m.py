@@ -14,6 +14,7 @@ for subdir in ['fixed_skeleton', 'labels']:
     txt_files = [f for f in listdir(join(data_dir, subdir)) if f.endswith('.txt')]
     if len(zip_files) > len(txt_files):
         print('\n[Human3.6M] decompress data.. ->', subdir)
+        
         for zfile in tqdm(zip_files):
             zfile = join(join(data_dir, subdir), zfile)
             zip_obj = ZipFile(zfile)
