@@ -1,7 +1,7 @@
 import numpy as np
 import numba as nb
 import numpy.linalg as la
-from math import pi
+from math import pi  # pylint: disable=no-name-in-module
 
 
 @nb.jit(nb.float32[:, :](

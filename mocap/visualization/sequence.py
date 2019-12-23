@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from os.path import isdir, join
 from tqdm import tqdm
-from os import makedirs, system
+from os import makedirs, system, remove, listdir
 import shutil
 import mocap.visualization.humanpose as hviz
 
@@ -63,7 +63,8 @@ class SequenceVisualizer:
              definite_cbc=None,
              name='',
              plot_jid=False,
-             create_video=False):
+             create_video=False,
+             if_video_keep_pngs=False):
         """
         # 002540
         # 099487
@@ -86,6 +87,7 @@ class SequenceVisualizer:
         :param name: string added to the newly created folder name
         :param plot_jid:
         :param create_video: if True create an .mp4 from the png files
+        :param if_video_keep_pngs: if True keep the PNG files after creating the mp4 video
         :return:
         """
         if last_frame is None:
@@ -213,7 +215,12 @@ class SequenceVisualizer:
             # create .mp4 from png files
 
             png_in = join(video_dir, 'out%05d.png')
-            mp4_out = join(video_dir, 'out.mp4')
+            mp4_out = join(video_dir, 'vid_' + name + '.mp4')
             system('ffmpeg -r 25 -i ' + png_in + ' -vcodec mpeg4 -y -vb 20M ' + mp4_out)
+
+            if not if_video_keep_pngs:
+                for f in listdir(video_dir):
+                    if f.endswith('.png'):
+                        remove(join(video_dir, f))
 
 

@@ -1,11 +1,12 @@
 import numba as nb
 import numpy as np
 from os import listdir
-from os.path import join, dirname, isdir
+from os.path import join, dirname, isdir, isfile
 from tqdm import tqdm
 from zipfile import ZipFile
 
 data_dir = join(dirname(__file__), '../data/h36m')
+password_file = join(dirname(__file__), '../data/password.txt')
 assert isdir(data_dir), data_dir
 
 # -- check if we need to extract the zip files --
@@ -14,16 +15,25 @@ for subdir in ['fixed_skeleton', 'labels']:
     txt_files = [f for f in listdir(join(data_dir, subdir)) if f.endswith('.txt')]
     if len(zip_files) > len(txt_files):
         print('\n[Human3.6M] decompress data.. ->', subdir)
-        
+
+        assert isfile(password_file), 'could not find ' + password_file + '!!'
+        password = open(password_file, 'r').read()
+
         for zfile in tqdm(zip_files):
             zfile = join(join(data_dir, subdir), zfile)
             zip_obj = ZipFile(zfile)
-            zip_obj.extractall(join(data_dir, subdir))
+            zip_obj.extractall(join(data_dir, subdir), pwd=password.encode('utf-8'))
         print()
 
 
 def get3d(actor, action, sid):
     fname = join(join(data_dir, 'fixed_skeleton'), actor + '_' + action + '_' + str(sid) + '.txt')
+    seq = np.loadtxt(fname, dtype=np.float32)
+    return seq
+
+
+def get_labels(actor, action, sid):
+    fname = join(join(data_dir, 'labels'), actor + '_' + action + '_' + str(sid) + '.txt')
     seq = np.loadtxt(fname, dtype=np.float32)
     return seq
 
@@ -44,7 +54,7 @@ def reflect_over_x(seq):
     for frame in range(len(seq)):
         person = seq[frame]
         for jid in range(len(person)):
-            pt3d = person[jid]
+            pt3d = np.ascontiguousarray(person[jid])
             seq[frame, jid] = I @ pt3d
     return seq
 
