@@ -62,7 +62,8 @@ class SequenceVisualizer:
              plot_cbc=None, last_frame=None,
              definite_cbc=None,
              name='',
-             plot_jid=False):
+             plot_jid=False,
+             create_video=False):
         """
         # 002540
         # 099487
@@ -84,6 +85,7 @@ class SequenceVisualizer:
         :param last_frame:
         :param name: string added to the newly created folder name
         :param plot_jid:
+        :param create_video: if True create an .mp4 from the png files
         :return:
         """
         if last_frame is None:
@@ -205,3 +207,11 @@ class SequenceVisualizer:
         if not to_file:
             plt.show()
             plt.close()
+        
+        if to_file and create_video:
+            print('\t--> create .mp4')
+            # create .mp4 from png files
+
+            
+
+

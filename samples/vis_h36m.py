@@ -15,4 +15,4 @@ seq = H36M.get3d('S1', 'walking', 1)
 
 print('seq', seq.shape)
 
-vis.plot(seq[0:50])
+vis.plot(seq[0:50], create_video=True)
