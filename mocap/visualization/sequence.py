@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from os.path import isdir, join
 from tqdm import tqdm
-from os import makedirs
+from os import makedirs, system
 import shutil
 import mocap.visualization.humanpose as hviz
 
@@ -212,6 +212,8 @@ class SequenceVisualizer:
             print('\t--> create .mp4')
             # create .mp4 from png files
 
-            
+            png_in = join(video_dir, 'out%05d.png')
+            mp4_out = join(video_dir, 'out.mp4')
+            system('ffmpeg -r 25 -i ' + png_in + ' -vcodec mpeg4 -y -vb 20M ' + mp4_out)
 
 
