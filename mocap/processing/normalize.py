@@ -84,6 +84,9 @@ def normalize_sequence_at_frame(seq, frame,
     """ Normalize sequence at {frame}
     """
     assert len(seq) > frame
+    if len(seq.shape) == 2:
+        n_frames = len(seq)
+        seq = seq.reshape((n_frames, -1, 3))
     return _normalize_sequence_at_frame(seq, frame,
                                         j_root, j_left, j_right)
 
@@ -105,10 +108,17 @@ def _normalize_sequence_at_frame(seq, frame, j_root, j_left, j_right):
     return result
 
 
+def remove_rotation_and_translation(seq, j_root=0, j_left=6, j_right=1):
+    if len(seq.shape) == 2:
+        n_frames = len(seq)
+        seq = seq.reshape((n_frames, -1, 3))
+    return _remove_rotation_and_translation(seq, j_root, j_left, j_right)
+
+
 @nb.jit(nb.float32[:, :, :](
     nb.float32[:, :, :], nb.int64, nb.int64, nb.int64
 ), nopython=True, nogil=True)
-def remove_rotation_and_translation(seq, j_root, j_left, j_right):
+def _remove_rotation_and_translation(seq, j_root, j_left, j_right):
     """
     :param seq:
     :param j_root:
