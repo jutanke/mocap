@@ -14,15 +14,17 @@ vis = SequenceVisualizer(vis_dir, 'vis_h36m', to_file=True, mark_origin=True)
 
 # Seq = H36M.get3d('S1', 'walking', 1)
 
-ds = H36M.H36M_FixedSkeleton_withActivities(actors=['S1'], actions=['walking'])
+ds = H36M.H36M_FixedSkeleton_withActivities(actors=['S1'], actions=['walking'], iterate_with_framerate=True)
 Seq, Lab = ds.get_sequence(0)
 
 
 seq = Seq[0:250:4]
 
-for seq, lab in ds:
+for seq, lab, framerate in ds:
     print('seq', seq.shape)
     print('lab', lab.shape)
+    print('framerate', framerate)
+    print('')
 
 exit(1)
 

@@ -102,19 +102,22 @@ ACTORS = ['S1', 'S5', 'S6', 'S7', 'S8', 'S9', 'S11']
 
 class H36M_FixedSkeleton(DataSet):
 
-    def __init__(self, actors, actions=ACTIONS):
+    def __init__(self, actors, actions=ACTIONS,
+                 iterate_with_framerate=False):
         seqs = []
         for actor in actors:
             for action in actions:
                 for sid in [1, 2]:
                     seq = get3d(actor, action, sid)
                     seqs.append(seq)
-        super().__init__([seqs], framerate=50)
+        super().__init__([seqs], framerate=50, 
+                         iterate_with_framerate=iterate_with_framerate)
 
 
 class H36M_FixedSkeleton_withActivities(DataSet):
 
-    def __init__(self, actors, actions=ACTIONS):
+    def __init__(self, actors, actions=ACTIONS,
+                 iterate_with_framerate=False):
         seqs = []
         labels = []
         for actor in actors:
@@ -124,6 +127,7 @@ class H36M_FixedSkeleton_withActivities(DataSet):
                     label = get_labels(actor, action, sid)
                     seqs.append(seq)
                     labels.append(label)
-        super().__init__([seqs, labels], framerate=50)
+        super().__init__([seqs, labels], framerate=50,
+                         iterate_with_framerate=iterate_with_framerate)
 
 

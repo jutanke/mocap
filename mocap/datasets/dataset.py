@@ -3,14 +3,16 @@ import numpy as np
 
 class DataSet:
 
-    def __init__(self, Data, framerate):
+    def __init__(self, Data, framerate, iterate_with_framerate):
         """
         :param Data: [data0, data1, ...] lists of sequences, all
             dataX must have the same length. This is a list so that
             multiple things can be associated with each other, e.g.
             human poses <--> activity labels
         :param framerate: framerate in Hz for each sequence
+        :param iterate_with_framerate: if True the iterator returns the framerate as well
         """
+        self.iterate_with_framerate = iterate_with_framerate
         n_sequences = -1
         for data in Data:
             if n_sequences < 0:
@@ -52,7 +54,11 @@ class DataSet:
         return len(self.Data[0])
 
     def __iter__(self):
-        return DataSetIterator(self)
+        if self.iterate_with_framerate:
+            return DataSetWithFramerateIterator(self)
+        else:
+            return DataSetIterator(self)
+
 
 class DataSetIterator:
 
@@ -69,4 +75,24 @@ class DataSetIterator:
             return result
         else:
             raise StopIteration
+
+
+
+class DataSetWithFramerateIterator:
+
+    def __init__(self, dataset):
+        self.dataset = dataset
+        self._index = 0
+    
+    def __next__(self):
+        if self._index < len(self.dataset):
+            result = []
+            for data in self.dataset.Data:
+                result.append(data[self._index])
+            result.append(self.dataset.get_framerate(self._index))
+            self._index += 1
+            return result
+        else:
+            raise StopIteration
+
 
