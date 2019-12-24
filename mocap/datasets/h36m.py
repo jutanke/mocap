@@ -4,6 +4,7 @@ from os import listdir
 from os.path import join, dirname, isdir, isfile
 from tqdm import tqdm
 from zipfile import ZipFile
+from mocap.datasets.dataset import DataSet
 
 data_dir = join(dirname(__file__), '../data/h36m')
 password_file = join(dirname(__file__), '../data/password.txt')
@@ -33,7 +34,7 @@ def get3d(actor, action, sid):
 
 
 def get_labels(actor, action, sid):
-    fname = join(join(data_dir, 'labels'), actor + '_' + action + '_' + str(sid) + '.txt')
+    fname = join(join(data_dir, 'labels'), actor + '_' + action + '_' + str(sid) + '_label.txt')
     seq = np.loadtxt(fname, dtype=np.float32)
     return seq
 
@@ -73,3 +74,56 @@ def mirror_p3d(seq):
     x = reflect_over_x(x_copy)
     x[:, lr] = x[:, rl]
     return x
+
+
+# =======================
+# D A T A S E T S
+# =======================
+
+ACTIONS = [
+    'directions',
+    'discussion',
+    'eating',
+    'greeting',
+    'phoning',
+    'posing',
+    'purchases',
+    'sitting',
+    'sittingdown',
+    'smoking',
+    'takingphoto',
+    'waiting',
+    'walking',
+    'walkingdog',
+    'walkingtogether'
+]
+
+ACTORS = ['S1', 'S5', 'S6', 'S7', 'S8', 'S9', 'S11']
+
+class H36M_FixedSkeleton(DataSet):
+
+    def __init__(self, actors, actions=ACTIONS):
+        seqs = []
+        for actor in actors:
+            for action in actions:
+                for sid in [1, 2]:
+                    seq = get3d(actor, action, sid)
+                    seqs.append(seq)
+        super().__init__([seqs], framerate=50)
+
+
+class H36M_FixedSkeleton_withActivities(DataSet):
+
+    def __init__(self, actors, actions=ACTIONS):
+        seqs = []
+        labels = []
+        for actor in actors:
+            for action in actions:
+                for sid in [1, 2]:
+                    seq = get3d(actor, action, sid)
+                    label = get_labels(actor, action, sid)
+                    seqs.append(seq)
+                    labels.append(label)
+        super().__init__([seqs, labels], framerate=50)
+
+

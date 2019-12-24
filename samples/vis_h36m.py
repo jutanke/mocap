@@ -12,8 +12,19 @@ if not isdir(vis_dir):
 
 vis = SequenceVisualizer(vis_dir, 'vis_h36m', to_file=True, mark_origin=True)
 
-Seq = H36M.get3d('S1', 'walking', 1)
+# Seq = H36M.get3d('S1', 'walking', 1)
+
+ds = H36M.H36M_FixedSkeleton_withActivities(actors=['S1'], actions=['walking'])
+Seq, Lab = ds.get_sequence(0)
+
+
 seq = Seq[0:250:4]
+
+for seq, lab in ds:
+    print('seq', seq.shape)
+    print('lab', lab.shape)
+
+exit(1)
 
 vis.plot(seq, 
     name='sample', 
