@@ -41,6 +41,10 @@ def get_expmap(actor, action, sid):
     return seq
 
 
+def get_euler(actor, action, sid):
+    H36M_DA.aquire_euler()
+
+
 def get_labels(actor, action, sid):
     fname = join(join(data_dir, 'labels'), actor + '_' + action + '_' + str(sid) + '_label.txt')
     seq = np.loadtxt(fname, dtype=np.float32)

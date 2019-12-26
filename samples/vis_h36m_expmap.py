@@ -13,6 +13,6 @@ if not isdir(vis_dir):
 vis = SequenceVisualizer(vis_dir, 'vis_h36m_expmap', to_file=True, mark_origin=True)
 
 
-Seq = H36M.get_expmap('S1', 'walking', 1)
+Seq = H36M.get_euler('S1', 'walking', 1)
 
 print('hee', Seq.shape)
