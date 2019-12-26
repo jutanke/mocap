@@ -1,4 +1,5 @@
 import numpy as np
+import mocap.datasets.h36m as H36M
 
 
 # -- hardcoded data --
@@ -58,7 +59,12 @@ def euler_fk(angles):
         xyz = np.reshape(xyz, (n_batch, 3))
         Pts3d.append(xyz)
 
-    Pts3d = np.stack(Pts3d, axis=1)
+    Pts3d = np.stack(Pts3d, axis=1).astype(np.float32)
+
+    Pts3d[:, :, (0, 1, 2)] = Pts3d[:, :, (0, 2, 1)]
+
+    Pts3d = H36M.mirror_p3d(Pts3d)
+
     return Pts3d
 
 
