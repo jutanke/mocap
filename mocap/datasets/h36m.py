@@ -5,6 +5,7 @@ from os.path import join, dirname, isdir, isfile
 from tqdm import tqdm
 from zipfile import ZipFile
 from mocap.datasets.dataset import DataSet
+import mocap.dataaquisition.h36m as H36M_DA
 
 data_dir = join(dirname(__file__), '../data/h36m')
 password_file = join(dirname(__file__), '../data/password.txt')
@@ -30,6 +31,13 @@ for subdir in ['fixed_skeleton', 'labels']:
 def get3d(actor, action, sid):
     fname = join(join(data_dir, 'fixed_skeleton'), actor + '_' + action + '_' + str(sid) + '.txt')
     seq = np.loadtxt(fname, dtype=np.float32)
+    return seq
+
+
+def get_expmap(actor, action, sid):
+    H36M_DA.aquire_expmap()
+    fname = join(join(join(data_dir, 'expmap/h3.6m/dataset'), actor), action + '_' + str(sid) + '.txt')
+    seq = np.loadtxt(fname, delimiter=',', dtype=np.float32)
     return seq
 
 
