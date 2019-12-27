@@ -16,7 +16,17 @@ class PoseSet:
         self.Data = np.concatenate(Data)
 
     def distance_to_dataset(self, pose):
+        """ Calculate the distance to all elements of the dataset from {pose}.
+            The distance is:
+                min[ d(pose|posest), d(mirror(pose)|poseset) ]
+        :param pose: {n_joints x 3} 
+        """
         pass
 
     def distance_to_dataset_kabsch(self, pose):
+        """ Calculate the distance to all elements of the dataset from {pose}.
+            The distance is:
+                min[ d(pose|posest), d(mirror(pose)|poseset) ]
+        :param pose: {n_joints x 3} 
+        """
         pass
