@@ -73,8 +73,9 @@ def _rotate_P_to_Q(P, Q):
     """
     n_joints = P.shape[0]
     translate_p = np.sum(P, axis=0) / n_joints
+    translate_q = np.sum(Q, axis=0) / n_joints
     R = np.ascontiguousarray(_kabsch(P, Q))
     P = P - translate_p
-    P = P @ R
-    P += translate_p
+    P = P @ np.transpose(R)
+    P += translate_q
     return P
