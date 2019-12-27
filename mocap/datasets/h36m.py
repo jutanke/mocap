@@ -115,6 +115,14 @@ ACTIONS = [
 
 ACTORS = ['S1', 'S5', 'S6', 'S7', 'S8', 'S9', 'S11']
 
+
+class H36M_Simplified(DataSet):
+
+    def __init__(self, dataset, data_target=0):
+        used_joints = [0, 1, 2, 3, 6, 7, 8, 12, 13, 14, 15, 17, 18, 19, 25, 26, 27]
+        pass
+
+
 class H36M_FixedSkeleton(DataSet):
 
     def __init__(self, actors, actions=ACTIONS,
