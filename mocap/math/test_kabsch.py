@@ -5,7 +5,7 @@ import numpy as np
 import numpy.random as rnd
 import numpy.linalg as la
 import mocap.math.geometry as gm
-from mocap.math.kabsch import kabsch
+from mocap.math.kabsch import kabsch, rotate_P_to_Q
 from math import pi  # pylint: disable=no-name-in-module
 
 
@@ -37,6 +37,22 @@ class TestKabsch(unittest.TestCase):
             dist = np.sum(np.abs(R_pred - R))
             self.assertAlmostEqual(dist, 0.0, places=4)
 
+
+class TestRotations(unittest.TestCase):
+
+    def test_simple(self):
+        n_joints = 16
+        for _ in range(25):
+            Q = rnd.rand(n_joints, 3)
+            P = Q.copy()
+            a, b, c = rnd.rand(3) * pi * 2
+            R = gm.rot3d(a, b, c)
+            P = P @ np.transpose(R)
+            
+            Q_recovered = rotate_P_to_Q(P, Q)
+
+            dist = np.sum(np.abs(Q_recovered - Q))
+            self.assertAlmostEqual(dist, 0.0, places=4)
 
 
 
