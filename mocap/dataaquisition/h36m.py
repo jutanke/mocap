@@ -10,6 +10,7 @@ DATA_DIR = join(dirname(__file__), '../data/h36m')
 
 
 def aquire_euler():
+    aquire_expmap()
     global DATA_DIR
     euler_dir = join(DATA_DIR, 'euler')
     if not isdir(euler_dir):
