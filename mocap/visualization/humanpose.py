@@ -78,10 +78,10 @@ def plot(ax, human, plot_jid=False, do_scatter=True, linewidth=2,
         connect = [
             (0, 1), (1, 4), (1, 2), (2, 3),
             (4, 5), (5, 6),
-            (1, 14), (4, 11), (14, 10), (10, 11),
+            (1, 14), (4, 11),
             (11, 12), (12, 13), (14, 15), (15, 16),
-            (10, 8), (8, 9),
-            (14, 7), (7, 11)
+            (8, 9), (9, 10),
+            (14, 7), (7, 11), (14, 8), (8, 11)
         ]
         LR = [False, False, False, False, True,
               True, True, False, False, False,

@@ -119,8 +119,35 @@ ACTORS = ['S1', 'S5', 'S6', 'S7', 'S8', 'S9', 'S11']
 class H36M_Simplified(DataSet):
 
     def __init__(self, dataset, data_target=0):
+        """
+        :param dataset: {mocap.datasets.dataset.DataSet}
+        """
+        assert data_target < dataset.n_data_entries
         used_joints = [0, 1, 2, 3, 6, 7, 8, 12, 13, 14, 15, 17, 18, 19, 25, 26, 27]
-        pass
+        Keys = dataset.Keys
+        Data_new = []
+        for did, data in enumerate(dataset.Data):
+            if did == data_target:
+                seqs = []
+                for seq in data:
+                    flattend = False
+                    n_frames = len(seq)
+                    if len(seq.shape) == 2:
+                        flattend = True
+                        seq = seq.reshape((n_frames, 32, 3))
+                    seq = seq[:, used_joints, :]
+                    if flattend:
+                        seq = seq.reshape((n_frames, -1))
+                    seqs.append(seq)
+                Data_new.append(seqs)
+            else:
+                Data_new.append(data)
+        
+        super().__init__(Data_new, Keys=Keys, 
+                         framerate=dataset.framerate,
+                         iterate_with_framerate=dataset.iterate_with_framerate,
+                         iterate_with_keys=dataset.iterate_with_keys,
+                         j_root=0, j_left=4, j_right=1)
 
 
 class H36M_FixedSkeleton(DataSet):
@@ -138,7 +165,8 @@ class H36M_FixedSkeleton(DataSet):
                     keys.append((actor, action, sid))
         super().__init__([seqs], Keys=keys, framerate=50, 
                          iterate_with_framerate=iterate_with_framerate,
-                         iterate_with_keys=iterate_with_keys)
+                         iterate_with_keys=iterate_with_keys,
+                         j_root=0, j_left=6, j_right=1)
 
 
 class H36M_FixedSkeleton_withActivities(DataSet):
@@ -159,6 +187,7 @@ class H36M_FixedSkeleton_withActivities(DataSet):
                     keys.append((actor, action, sid))
         super().__init__([seqs, labels], Keys=keys, framerate=50,
                          iterate_with_framerate=iterate_with_framerate,
-                         iterate_with_keys=iterate_with_keys)
+                         iterate_with_keys=iterate_with_keys,
+                         j_root=0, j_left=6, j_right=1)
 
 

@@ -4,7 +4,7 @@ import numpy as np
 class DataSet:
 
     def __init__(self, Data, Keys, framerate, iterate_with_framerate,
-                 iterate_with_keys):
+                 iterate_with_keys, j_root, j_left, j_right):
         """
         :param Data: [data0, data1, ...] lists of sequences, all
             dataX must have the same length. This is a list so that
@@ -17,13 +17,16 @@ class DataSet:
         """
         self.iterate_with_framerate = iterate_with_framerate
         self.iterate_with_keys = iterate_with_keys
+        self.j_root = j_root
+        self.j_left = j_left
+        self.j_right = j_right
         n_sequences = -1
         for data in Data:
             if n_sequences < 0:
                 n_sequences = len(data)
             else:
                 assert n_sequences == len(data), 'length mismatch:' + str(n_sequences) + ' vs ' + str(len(data))
-        assert n_sequences == len(Keys)
+        assert n_sequences == len(Keys), str(n_sequences) + ' vs ' + str(len(Keys))
         if not isinstance(framerate, int):
             assert len(framerate) == n_sequences
         self.Data = Data

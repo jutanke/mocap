@@ -17,13 +17,21 @@ vis = SequenceVisualizer(vis_dir, 'vis_h36m', to_file=True, mark_origin=False)
 ds = H36M.H36M_FixedSkeleton_withActivities(actors=['S1'], actions=['walking'],
                                             iterate_with_framerate=True,
                                             iterate_with_keys=True)
+
+ds = H36M.H36M_Simplified(ds)
+
 Seq, Lab = ds.get_sequence(0)
 
 
 seq = Seq[0:250:4]
 
+print('seq', seq.shape)
 
-seq_norm = norm.normalize_sequence_at_frame(seq, 15)
+
+seq_norm = norm.normalize_sequence_at_frame(seq, 15, 
+                                            j_root=ds.j_root,
+                                            j_left=ds.j_left,
+                                            j_right=ds.j_right)
 
 
 views = [(0, 90)]
