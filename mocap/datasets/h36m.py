@@ -79,8 +79,22 @@ def mirror_p3d(seq):
     """
         :param seq: [n_frames, 32*3]
         """
-    LS = [6, 7, 8, 9, 10, 16, 17, 18, 19, 20, 21, 22, 23]
-    RS = [1, 2, 3, 4, 5, 24, 25, 26, 27, 28, 29, 30, 31]
+    if len(seq.shape) == 2:
+        n_joints = seq.shape[1]//3
+    elif len(seq.shape) == 3:
+        n_joints = seq.shape[1]
+    else:
+        raise ValueError("incorrect shape:" + str(seq.shape))
+    
+    assert n_joints in [32, 17], 'wrong joint number:' + str(n_joints)
+
+    if n_joints == 32:
+        LS = [6, 7, 8, 9, 10, 16, 17, 18, 19, 20, 21, 22, 23]
+        RS = [1, 2, 3, 4, 5, 24, 25, 26, 27, 28, 29, 30, 31]
+    elif n_joints == 17:
+        LS = [4, 5, 6, 11, 12, 13]
+        RS = [1, 2, 3, 14, 15, 16]
+
     lr = np.array(LS + RS)
     rl = np.array(RS + LS)
     n_frames = len(seq)

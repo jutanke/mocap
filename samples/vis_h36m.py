@@ -27,6 +27,7 @@ seq = Seq[0:250:4]
 
 print('seq', seq.shape)
 
+seq = H36M.mirror_p3d(seq)
 
 seq_norm = norm.normalize_sequence_at_frame(seq, 15, 
                                             j_root=ds.j_root,
@@ -35,7 +36,7 @@ seq_norm = norm.normalize_sequence_at_frame(seq, 15,
 
 
 views = [(0, 90)]
-vis.plot(seq_norm, name='norm', create_video=False, plot_jid=True, views=views, noaxis=True)
+vis.plot(seq_norm, name='norm', create_video=True, plot_jid=False, views=views, noaxis=True)
 
 
 
