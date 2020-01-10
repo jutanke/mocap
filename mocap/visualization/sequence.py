@@ -64,6 +64,7 @@ class SequenceVisualizer:
              name='',
              plot_jid=False,
              create_video=False,
+             video_fps=25,
              if_video_keep_pngs=False):
         """
         # 002540
@@ -216,7 +217,7 @@ class SequenceVisualizer:
 
             png_in = join(video_dir, 'out%05d.png')
             mp4_out = join(video_dir, 'vid_' + name + '.mp4')
-            system('ffmpeg -r 25 -i ' + png_in + ' -vcodec mpeg4 -y -vb 20M ' + mp4_out)
+            system('ffmpeg -r ' + str(video_fps) + ' -i ' + png_in + ' -vcodec mpeg4 -y -vb 20M ' + mp4_out)
 
             if not if_video_keep_pngs:
                 for f in listdir(video_dir):

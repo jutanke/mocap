@@ -21,3 +21,4 @@ Seq_xyz = norm.remove_rotation_and_translation(H36M.get3d('S1', 'walking', 1)[0:
 
 
 vis.plot(Seq, Seq_xyz, parallel=True, create_video=True)
+

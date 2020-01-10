@@ -36,7 +36,7 @@ seq_norm = norm.normalize_sequence_at_frame(seq, 15,
 
 
 views = [(0, 90)]
-vis.plot(seq_norm, name='norm', create_video=True, plot_jid=False, views=views, noaxis=True)
+vis.plot(seq_norm, name='norm', create_video=True, plot_jid=False, views=views, noaxis=False)
 
 
 
