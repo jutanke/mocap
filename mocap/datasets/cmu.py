@@ -78,13 +78,10 @@ def reflect_over_x(seq):
         [0, 1, 0],
         [0, 0, 1]
         ], np.float32)
-    # ensure we do not fuck up memory
-    # seq_reflect = np.empty(seq.shape, np.float32)
     for frame in range(len(seq)):
         person = seq[frame]
         for jid in range(len(person)):
             pt3d = np.ascontiguousarray(person[jid])
-            # seq_reflect[frame, jid] = I @ pt3d
             seq[frame, jid] = I @ pt3d
 
     # return seq_reflect
