@@ -77,8 +77,8 @@ def reflect_over_x(seq):
 
 def mirror_p3d(seq):
     """
-        :param seq: [n_frames, 32*3]
-        """
+    :param seq: [n_frames, 32*3]
+    """
     if len(seq.shape) == 2:
         n_joints = seq.shape[1]//3
     elif len(seq.shape) == 3:
@@ -161,7 +161,8 @@ class H36M_Simplified(DataSet):
                          framerate=dataset.framerate,
                          iterate_with_framerate=dataset.iterate_with_framerate,
                          iterate_with_keys=dataset.iterate_with_keys,
-                         j_root=0, j_left=4, j_right=1)
+                         j_root=0, j_left=4, j_right=1,
+                         mirror_fn=mirror_p3d)
 
 
 class H36M_FixedSkeleton(DataSet):
@@ -180,7 +181,8 @@ class H36M_FixedSkeleton(DataSet):
         super().__init__([seqs], Keys=keys, framerate=50, 
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
-                         j_root=0, j_left=6, j_right=1)
+                         j_root=0, j_left=6, j_right=1,
+                         mirror_fn=mirror_p3d)
 
 
 class H36M_FixedSkeleton_withActivities(DataSet):
@@ -202,6 +204,7 @@ class H36M_FixedSkeleton_withActivities(DataSet):
         super().__init__([seqs, labels], Keys=keys, framerate=50,
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
-                         j_root=0, j_left=6, j_right=1)
+                         j_root=0, j_left=6, j_right=1,
+                         mirror_fn=mirror_p3d)
 
 

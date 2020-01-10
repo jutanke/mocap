@@ -12,21 +12,44 @@ if not isdir(vis_dir):
 
 print('go')
 
-seq = CMU.get('01', '01')
+ds = CMU.CMU_DataSet(['01'])
+
+print("len", len(ds))
+
+seq = ds[0]
 seq_norm = norm.normalize_sequence_at_frame(seq, 15, 
-                                            j_root=-1,
-                                            j_left=1,
-                                            j_right=6)
+                                            j_root=ds.j_root,
+                                            j_left=ds.j_left,
+                                            j_right=ds.j_right)
 seq_norm = norm.remove_rotation_and_translation(
-    seq_norm, j_root=-1, j_left=1, j_right=6
+    seq_norm, j_root=ds.j_root, 
+              j_left=ds.j_left, 
+              j_right=ds.j_right
 )
 
-print('seq', seq.shape)
+seq_mirror = ds.mirror(seq_norm)
 
 vis = SequenceVisualizer(vis_dir, 'vis_cmu', 
                          to_file=True,
                          mark_origin=False)
 
 views = [(0, 90)]
-vis.plot(seq_norm[0:400:10], plot_jid=True, 
-         noaxis=True, views=views)
+
+vis.plot(seq_norm[0:400:20],
+         parallel=False,
+         plot_jid=True, 
+         noaxis=True, views=views, 
+         create_video=False)
+
+vis.plot(seq_mirror[0:400:20],
+         parallel=False,
+         plot_jid=True, 
+         noaxis=True, views=views, 
+         create_video=False)
+
+
+vis.plot(seq_norm[0:400:10], seq2=seq_mirror[0:400:10],
+         parallel=True,
+         plot_jid=False, 
+         noaxis=True, views=views, 
+         create_video=True)

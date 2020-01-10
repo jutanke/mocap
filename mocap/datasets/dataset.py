@@ -4,7 +4,8 @@ import numpy as np
 class DataSet:
 
     def __init__(self, Data, Keys, framerate, iterate_with_framerate,
-                 iterate_with_keys, j_root, j_left, j_right):
+                 iterate_with_keys, j_root, j_left, j_right,
+                 mirror_fn=None):
         """
         :param Data: [data0, data1, ...] lists of sequences, all
             dataX must have the same length. This is a list so that
@@ -14,12 +15,14 @@ class DataSet:
         :param framerate: framerate in Hz for each sequence
         :param iterate_with_framerate: if True the iterator returns the framerate as well
         :param iterate_with_keys: if True the iterator returns the key as well
+        :param mirror_fn: def mirror(seq): -->
         """
         self.iterate_with_framerate = iterate_with_framerate
         self.iterate_with_keys = iterate_with_keys
         self.j_root = j_root
         self.j_left = j_left
         self.j_right = j_right
+        self.mirror_fn = mirror_fn
         n_sequences = -1
         for data in Data:
             if n_sequences < 0:
@@ -34,6 +37,10 @@ class DataSet:
         self.framerate = framerate
         self.n_data_entries = len(Data)
         self.n_sequences = n_sequences
+    
+    def mirror(self, seq):
+        assert self.mirror_fn is not None
+        return self.mirror_fn(seq)
     
     def get_framerate(self, index):
         """ return the framerate for the given sequence
@@ -57,6 +64,8 @@ class DataSet:
             result.append(data[index])
         return result
     
+    def __getitem__(self, key):
+        return self.get_sequence(key)
 
     def __len__(self):
         return len(self.Data[0])

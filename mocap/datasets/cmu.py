@@ -2,13 +2,26 @@ import numba as nb
 import numpy as np
 import matplotlib.pyplot as plt
 from os.path import join, dirname, isdir, isfile
+from os import listdir
 from transforms3d.euler import euler2mat
 from mpl_toolkits.mplot3d import Axes3D
 import mocap.dataaquisition.cmu as CMU_DA
+from mocap.datasets.dataset import DataSet
+
+
+CMU_DA.aquire_cmumocap()  # load CMU data if needed
+
+ALL_SUBJECTS = list(sorted(listdir(CMU_DA.CMU_DIR)))
+
+def GET_ACTIONS(subject):
+  subject_loc = join(CMU_DA.CMU_DIR, subject)
+  assert isdir(subject_loc), subject_loc
+  actions = [f[len(subject) + 1:-4] for f in list(sorted(listdir(subject_loc))) \
+    if f.endswith('.amc')]
+  return actions
 
 
 def get(subject, action, store_binary=True, z_is_up=True):
-    CMU_DA.aquire_cmumocap()
     subject_loc = join(CMU_DA.CMU_DIR, subject)
     assert isdir(subject_loc), subject_loc
 
@@ -52,6 +65,90 @@ def get(subject, action, store_binary=True, z_is_up=True):
 
     return points3d
 
+
+@nb.jit(nb.float32[:, :, :](
+    nb.float32[:, :, :]
+), nopython=True, nogil=True)
+def reflect_over_x(seq):
+    """ reflect sequence over x-y (exchange left-right)
+    INPLACE
+    """
+    I = np.array([
+        [-1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1]
+        ], np.float32)
+    # ensure we do not fuck up memory
+    # seq_reflect = np.empty(seq.shape, np.float32)
+    for frame in range(len(seq)):
+        person = seq[frame]
+        for jid in range(len(person)):
+            pt3d = np.ascontiguousarray(person[jid])
+            # seq_reflect[frame, jid] = I @ pt3d
+            seq[frame, jid] = I @ pt3d
+
+    # return seq_reflect
+    return seq
+
+
+def mirror(seq):
+  """
+  :param seq: [n_frames, 32*3]
+  """
+  if len(seq.shape) == 2:
+      n_joints = seq.shape[1]//3
+  elif len(seq.shape) == 3:
+      n_joints = seq.shape[1]
+  else:
+      raise ValueError("incorrect shape:" + str(seq.shape))
+  
+  assert n_joints in [31], 'wrong joint number:' + str(n_joints)
+
+  # left = [0, 1, 2, 3, 8, 9, 10, 11]
+  # right = [4, 5, 6, 7, 12, 13, 14, 15]
+  left =  [1, 2, 3, 4, 5,  17, 18, 19, 20, 21, 22, 23]
+  right = [6, 7, 8, 9, 10, 24, 25, 26, 27, 28, 29, 30]
+  lr = np.array(left + right, np.int64)
+  rl = np.array(right + left, np.int64)
+
+  seq_ = reflect_over_x(seq.copy())
+  seq_[:, lr, :] = seq_[:, rl, :]
+  return seq_
+
+
+# ===================================
+
+class CMU_DataSet(DataSet):
+
+  def __init__(self, subjects,
+               store_binary=True,
+               z_is_up=True,
+               iterate_with_framerate=False,
+               iterate_with_keys=False):
+    subjects_with_60fps = {'60', '61', '75', '87', '88', '89'}
+    seqs = []
+    keys = []
+    framerates = []
+    for subject in subjects:
+      for action in GET_ACTIONS(subject):
+        seq = get(subject, action, 
+                  store_binary=store_binary,
+                  z_is_up=z_is_up)
+        seqs.append(seq)
+        keys.append((subject, action))
+
+        if subject in subjects_with_60fps:
+          framerates.append(60)
+        else:
+          framerates.append(120)
+
+
+    super().__init__([seqs], Keys=keys,
+                     framerate=framerates,
+                     iterate_with_framerate=iterate_with_framerate,
+                     iterate_with_keys=iterate_with_keys,
+                     j_root=-1, j_left=1, j_right=6,
+                     mirror_fn=mirror)
 
 # =====================================================================
 # External code taken from: Yuxiao Zhou (https://calciferzh.github.io/)
