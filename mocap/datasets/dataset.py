@@ -5,6 +5,7 @@ class DataSet:
 
     def __init__(self, Data, Keys, framerate, iterate_with_framerate,
                  iterate_with_keys, j_root, j_left, j_right,
+                 n_joints,
                  mirror_fn=None):
         """
         :param Data: [data0, data1, ...] lists of sequences, all
@@ -16,7 +17,9 @@ class DataSet:
         :param iterate_with_framerate: if True the iterator returns the framerate as well
         :param iterate_with_keys: if True the iterator returns the key as well
         :param mirror_fn: def mirror(seq): -->
+        :param n_joints:
         """
+        self.n_joints = n_joints
         self.iterate_with_framerate = iterate_with_framerate
         self.iterate_with_keys = iterate_with_keys
         self.j_root = j_root

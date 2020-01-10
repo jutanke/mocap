@@ -145,6 +145,7 @@ class CMU_DataSet(DataSet):
                      iterate_with_framerate=iterate_with_framerate,
                      iterate_with_keys=iterate_with_keys,
                      j_root=-1, j_left=1, j_right=6,
+                     n_joints=31,
                      mirror_fn=mirror)
 
 # =====================================================================

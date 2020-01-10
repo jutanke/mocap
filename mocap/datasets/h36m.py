@@ -162,6 +162,7 @@ class H36M_Simplified(DataSet):
                          iterate_with_framerate=dataset.iterate_with_framerate,
                          iterate_with_keys=dataset.iterate_with_keys,
                          j_root=0, j_left=4, j_right=1,
+                         n_joints=17,
                          mirror_fn=mirror_p3d)
 
 
@@ -182,6 +183,7 @@ class H36M_FixedSkeleton(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
+                         n_joints=32,
                          mirror_fn=mirror_p3d)
 
 
@@ -205,6 +207,7 @@ class H36M_FixedSkeleton_withActivities(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
+                         n_joints=32,
                          mirror_fn=mirror_p3d)
 
 
