@@ -46,7 +46,7 @@ def get(subject, action, store_binary=True, z_is_up=True):
         ], np.float32)
         points3d = points3d @ R
 
-    points3d = points3d / 10
+    points3d = points3d * 0.056444  # convert inches to mm
     if store_binary:
         np.save(npy_file, points3d)  # file must not exist
 
