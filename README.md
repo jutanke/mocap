@@ -28,3 +28,7 @@ Then, call the following script as follows to extract the data:
 $ cd mocap/dataaquisition/scripts
 $ python get_h36m_skeleton.py /path/to/h36m/folder/human3.6m
 ```
+
+### CMU
+
+The CMU mocap dataset is automatically downloaded once make use of it. This may take some time!
