@@ -92,6 +92,8 @@ for actor in ACTORS:
             joints3d = joints3d.astype('float32')
 
             fixed_sid = sid + 1
+            fixed_sid = fixed_sid % 2 + 1  # 2 -> 1 and 1 -> 2
+
             if (actor == 'S8' and fixed_action == 'walkingtogether') or \
                     (actor == 'S7' and fixed_action == 'walking') or \
                     (actor == 'S7' and fixed_action == 'waiting') or \
@@ -113,6 +115,9 @@ for actor in ACTORS:
                     (actor == 'S5' and fixed_action == 'discussion') or \
                     (actor == 'S5' and fixed_action == 'directions'):
                 fixed_sid = fixed_sid % 2 + 1  # 2 -> 1 and 1 -> 2
+
+            if fixed_action == 'walkdog':
+                fixed_action = 'walkingdog'
 
             fname = join(target_dir, actor + '_' + fixed_action + '_' + str(fixed_sid) + '.npy')
             np.save(fname, joints3d)

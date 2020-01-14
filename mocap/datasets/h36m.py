@@ -178,6 +178,27 @@ class H36M_Simplified(DataSet):
                          mirror_fn=mirror_p3d)
 
 
+class H36M(DataSet):
+
+    def __init__(self, actors, actions=ACTIONS,
+                 iterate_with_framerate=False,
+                 iterate_with_keys=False):
+        seqs = []
+        keys = []
+        for actor in actors:
+            for action in actions:
+                for sid in [1, 2]:
+                    seq = get3d(actor, action, sid)
+                    seqs.append(seq)
+                    keys.append((actor, action, sid))
+        super().__init__([seqs], Keys=keys, framerate=50,
+                         iterate_with_framerate=iterate_with_framerate,
+                         iterate_with_keys=iterate_with_keys,
+                         j_root=0, j_left=6, j_right=1,
+                         n_joints=32,
+                         mirror_fn=mirror_p3d)
+
+
 class H36M_FixedSkeleton(DataSet):
 
     def __init__(self, actors, actions=ACTIONS,
@@ -211,6 +232,30 @@ class H36M_FixedSkeleton_withActivities(DataSet):
             for action in actions:
                 for sid in [1, 2]:
                     seq = get3d_fixed(actor, action, sid)
+                    label = get_labels(actor, action, sid)
+                    seqs.append(seq)
+                    labels.append(label)
+                    keys.append((actor, action, sid))
+        super().__init__([seqs, labels], Keys=keys, framerate=50,
+                         iterate_with_framerate=iterate_with_framerate,
+                         iterate_with_keys=iterate_with_keys,
+                         j_root=0, j_left=6, j_right=1,
+                         n_joints=32,
+                         mirror_fn=mirror_p3d)
+
+
+class H36M_withActivities(DataSet):
+
+    def __init__(self, actors, actions=ACTIONS,
+                 iterate_with_framerate=False,
+                 iterate_with_keys=False):
+        seqs = []
+        labels = []
+        keys = []
+        for actor in actors:
+            for action in actions:
+                for sid in [1, 2]:
+                    seq = get3d(actor, action, sid)
                     label = get_labels(actor, action, sid)
                     seqs.append(seq)
                     labels.append(label)
