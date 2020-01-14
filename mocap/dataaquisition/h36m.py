@@ -27,7 +27,6 @@ def aquire_euler():
                     np.save(fname, euler_seq)
 
 
-
 def aquire_expmap():
     global DATA_DIR
     exp_dir = join(DATA_DIR, 'expmap')

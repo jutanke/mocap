@@ -13,19 +13,20 @@ assert isdir(data_dir), data_dir
 
 # -- check if we need to extract the zip files --
 for subdir in ['fixed_skeleton', 'labels']:
-    zip_files = [f for f in listdir(join(data_dir, subdir)) if f.endswith('.zip')]
-    txt_files = [f for f in listdir(join(data_dir, subdir)) if f.endswith('.txt')]
-    if len(zip_files) > len(txt_files):
-        print('\n[Human3.6M] decompress data.. ->', subdir)
+    if isdir(join(data_dir, subdir)):
+        zip_files = [f for f in listdir(join(data_dir, subdir)) if f.endswith('.zip')]
+        txt_files = [f for f in listdir(join(data_dir, subdir)) if f.endswith('.txt')]
+        if len(zip_files) > len(txt_files):
+            print('\n[Human3.6M] decompress data.. ->', subdir)
 
-        assert isfile(password_file), 'could not find ' + password_file + '!!'
-        password = open(password_file, 'r').read()
+            assert isfile(password_file), 'could not find ' + password_file + '!!'
+            password = open(password_file, 'r').read()
 
-        for zfile in tqdm(zip_files):
-            zfile = join(join(data_dir, subdir), zfile)
-            zip_obj = ZipFile(zfile)
-            zip_obj.extractall(join(data_dir, subdir), pwd=password.encode('utf-8'))
-        print()
+            for zfile in tqdm(zip_files):
+                zfile = join(join(data_dir, subdir), zfile)
+                zip_obj = ZipFile(zfile)
+                zip_obj.extractall(join(data_dir, subdir), pwd=password.encode('utf-8'))
+            print()
 
 
 def get3d(actor, action, sid):
