@@ -12,24 +12,35 @@ password_file = join(dirname(__file__), '../data/password.txt')
 assert isdir(data_dir), data_dir
 
 # -- check if we need to extract the zip files --
-for subdir in ['fixed_skeleton', 'labels']:
-    if isdir(join(data_dir, subdir)):
-        zip_files = [f for f in listdir(join(data_dir, subdir)) if f.endswith('.zip')]
-        txt_files = [f for f in listdir(join(data_dir, subdir)) if f.endswith('.txt')]
-        if len(zip_files) > len(txt_files):
-            print('\n[Human3.6M] decompress data.. ->', subdir)
+for subdir, needs_password in zip(['labels'], [True]):
+    zip_files = [f for f in listdir(join(data_dir, subdir)) if f.endswith('.zip')]
+    txt_files = [f for f in listdir(join(data_dir, subdir)) if f.endswith('.txt')]
+    if len(zip_files) > len(txt_files):
+        print('\n[Human3.6M] decompress data.. ->', subdir)
 
+        if needs_password:
+            if not isfile(password_file):
+                continue
             assert isfile(password_file), 'could not find ' + password_file + '!!'
             password = open(password_file, 'r').read()
 
-            for zfile in tqdm(zip_files):
-                zfile = join(join(data_dir, subdir), zfile)
-                zip_obj = ZipFile(zfile)
+        for zfile in tqdm(zip_files):
+            zfile = join(join(data_dir, subdir), zfile)
+            zip_obj = ZipFile(zfile)
+            if needs_password:
                 zip_obj.extractall(join(data_dir, subdir), pwd=password.encode('utf-8'))
-            print()
+            else:
+                zip_obj.extractall(join(data_dir, subdir))
+        print()
 
 
 def get3d(actor, action, sid):
+    fname = join(join(data_dir, 'p3d'), actor + '_' + action + '_' + str(sid) + '.npy')
+    seq = np.load(fname)
+    return seq
+
+
+def get3d_fixed(actor, action, sid):
     fname = join(join(data_dir, 'fixed_skeleton'), actor + '_' + action + '_' + str(sid) + '.txt')
     seq = np.loadtxt(fname, dtype=np.float32)
     return seq
@@ -177,7 +188,7 @@ class H36M_FixedSkeleton(DataSet):
         for actor in actors:
             for action in actions:
                 for sid in [1, 2]:
-                    seq = get3d(actor, action, sid)
+                    seq = get3d_fixed(actor, action, sid)
                     seqs.append(seq)
                     keys.append((actor, action, sid))
         super().__init__([seqs], Keys=keys, framerate=50, 
@@ -199,7 +210,7 @@ class H36M_FixedSkeleton_withActivities(DataSet):
         for actor in actors:
             for action in actions:
                 for sid in [1, 2]:
-                    seq = get3d(actor, action, sid)
+                    seq = get3d_fixed(actor, action, sid)
                     label = get_labels(actor, action, sid)
                     seqs.append(seq)
                     labels.append(label)
