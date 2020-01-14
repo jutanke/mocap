@@ -9,22 +9,33 @@ import numpy as np
 DATA_DIR = join(dirname(__file__), '../data/h36m')
 
 
+def aquire_fixed_skeleton():
+    aquire_euler()
+    global DATA_DIR
+    data_dir = join(DATA_DIR, 'fixed_skeleton')
+    if not isdir(data_dir):
+        makedirs(data_dir)
+        for actor in H36M.ACTORS:
+            for action in H36M.ACTIONS:
+                for sid in [1, 2]:
+                    fname = join(data_dir, actor + '_' + action + '_' + str(sid) + '.txt')
+
+
 def aquire_euler():
     aquire_expmap()
     global DATA_DIR
     euler_dir = join(DATA_DIR, 'euler')
     if not isdir(euler_dir):
         makedirs(euler_dir)
-
-    for actor in H36M.ACTORS:
-        for action in H36M.ACTIONS:
-            for sid in [1, 2]:
-                fname = join(euler_dir, actor + '_' + action + '_' + str(sid) + '.npy')
-                if not isfile(fname):
-                    print('[data aquisition] - h36m - extract euler ', (actor, action, sid))
-                    exp_seq = H36M.get_expmap(actor, action, sid)
-                    euler_seq = conv.expmap2euler(exp_seq).astype('float32')
-                    np.save(fname, euler_seq)
+        for actor in H36M.ACTORS:
+            for action in H36M.ACTIONS:
+                for sid in [1, 2]:
+                    fname = join(euler_dir, actor + '_' + action + '_' + str(sid) + '.npy')
+                    if not isfile(fname):
+                        print('[data aquisition] - h36m - extract euler ', (actor, action, sid))
+                        exp_seq = H36M.get_expmap(actor, action, sid)
+                        euler_seq = conv.expmap2euler(exp_seq).astype('float32')
+                        np.save(fname, euler_seq)
 
 
 def aquire_expmap():

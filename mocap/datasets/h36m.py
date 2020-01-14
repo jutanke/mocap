@@ -5,11 +5,14 @@ from os.path import join, dirname, isdir, isfile
 from tqdm import tqdm
 from zipfile import ZipFile
 from mocap.datasets.dataset import DataSet
+import mocap.math.fk as FK
 import mocap.dataaquisition.h36m as H36M_DA
 
 data_dir = join(dirname(__file__), '../data/h36m')
 password_file = join(dirname(__file__), '../data/password.txt')
 assert isdir(data_dir), data_dir
+
+CACHE_get3d_fixed_from_rotation = {}
 
 # -- check if we need to extract the zip files --
 for subdir, needs_password in zip(['labels'], [True]):
@@ -44,6 +47,18 @@ def get3d_fixed(actor, action, sid):
     fname = join(join(data_dir, 'fixed_skeleton'), actor + '_' + action + '_' + str(sid) + '.txt')
     seq = np.loadtxt(fname, dtype=np.float32)
     return seq
+
+
+def get3d_fixed_from_rotation(actor, action, sid):
+    global CACHE_get3d_fixed_from_rotation
+    if (actor, action, sid) not in CACHE_get3d_fixed_from_rotation:
+        seq = get_euler(actor, action, sid)
+        seq = FK.euler_fk(seq)
+        seq = reflect_over_x(seq)
+        seq = mirror_p3d(seq)  # there are some mirroring issues in the original rotational data:
+        # https://github.com/una-dinosauria/human-motion-prediction/issues/46
+        CACHE_get3d_fixed_from_rotation[actor, action, sid] = seq
+    return CACHE_get3d_fixed_from_rotation[actor, action, sid]
 
 
 def get_expmap(actor, action, sid):
