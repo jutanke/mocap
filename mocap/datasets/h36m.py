@@ -8,7 +8,8 @@ from mocap.datasets.dataset import DataSet
 import mocap.math.fk as FK
 import mocap.dataaquisition.h36m as H36M_DA
 
-data_dir = join(dirname(__file__), '../data/h36m')
+# data_dir = join(dirname(__file__), '../data/h36m')
+data_dir = H36M_DA.DATA_DIR
 password_file = join(dirname(__file__), '../data/password.txt')
 assert isdir(data_dir), data_dir
 
@@ -62,14 +63,14 @@ def get3d_fixed_from_rotation(actor, action, sid):
 
 
 def get_expmap(actor, action, sid):
-    H36M_DA.aquire_expmap()
+    H36M_DA.acquire_expmap()
     fname = join(join(join(data_dir, 'expmap/h3.6m/dataset'), actor), action + '_' + str(sid) + '.txt')
     seq = np.loadtxt(fname, delimiter=',', dtype=np.float32)
     return seq
 
 
 def get_euler(actor, action, sid):
-    H36M_DA.aquire_euler()
+    H36M_DA.acquire_euler()
     fname = join(join(data_dir, 'euler'), actor + '_' + action + '_' + str(sid) + '.npy')
     seq = np.load(fname)
     return seq

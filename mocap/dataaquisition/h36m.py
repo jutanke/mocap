@@ -1,16 +1,17 @@
 import requests
 import zipfile
-from os.path import join, dirname, isdir, isfile
+from os.path import join, isdir, isfile
 from os import makedirs
 import mocap.datasets.h36m as H36M
 import mocap.processing.conversion as conv
 import numpy as np
+import mocap.settings as settings
 
-DATA_DIR = join(dirname(__file__), '../data/h36m')
+DATA_DIR = join(settings.get_data_path(), 'h36m')
 
 
-def aquire_fixed_skeleton():
-    aquire_euler()
+def acquire_fixed_skeleton():
+    acquire_euler()
     global DATA_DIR
     data_dir = join(DATA_DIR, 'fixed_skeleton')
     if not isdir(data_dir):
@@ -21,8 +22,8 @@ def aquire_fixed_skeleton():
                     fname = join(data_dir, actor + '_' + action + '_' + str(sid) + '.txt')
 
 
-def aquire_euler():
-    aquire_expmap()
+def acquire_euler():
+    acquire_expmap()
     global DATA_DIR
     euler_dir = join(DATA_DIR, 'euler')
     if not isdir(euler_dir):
@@ -38,7 +39,7 @@ def aquire_euler():
                         np.save(fname, euler_seq)
 
 
-def aquire_expmap():
+def acquire_expmap():
     global DATA_DIR
     exp_dir = join(DATA_DIR, 'expmap')
     zip_fname = join(exp_dir, 'h3.6m.zip')

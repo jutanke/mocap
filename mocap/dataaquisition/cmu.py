@@ -1,18 +1,13 @@
 import requests
 import zipfile
-from os.path import join, dirname, isdir, isfile
+from os.path import join, isdir, isfile
 from os import makedirs
-import mocap.datasets.h36m as H36M
-import mocap.processing.conversion as conv
-import numpy as np
+import mocap.settings as settings
 
-location_file = join(dirname(__file__), '../data/cmu_location.txt')
-if isfile(location_file):
-    DATA_DIR = open(location_file, 'r').read()
-else:
-    DATA_DIR = join(dirname(__file__), '../data/cmu')
+DATA_DIR = join(settings.get_data_path(), 'cmu')
 
-def aquire_cmumocap():
+
+def acquire_cmumocap():
     global DATA_DIR
     if not isdir(DATA_DIR):
         makedirs(DATA_DIR)
@@ -32,5 +27,6 @@ def aquire_cmumocap():
 
             with zipfile.ZipFile(zip_file, 'r') as zip_ref:
                 zip_ref.extractall(DATA_DIR)
+
 
 CMU_DIR = join(DATA_DIR, 'all_asfamc/subjects')

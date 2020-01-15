@@ -9,7 +9,7 @@ import mocap.dataaquisition.cmu as CMU_DA
 from mocap.datasets.dataset import DataSet
 
 
-CMU_DA.aquire_cmumocap()  # load CMU data if needed
+CMU_DA.acquire_cmumocap()  # load CMU data if needed
 
 ALL_SUBJECTS = list(sorted(listdir(CMU_DA.CMU_DIR)))
 
