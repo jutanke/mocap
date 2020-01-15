@@ -37,6 +37,7 @@ pip install git+https://github.com/spacepy/spacepy.git
 
 In case of Human3.6M, follow the steps [below](https://github.com/jutanke/mocap#human36m) first and make sure that you have downloaded the dataset from the official website. In case of CMU, the data will be automatically downloaded.
 
+__basic usage__
 ```python
 # ~~~~~~~~~~~~~~~~~~~~~~~
 # using Human3.6M
@@ -85,7 +86,7 @@ action_for_subject_01 = CMU.GET_ACTIONS('01')
 ds = CMU.CMU(['01'])
 ```
 
-Advanced iterations:
+__Advanced iterations__:
 ```python
 import mocap.datasets.h36m as H36M
 
