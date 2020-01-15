@@ -78,9 +78,41 @@ ds = H36M.H36M_Simplified(ds)
 # ~~~~~~~~~~~~~~~~~~~~~~~
 import mocap.datasets.cmu as CMU
 
+all_subjects = CMU.ALL_SUBJECTS
+# different subjects have different actions:
+action_for_subject_01 = CMU.GET_ACTIONS('01')
 
-
+ds = CMU.CMU(['01'])
 ```
+
+Advanced iterations:
+```python
+import mocap.datasets.h36m as H36M
+
+# include the framerate for each sequence
+ds = H36M.H36M(actors=['S1'], iterate_with_framerate=True)
+for seq, framerate in ds:
+    print(seq.shape)  # {n_frames x 96}
+    print('framerate in Hz:', framerate)
+
+# include the unique sequence key for each sequence
+ds = H36M.H36M(actors=['S1'], iterate_with_keys=True)
+for seq, key in ds:
+    print(seq.shape)  # {n_frames x 96}
+    print('key:', key)  # h36m: (actor, action, sid) || cmu: (subject, action)
+
+# include both key and framerate per sequence:
+ds = H36M.H36M(actors=['S1'],
+               iterate_with_keys=True,
+               iterate_with_framerate=True)
+for seq, framerate, key in ds:
+    print(seq.shape)  # {n_frames x 96}
+    print('framerate in Hz:', framerate)
+    print('key:', key)  # h36m: (actor, action, sid) || cmu: (subject, action)
+
+# this also works with activity labels!
+```
+
 
 ## Data
 ### Human 3.6M
