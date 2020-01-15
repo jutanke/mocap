@@ -9,7 +9,7 @@ This library requires some external tools, such as:
 * __numba__: to speed-up performance. ```conda install numba```
 * __transforms3d__: For handling translations between rotational data. ```pip install transforms3d```
 * __tqdm__: for visualization. ```pip install tqdm```
-* __spacepy__: Some datasets require to read the CDF file format from NASA. Install as follows (taken from stackoverflow).
+* __spacepy__: Some datasets require to read the CDF file format from NASA. Install as follows (taken from [stackoverflow](https://stackoverflow.com/questions/37232008/how-read-common-data-format-cdf-in-python)).
 ```
 wget -r -l1 -np -nd -nc http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/latest-release/linux/ -A cdf*-dist-all.tar.gz
 tar xf cdf*-dist-all.tar.gz -C ./
