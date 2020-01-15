@@ -2,6 +2,37 @@
 
 Helper library to handle mocap data. At the moment, the CMU Mocap dataset as well as the Mocap data from the Human3.6M dataset are used.
 
+## Install
+This library requires some external tools, such as:
+
+* __matplotlib__: for visualization. ```conda install matplotlib```
+* __numba__: to speed-up performance. ```conda install numba```
+* __transforms3d__: For handling translations between rotational data. ```pip install transforms3d```
+* __tqdm__: for visualization. ```pip install tqdm```
+* __spacepy__: Some datasets require to read the CDF file format from NASA. Install as follows (taken from stackoverflow).
+```
+wget -r -l1 -np -nd -nc http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/latest-release/linux/ -A cdf*-dist-all.tar.gz
+tar xf cdf*-dist-all.tar.gz -C ./
+cd cdf*dist
+apt install build-essential gfortran libncurses5-dev
+make OS=linux ENV=gnu CURSES=yes FORTRAN=no UCOPTIONS=-O2 SHARED=yes -j4 all
+make install #no sudo
+```
+
+Add to _.bashrc_:
+```
+export CDF_BASE=$HOME/Libraries/cdf/cdf36_3-dist
+export CDF_INC=$CDF_BASE/include
+export CDF_LIB=$CDF_BASE/lib
+export CDF_BIN=$CDF_BASE/bin
+export LD_LIBRARY_PATH=$CDF_BASE/lib:$LD_LIBRARY_PATH
+```
+
+Then install spacepy:
+```
+pip install git+https://github.com/spacepy/spacepy.git
+```
+
 ## Data
 ### Human 3.6M
 
