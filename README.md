@@ -33,6 +33,55 @@ Then install spacepy:
 pip install git+https://github.com/spacepy/spacepy.git
 ```
 
+## Usage
+
+In case of Human3.6M, follow the steps [below](https://github.com/jutanke/mocap#human36m) first and make sure that you have downloaded the dataset from the official website. In case of CMU, the data will be automatically downloaded.
+
+```python
+# ~~~~~~~~~~~~~~~~~~~~~~~
+# using Human3.6M
+# ~~~~~~~~~~~~~~~~~~~~~~~
+import mocap.datasets.h36m as H36M
+
+all_actors = H36M.ACTORS  # ['S1', 'S5', ..., 'S11']  total number: 7
+all_actions = H36M.ACTIONS  # ['walking', ..., 'sittingdown']  total number: 15
+
+ds = H36M.H36M(actors=all_actors)  # 32-joint 3D joint positions, in [m]
+seq = ds[0]  # get the first sequence, {n_frames x 96}
+print('number of sequences:', len(ds))
+
+for seq in ds:  # loop over entire dataset
+    print(seq.shape)  # {n_frames x 96}
+
+# -- with activities --
+# For our research we hand-labeled 11 activities
+ds = H36M.H36M_withActivities(actors=['S1'])  # We provide 11 framewise activity labels
+seq, labels = ds[0]  # get the first sequence, {n_frames x 96}, {n_frames x 11}
+
+for seq, labels in ds:  # loop over entire dataset
+    print(seq.shape)  # {n_frames x 96}
+    print(labels.shape)  # {n_frames x 11}
+
+# -- fixed skeleton --
+# Initially, each skeleton has different dimensions due to the actors being of different
+# height and size. However, we also provide processed data where the skeletons of all 
+# actors are processed such that they only utilize the skeleton of actor "S1".
+ds = H36M.H36M_FixedSkeleton(actor=all_actors)
+ds = H36M.H36M_FixedSkeleton_withActivities(actors=all_actors)
+
+# Simplify skeleton:
+ds = H36M.H36M_Simplified(ds)
+# ds can be used like any other dataset above, it just simplifies the skeleton to 17 joints
+
+# ~~~~~~~~~~~~~~~~~~~~~~~
+# using CMU mocap data
+# ~~~~~~~~~~~~~~~~~~~~~~~
+import mocap.datasets.cmu as CMU
+
+
+
+```
+
 ## Data
 ### Human 3.6M
 
@@ -43,6 +92,13 @@ Default skeleton with _32_ joints:
 
 Simplified skeleton with _17_ joints:
 <img width="188" alt="Screenshot 2019-12-28 at 11 13 00" src="https://user-images.githubusercontent.com/831215/71544883-19d34a00-2963-11ea-8c21-03ea411ac17c.png">
+
+#### Acitivity labels
+
+We provide framewise activity labels for the entire Human3.6M dataset.
+The following _11_ human-labeled acitivites are used:
+![labels](https://user-images.githubusercontent.com/831215/72436240-44653580-37a0-11ea-85ee-def425e75f3c.png)
+
 
 ### CMU Mocap
 
