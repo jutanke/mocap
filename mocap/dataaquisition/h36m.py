@@ -4,7 +4,6 @@ from os.path import join, isdir, isfile
 from os import makedirs
 import mocap.datasets.h36m as H36M
 import mocap.processing.conversion as conv
-import mocap.processing.normalize as norm
 import numpy as np
 import mocap.settings as settings
 import mocap.math.kabsch as KB
@@ -25,10 +24,6 @@ def acquire_fixed_skeleton():
             for action in tqdm(H36M.ACTIONS):
                 for sid in [1, 2]:
                     fname = join(data_dir, actor + '_' + action + '_' + str(sid) + '.txt')
-                    # seq1 = norm.remove_rotation_and_translation(
-                    #     H36M.get3d_fixed_from_rotation(actor, action, sid))
-                    # seq2 = norm.remove_rotation_and_translation(
-                    #     H36M.get3d(actor, action, sid))
                     seq1 = H36M.get3d_fixed_from_rotation(actor, action, sid)
                     seq2 = H36M.get3d(actor, action, sid)
                     assert len(seq1) == len(seq2), actor + ' ' + action + ' -> ' + str(seq1.shape) + '|' + str(seq2.shape)
@@ -77,9 +72,3 @@ def acquire_expmap():
 
         with zipfile.ZipFile(zip_fname, 'r') as zip_ref:
             zip_ref.extractall(exp_dir)
-
-
-
-
-
-    
