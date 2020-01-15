@@ -20,10 +20,12 @@ for subdir, needs_password in zip(['labels'], [True]):
     zip_files = [f for f in listdir(join(data_dir, subdir)) if f.endswith('.zip')]
     txt_files = [f for f in listdir(join(data_dir, subdir)) if f.endswith('.txt')]
     if len(zip_files) > len(txt_files):
-        print('\n[Human3.6M] decompress data.. ->', subdir)
+        print('\n[mocap][Human3.6M] decompress data.. ->', subdir)
 
         if needs_password:
             if not isfile(password_file):
+                print("\t\n\033[1m\033[93mCannot find password file... skipping decompression\033[0m")
+                print()
                 continue
             assert isfile(password_file), 'could not find ' + password_file + '!!'
             password = open(password_file, 'r').read()
@@ -45,6 +47,7 @@ def get3d(actor, action, sid):
 
 
 def get3d_fixed(actor, action, sid):
+    H36M_DA.acquire_fixed_skeleton()
     fname = join(join(data_dir, 'fixed_skeleton'), actor + '_' + action + '_' + str(sid) + '.txt')
     seq = np.loadtxt(fname, dtype=np.float32)
     return seq
