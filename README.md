@@ -1,6 +1,7 @@
 # mocap
 
-tbd
+Helper library to handle mocap data. At the moment, the CMU Mocap dataset as well as the Mocap data from the Human3.6M dataset are used.
+
 ## Data
 ### Human 3.6M
 
