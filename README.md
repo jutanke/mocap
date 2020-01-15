@@ -37,7 +37,7 @@ pip install git+https://github.com/spacepy/spacepy.git
 
 In case of Human3.6M, follow the steps [below](https://github.com/jutanke/mocap#human36m) first and make sure that you have downloaded the dataset from the official website. In case of CMU, the data will be automatically downloaded.
 
-__basic usage__
+__Basic usage__:
 ```python
 # ~~~~~~~~~~~~~~~~~~~~~~~
 # using Human3.6M
@@ -112,6 +112,36 @@ for seq, framerate, key in ds:
     print('key:', key)  # h36m: (actor, action, sid) || cmu: (subject, action)
 
 # this also works with activity labels!
+```
+
+__Normalization__:
+```python
+import mocap.datasets.h36m as H36M
+import mocap.processing.normalize as norm
+
+ds = H36M.H36M(actors=['S1'])
+
+seq = ds[0]
+
+# normalize the sequence at a given frame: at that frame, the root joint
+# is centered at the origin and the person faces forward in positive x-direction.
+# The facing direction is defined by the left and right hip joints.
+# The preceeding and following frames are rotated and translated relative to the
+# normalized frame.
+normalization_frame = 15
+seq_norm = norm.normalize_sequence_at_frame(seq, normalization_frame,
+                                            j_root=ds.j_root,
+                                            j_left=ds.j_left,
+                                            j_right=ds.j_right)
+# if seq is a batch of sequences, the following function can be used:
+#     {norm.batch_normalize_sequence_at_frame}
+
+
+# global rotation and translation can be removed completely for a sequence:
+seq_norm = norm.remove_rotation_and_translation(seq,
+                                                j_root=ds.j_root,
+                                                j_left=ds.j_left,
+                                                j_right=ds.j_right)
 ```
 
 
