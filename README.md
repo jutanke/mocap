@@ -33,6 +33,15 @@ Then install spacepy:
 pip install git+https://github.com/spacepy/spacepy.git
 ```
 
+Finally, the library can be installed as follows:
+```
+pip install git+https://github.com/jutanke/mocap.git
+```
+or locally by
+```
+python setup.py install
+```
+
 ## Usage
 
 In case of Human3.6M, follow the steps [below](https://github.com/jutanke/mocap#human36m) first and make sure that you have downloaded the dataset from the official website. In case of CMU, the data will be automatically downloaded.
