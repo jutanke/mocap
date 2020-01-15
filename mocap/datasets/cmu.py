@@ -13,6 +13,7 @@ CMU_DA.acquire_cmumocap()  # load CMU data if needed
 
 ALL_SUBJECTS = list(sorted(listdir(CMU_DA.CMU_DIR)))
 
+
 def GET_ACTIONS(subject):
   subject_loc = join(CMU_DA.CMU_DIR, subject)
   assert isdir(subject_loc), subject_loc
@@ -115,7 +116,7 @@ def mirror(seq):
 
 # ===================================
 
-class CMU_DataSet(DataSet):
+class CMU(DataSet):
 
   def __init__(self, subjects,
                store_binary=True,

@@ -12,7 +12,7 @@ if not isdir(vis_dir):
 
 print('go')
 
-ds = CMU.CMU_DataSet(['01'])
+ds = CMU.CMU(['01'])
 
 print("len", len(ds))
 
