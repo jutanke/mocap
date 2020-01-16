@@ -33,6 +33,7 @@ def set_data_path(path):
     print('\033[92mData path is set\033[0m')
     print()
 
+
 def set_password(password):
     password_file = join(abspath(dirname(__file__)), 'data/password.txt')
     if isfile(password_file):
