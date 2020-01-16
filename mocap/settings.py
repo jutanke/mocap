@@ -29,7 +29,9 @@ def set_data_path(path):
         sleep(0.5)
     with open(SETTINGS_FILE, 'w') as f:
         json.dump(SETTINGS, f)
-
+    print()
+    print('\033[92mData path is set\033[0m')
+    print()
 
 def set_password(password):
     password_file = join(abspath(dirname(__file__)), 'data/password.txt')
@@ -39,6 +41,9 @@ def set_password(password):
     with open(password_file, 'w') as f:
         f.write(password)
     sleep(0.1)
+    print()
+    print('\033[92mWrite password to ' + password_file + '\033[0m')
+    print()
 
 
 def reset_settings(user_warning_prompt=True):
