@@ -3,7 +3,7 @@ from os import remove
 import json
 from time import sleep
 
-SETTINGS_FILE = join(dirname(__file__), 'data/settings.json')
+SETTINGS_FILE = join(abspath(dirname(__file__)), 'data/settings.json')
 
 SETTINGS = None
 if isfile(SETTINGS_FILE):
@@ -29,6 +29,16 @@ def set_data_path(path):
         sleep(0.5)
     with open(SETTINGS_FILE, 'w') as f:
         json.dump(SETTINGS, f)
+
+
+def set_password(password):
+    password_file = join(abspath(dirname(__file__)), 'data/password.txt')
+    if isfile(password_file):
+        remove(password_file)
+    sleep(0.1)
+    with open(password_file, 'w') as f:
+        f.write(password)
+    sleep(0.1)
 
 
 def reset_settings(user_warning_prompt=True):
