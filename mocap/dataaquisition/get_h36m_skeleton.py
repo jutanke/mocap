@@ -6,13 +6,8 @@ import numpy as np
 from tqdm import tqdm
 
 
-def transform(h36m_path):
+def transform(h36m_path, target_dir):
     assert isdir(h36m_path), h36m_path
-
-    data_dir = join(dirname(__file__), '../../data/h36m')
-    assert isdir(data_dir), data_dir
-
-    target_dir = join(data_dir, 'p3d')
     if isdir(target_dir):
         shutil.rmtree(target_dir)
     makedirs(target_dir)

@@ -8,8 +8,15 @@ import numpy as np
 import mocap.settings as settings
 import mocap.math.kabsch as KB
 from tqdm import tqdm
+from mocap.dataaquisition.get_h36m_skeleton import transform
 
 DATA_DIR = join(settings.get_data_path(), 'h36m')
+
+
+def acquire_h36m():
+    target_dir = join(settings.get_data_path(), 'h36m/p3d')
+    if not isdir(target_dir):
+        transform(settings.get_h36m_path(), target_dir)
 
 
 def acquire_fixed_skeleton():

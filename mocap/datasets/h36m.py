@@ -41,6 +41,7 @@ for subdir, needs_password in zip(['labels'], [True]):
 
 
 def get3d(actor, action, sid):
+    H36M_DA.acquire_h36m()
     fname = join(join(data_dir, 'p3d'), actor + '_' + action + '_' + str(sid) + '.npy')
     seq = np.load(fname)
     return seq
