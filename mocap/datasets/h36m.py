@@ -21,6 +21,10 @@ CACHE_get3d_fixed_from_rotation = {}
 for subdir, needs_password in zip(['labels'], [True]):
     zip_files = [f for f in listdir(join(local_data_dir, subdir)) if f.endswith('.zip')]
     txt_files = [f for f in listdir(join(data_dir, subdir)) if f.endswith('.txt')]
+
+    if not isdir(join(data_dir, subdir)):
+        makedirs(join(data_dir, subdir))
+
     if len(zip_files) > len(txt_files):
         print('\n[mocap][Human3.6M] decompress data.. ->', subdir)
 
