@@ -1,6 +1,6 @@
 import numba as nb
 import numpy as np
-from os import listdir
+from os import listdir, makedirs
 from os.path import join, dirname, isdir, isfile
 from tqdm import tqdm
 from zipfile import ZipFile
@@ -8,16 +8,18 @@ from mocap.datasets.dataset import DataSet
 import mocap.math.fk as FK
 import mocap.dataaquisition.h36m as H36M_DA
 
-# data_dir = join(dirname(__file__), '../data/h36m')
+local_data_dir = join(dirname(__file__), '../data/h36m')
 data_dir = H36M_DA.DATA_DIR
 password_file = join(dirname(__file__), '../data/password.txt')
-assert isdir(data_dir), data_dir
+assert isdir(local_data_dir), local_data_dir
+if not isdir(data_dir):
+    makedirs(data_dir)
 
 CACHE_get3d_fixed_from_rotation = {}
 
 # -- check if we need to extract the zip files --
 for subdir, needs_password in zip(['labels'], [True]):
-    zip_files = [f for f in listdir(join(data_dir, subdir)) if f.endswith('.zip')]
+    zip_files = [f for f in listdir(join(local_data_dir, subdir)) if f.endswith('.zip')]
     txt_files = [f for f in listdir(join(data_dir, subdir)) if f.endswith('.txt')]
     if len(zip_files) > len(txt_files):
         print('\n[mocap][Human3.6M] decompress data.. ->', subdir)
