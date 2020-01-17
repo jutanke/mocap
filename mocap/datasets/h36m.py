@@ -38,7 +38,7 @@ for subdir, needs_password in zip(['labels'], [True]):
             password = open(password_file, 'r').read()
 
         for zfile in tqdm(zip_files):
-            zfile = join(join(data_dir, subdir), zfile)
+            zfile = join(join(local_data_dir, subdir), zfile)
             zip_obj = ZipFile(zfile)
             if needs_password:
                 zip_obj.extractall(join(data_dir, subdir), pwd=password.encode('utf-8'))
