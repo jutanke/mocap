@@ -56,8 +56,13 @@ def get3d(actor, action, sid):
 
 def get3d_fixed(actor, action, sid):
     H36M_DA.acquire_fixed_skeleton()
-    fname = join(join(data_dir, 'fixed_skeleton'), actor + '_' + action + '_' + str(sid) + '.txt')
-    seq = np.loadtxt(fname, dtype=np.float32)
+    fname_binary = join(join(data_dir, 'fixed_skeleton'), actor + '_' + action + '_' + str(sid) + '.npy')
+    if isfile(fname_binary):
+        seq = np.load(fname_binary, dtype=np.float32)
+    else:
+        fname = join(join(data_dir, 'fixed_skeleton'), actor + '_' + action + '_' + str(sid) + '.txt')
+        seq = np.loadtxt(fname, dtype=np.float32)
+        np.save(fname_binary, seq)
     return seq
 
 
