@@ -7,6 +7,7 @@ from zipfile import ZipFile
 from mocap.datasets.dataset import DataSet
 import mocap.math.fk as FK
 import mocap.dataaquisition.h36m as H36M_DA
+import mocap.processing.normalize as norm
 
 local_data_dir = join(dirname(__file__), '../data/h36m')
 data_dir = H36M_DA.DATA_DIR
@@ -227,13 +228,16 @@ class H36M(DataSet):
 
     def __init__(self, actors, actions=ACTIONS,
                  iterate_with_framerate=False,
-                 iterate_with_keys=False):
+                 iterate_with_keys=False,
+                 remove_global_Rt=False):
         seqs = []
         keys = []
         for actor in actors:
             for action in actions:
                 for sid in [1, 2]:
                     seq = get3d(actor, action, sid)
+                    if remove_global_Rt:
+                        seq = norm.remove_rotation_and_translation(seq, j_root=0, j_left=6, j_right=1)
                     seqs.append(seq)
                     keys.append((actor, action, sid))
         super().__init__([seqs], Keys=keys, framerate=50,
@@ -248,13 +252,16 @@ class H36M_FixedSkeleton(DataSet):
 
     def __init__(self, actors, actions=ACTIONS,
                  iterate_with_framerate=False,
-                 iterate_with_keys=False):
+                 iterate_with_keys=False,
+                 remove_global_Rt=False):
         seqs = []
         keys = []
         for actor in actors:
             for action in actions:
                 for sid in [1, 2]:
                     seq = get3d_fixed(actor, action, sid)
+                    if remove_global_Rt:
+                        seq = norm.remove_rotation_and_translation(seq, j_root=0, j_left=6, j_right=1)
                     seqs.append(seq)
                     keys.append((actor, action, sid))
         super().__init__([seqs], Keys=keys, framerate=50, 
@@ -269,7 +276,8 @@ class H36M_FixedSkeleton_withActivities(DataSet):
 
     def __init__(self, actors, actions=ACTIONS,
                  iterate_with_framerate=False,
-                 iterate_with_keys=False):
+                 iterate_with_keys=False,
+                 remove_global_Rt=False):
         seqs = []
         labels = []
         keys = []
@@ -277,6 +285,8 @@ class H36M_FixedSkeleton_withActivities(DataSet):
             for action in actions:
                 for sid in [1, 2]:
                     seq = get3d_fixed(actor, action, sid)
+                    if remove_global_Rt:
+                        seq = norm.remove_rotation_and_translation(seq, j_root=0, j_left=6, j_right=1)
                     label = get_labels(actor, action, sid)
                     seqs.append(seq)
                     labels.append(label)
@@ -293,7 +303,8 @@ class H36M_withActivities(DataSet):
 
     def __init__(self, actors, actions=ACTIONS,
                  iterate_with_framerate=False,
-                 iterate_with_keys=False):
+                 iterate_with_keys=False,
+                 remove_global_Rt=False):
         seqs = []
         labels = []
         keys = []
@@ -303,6 +314,8 @@ class H36M_withActivities(DataSet):
                     seq = get3d(actor, action, sid)
                     label = get_labels(actor, action, sid)
                     seqs.append(seq)
+                    if remove_global_Rt:
+                        seq = norm.remove_rotation_and_translation(seq, j_root=0, j_left=6, j_right=1)
                     labels.append(label)
                     keys.append((actor, action, sid))
         super().__init__([seqs, labels], Keys=keys, framerate=50,

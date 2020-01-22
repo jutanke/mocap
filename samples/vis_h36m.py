@@ -15,7 +15,8 @@ vis = SequenceVisualizer(vis_dir, 'vis_h36m', to_file=True, mark_origin=False)
 
 ds = H36M.H36M_FixedSkeleton(actors=['S5'], actions=['walking'],
                              iterate_with_framerate=True,
-                             iterate_with_keys=True)
+                             iterate_with_keys=True,
+                             remove_global_Rt=True)
 
 ds = H36M.H36M_Simplified(ds)
 Seq = ds.get_sequence(0)
@@ -27,10 +28,11 @@ print('seq', seq.shape)
 
 seq = H36M.mirror_p3d(seq)
 
-seq_norm = norm.normalize_sequence_at_frame(seq, 15,
-                                            j_root=ds.j_root,
-                                            j_left=ds.j_left,
-                                            j_right=ds.j_right)
+seq_norm = seq
+# seq_norm = norm.normalize_sequence_at_frame(seq, 15,
+#                                             j_root=ds.j_root,
+#                                             j_left=ds.j_left,
+#                                             j_right=ds.j_right)
 
 
 # views = [(0, 90)]
