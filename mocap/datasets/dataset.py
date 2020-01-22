@@ -1,4 +1,5 @@
 import numpy as np
+import hashlib
 
 
 class DataSet:
@@ -44,6 +45,12 @@ class DataSet:
     def mirror(self, seq):
         assert self.mirror_fn is not None
         return self.mirror_fn(seq)
+    
+    def get_unique_id(self):
+        txt = ''
+        for key in sorted(self.Keys):
+            txt += str(key)
+        return hashlib.sha256(txt.encode('utf-8')).hexdigest()
     
     def get_framerate(self, index):
         """ return the framerate for the given sequence
