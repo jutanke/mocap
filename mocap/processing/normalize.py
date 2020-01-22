@@ -109,10 +109,15 @@ def _normalize_sequence_at_frame(seq, frame, j_root, j_left, j_right):
 
 
 def remove_rotation_and_translation(seq, j_root=0, j_left=6, j_right=1):
+    unflattend = False
     if len(seq.shape) == 2:
+        unflattend = True
         n_frames = len(seq)
         seq = seq.reshape((n_frames, -1, 3))
-    return _remove_rotation_and_translation(seq, j_root, j_left, j_right)
+    seq = _remove_rotation_and_translation(seq, j_root, j_left, j_right)
+    if unflattend:
+        seq = seq.reshape((n_frames, -1))
+    return seq
 
 
 @nb.jit(nb.float32[:, :, :](
