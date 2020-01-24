@@ -7,6 +7,7 @@ from transforms3d.euler import euler2mat
 from mpl_toolkits.mplot3d import Axes3D
 import mocap.dataaquisition.cmu as CMU_DA
 from mocap.datasets.dataset import DataSet
+import mocap.processing.normalize as norm
 
 
 CMU_DA.acquire_cmumocap()  # load CMU data if needed
@@ -122,6 +123,7 @@ class CMU(DataSet):
                store_binary=True,
                z_is_up=True,
                iterate_with_framerate=False,
+               remove_global_Rt=False,
                iterate_with_keys=False):
     subjects_with_60fps = {'60', '61', '75', '87', '88', '89'}
     seqs = []
@@ -132,6 +134,11 @@ class CMU(DataSet):
         seq = get(subject, action, 
                   store_binary=store_binary,
                   z_is_up=z_is_up)
+        if remove_global_Rt:
+            seq = norm.remove_rotation_and_translation(seq,
+                                                       j_root=-1,
+                                                       j_left=1,
+                                                       j_right=6)
         seqs.append(seq)
         keys.append((subject, action))
 

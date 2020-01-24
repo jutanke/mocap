@@ -12,44 +12,46 @@ if not isdir(vis_dir):
 
 print('go')
 
-ds = CMU.CMU(['01'])
+ds = CMU.CMU(['01'], remove_global_Rt=True)
 
 print("len", len(ds))
 
 seq = ds[0]
-seq_norm = norm.normalize_sequence_at_frame(seq, 15, 
-                                            j_root=ds.j_root,
-                                            j_left=ds.j_left,
-                                            j_right=ds.j_right)
-seq_norm = norm.remove_rotation_and_translation(
-    seq_norm, j_root=ds.j_root, 
-              j_left=ds.j_left, 
-              j_right=ds.j_right
-)
+# seq_norm = norm.normalize_sequence_at_frame(seq, 15,
+#                                             j_root=ds.j_root,
+#                                             j_left=ds.j_left,
+#                                             j_right=ds.j_right)
+# seq_norm = norm.remove_rotation_and_translation(
+#     seq_norm, j_root=ds.j_root,
+#               j_left=ds.j_left,
+#               j_right=ds.j_right
+# )
 
-seq_mirror = ds.mirror(seq_norm)
+seq_mirror = ds.mirror(seq)
 
 vis = SequenceVisualizer(vis_dir, 'vis_cmu', 
                          to_file=True,
                          mark_origin=False)
 
-views = [(0, 90)]
+views = [(45, 45)]
 
-vis.plot(seq_norm[0:400:20],
+create_video = True
+noaxis = False
+
+vis.plot(seq[0:400:20],
          parallel=False,
          plot_jid=True, 
-         noaxis=True, views=views, 
-         create_video=False)
+         noaxis=noaxis, views=views,
+         create_video=create_video)
 
 vis.plot(seq_mirror[0:400:20],
          parallel=False,
          plot_jid=True, 
-         noaxis=True, views=views, 
-         create_video=False)
+         noaxis=noaxis, views=views,
+         create_video=create_video)
 
-
-vis.plot(seq_norm[0:400:10], seq2=seq_mirror[0:400:10],
+vis.plot(seq[0:400:10], seq2=seq_mirror[0:400:10],
          parallel=True,
          plot_jid=False, 
-         noaxis=True, views=views, 
-         create_video=True)
+         noaxis=noaxis, views=views,
+         create_video=create_video)
