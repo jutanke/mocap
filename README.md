@@ -5,7 +5,7 @@ If this library is helpful to you, please cite the following work:
 ```bibtex
 @article{
    author        = {Tanke, Julian AND Weber, Andreas AND Gall, Juergen},
-   title         = {The title of this article},
+   title         = {Human Motion Anticipation with Symbolic Label},
    year          = {2019},
    archivePrefix = {arXiv},
    eprint        = {1912.06079},
