@@ -71,7 +71,10 @@ def get3d_fixed_from_rotation(actor, action, sid):
     loc = join(data_dir, 'fixed_skeleton_from_rotation')
     fname = join(loc, actor + '_' + action + '_' + str(sid) + '.txt')
     if isfile(fname):
-        return np.load(fname)
+        seq = np.load(fname)
+        n_frames = len(seq)
+        seq = seq.reshape((n_frames, -1))
+        return seq
     else:
         if not isdir(loc):
             makedirs(loc)
@@ -83,8 +86,10 @@ def get3d_fixed_from_rotation(actor, action, sid):
             seq = mirror_p3d(seq)  # there are some mirroring issues in the original rotational data:
             # https://github.com/una-dinosauria/human-motion-prediction/issues/46
             seq = seq.astype('float32')
-            CACHE_get3d_fixed_from_rotation[actor, action, sid] = seq
             np.save(fname, seq)
+            n_frames = len(seq)
+            seq = seq.reshape((n_frames, -1))
+            CACHE_get3d_fixed_from_rotation[actor, action, sid] = seq
         return CACHE_get3d_fixed_from_rotation[actor, action, sid]
 
 
