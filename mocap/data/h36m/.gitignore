@@ -3,3 +3,4 @@ expmap/
 euler/
 p3d/
 fixed_skeleton/*.npy
+fixed_skeleton_from_rotation/
