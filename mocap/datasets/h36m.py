@@ -68,15 +68,24 @@ def get3d_fixed(actor, action, sid):
 
 
 def get3d_fixed_from_rotation(actor, action, sid):
-    global CACHE_get3d_fixed_from_rotation
-    if (actor, action, sid) not in CACHE_get3d_fixed_from_rotation:
-        seq = get_euler(actor, action, sid)
-        seq = FK.euler_fk(seq)
-        seq = reflect_over_x(seq)
-        seq = mirror_p3d(seq)  # there are some mirroring issues in the original rotational data:
-        # https://github.com/una-dinosauria/human-motion-prediction/issues/46
-        CACHE_get3d_fixed_from_rotation[actor, action, sid] = seq
-    return CACHE_get3d_fixed_from_rotation[actor, action, sid]
+    loc = join(data_dir, 'fixed_skeleton_from_rotation')
+    fname = join(loc, actor + '_' + action + '_' + str(sid) + '.txt')
+    if isfile(fname):
+        return np.load(fname)
+    else:
+        if not isdir(loc):
+            makedirs(loc)
+        global CACHE_get3d_fixed_from_rotation
+        if (actor, action, sid) not in CACHE_get3d_fixed_from_rotation:
+            seq = get_euler(actor, action, sid)
+            seq = FK.euler_fk(seq)
+            seq = reflect_over_x(seq)
+            seq = mirror_p3d(seq)  # there are some mirroring issues in the original rotational data:
+            # https://github.com/una-dinosauria/human-motion-prediction/issues/46
+            seq = seq.astype('float32')
+            CACHE_get3d_fixed_from_rotation[actor, action, sid] = seq
+            np.save(fname, seq)
+        return CACHE_get3d_fixed_from_rotation[actor, action, sid]
 
 
 def get_expmap(actor, action, sid):
@@ -325,4 +334,49 @@ class H36M_withActivities(DataSet):
                          n_joints=32,
                          mirror_fn=mirror_p3d)
 
+class H36M_FixedSkeletonFromRotation(DataSet):
 
+    def __init__(self, actors, actions=ACTIONS,
+                 iterate_with_framerate=False,
+                 iterate_with_keys=False,
+                 remove_global_Rt=False):
+        seqs = []
+        keys = []
+        for actor in actors:
+            for action in actions:
+                for sid in [1, 2]:
+                    seq = get3d_fixed_from_rotation(actor, action, sid)
+                    if remove_global_Rt:
+                        seq = norm.remove_rotation_and_translation(seq, j_root=0, j_left=6, j_right=1)
+                    seqs.append(seq)
+                    keys.append((actor, action, sid))
+        super().__init__([seqs], Keys=keys, framerate=50,
+                         iterate_with_framerate=iterate_with_framerate,
+                         iterate_with_keys=iterate_with_keys,
+                         j_root=0, j_left=6, j_right=1,
+                         n_joints=32,
+                         mirror_fn=mirror_p3d)
+
+
+class H36M_FixedSkeletonFromRotation_withActivities(DataSet):
+
+    def __init__(self, actors, actions=ACTIONS,
+                 iterate_with_framerate=False,
+                 iterate_with_keys=False):
+        seqs = []
+        labels = []
+        keys = []
+        for actor in actors:
+            for action in actions:
+                for sid in [1, 2]:
+                    seq = get3d_fixed_from_rotation(actor, action, sid)
+                    label = get_labels(actor, action, sid)
+                    seqs.append(seq)
+                    labels.append(label)
+                    keys.append((actor, action, sid))
+        super().__init__([seqs, labels], Keys=keys, framerate=50,
+                         iterate_with_framerate=iterate_with_framerate,
+                         iterate_with_keys=iterate_with_keys,
+                         j_root=0, j_left=6, j_right=1,
+                         n_joints=32,
+                         mirror_fn=mirror_p3d)

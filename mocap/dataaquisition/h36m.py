@@ -44,6 +44,22 @@ def acquire_fixed_skeleton():
                     np.savetxt(fname, seq1)
 
 
+def acquire_fixed_skeleton_from_rotation():
+    acquire_euler()
+    global DATA_DIR
+    data_dir = join(DATA_DIR, 'fixed_skeleton_from_rotation')
+    if not isdir(data_dir):
+        print('[mocap][Human3.6M] generate fixed skeletons from rotation:', data_dir)
+        makedirs(data_dir)
+        for actor in H36M.ACTORS:
+            print('\thandle actor ', actor)
+            for action in tqdm(H36M.ACTIONS):
+                for sid in [1, 2]:
+                    fname = join(data_dir, actor + '_' + action + '_' + str(sid) + '.npy')
+                    seq1 = H36M.get3d_fixed_from_rotation(actor, action, sid)
+                    np.save(fname, seq1)
+
+
 def acquire_euler():
     acquire_expmap()
     global DATA_DIR

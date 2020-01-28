@@ -13,16 +13,16 @@ if not isdir(vis_dir):
 
 vis = SequenceVisualizer(vis_dir, 'vis_h36m', to_file=True, mark_origin=False)
 
-ds = H36M.H36M_FixedSkeleton(actors=['S5'], actions=['walking'],
-                             iterate_with_framerate=True,
-                             iterate_with_keys=True,
-                             remove_global_Rt=True)
+ds = H36M.H36M_FixedSkeletonFromRotation(actors=['S5'], actions=['walking'],
+                                         iterate_with_framerate=True,
+                                         iterate_with_keys=True,
+                                         remove_global_Rt=True)
 
 ds = H36M.H36M_Simplified(ds)
 Seq = ds.get_sequence(0)
 
 start = random.randint(0, len(Seq) - 251)
-seq = Seq[start:start+250:4]
+seq = Seq[start:start+300:5]
 
 print('seq', seq.shape)
 
