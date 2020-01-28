@@ -1,6 +1,17 @@
 # mocap
 
 Helper library to handle mocap data. At the moment, the CMU Mocap dataset as well as the Mocap data from the Human3.6M dataset are used.
+If this library is helpful to you, please cite the following work:
+```bibtex
+@article{
+   author        = {Tanke, Julian AND Weber, Andreas AND Gall, Juergen},
+   title         = {The title of this article},
+   year          = {2019},
+   archivePrefix = {arXiv},
+   eprint        = {1912.06079},
+   primaryClass  = {cs.CV}
+}
+```
 
 ## Install
 This library requires some external tools, such as:
