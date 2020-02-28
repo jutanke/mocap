@@ -107,8 +107,8 @@ def get_euler(actor, action, sid):
     return seq
 
 
-@nb.njit(nb.float32[:, :, :](
-    nb.float32[:, :, :]
+@nb.njit(nb.float32[:, :](
+    nb.float32[:, :]
 ), nogil=True)
 def remap_labels(Labels):
     """
