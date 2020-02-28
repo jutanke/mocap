@@ -139,10 +139,9 @@ def remap_labels(Labels):
         0,  # 9 => steps --> standing
         1]  # 10=> walking --> walking
     n_frames = Labels.shape[0]
-    Labels_as_class = np.argmax(Labels, axis=2)
     result = np.zeros((n_frames, 8), np.float32)
     for t in range(n_frames):
-        src_label = Labels_as_class[t]
+        src_label = np.argmax(Labels[t])
         target_label = mapping[src_label]
         result[t, target_label] = 1.0
     return result
