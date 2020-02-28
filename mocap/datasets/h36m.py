@@ -154,7 +154,10 @@ def get_labels(actor, action, sid):
 
 
 def get_simplified_labels(actor, action, sid):
-    fname = join(join(data_dir, 'labels_simple'), actor + '_' + action + '_' + str(sid) + '_label.txt')
+    sl_dir = join(data_dir, 'labels_simple')
+    fname = join(sl_dir, actor + '_' + action + '_' + str(sid) + '_label.txt')
+    if not isdir(sl_dir):
+        makedirs(sl_dir)
     if not isfile(fname):
         seq = get_labels(actor, action, sid)
         seq = remap_labels(seq)
