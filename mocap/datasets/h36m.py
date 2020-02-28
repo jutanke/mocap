@@ -161,7 +161,7 @@ def get_simplified_labels(actor, action, sid):
     if not isfile(fname):
         seq = get_labels(actor, action, sid)
         seq = remap_labels(seq)
-        np.savetxt(fname, seq, fmt='d')
+        np.savetxt(fname, seq, fmt='%d')
     seq = np.loadtxt(fname, dtype=np.float32)
     return seq
 
