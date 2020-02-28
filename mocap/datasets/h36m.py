@@ -107,8 +107,59 @@ def get_euler(actor, action, sid):
     return seq
 
 
+@nb.njit(nb.float32[:, :, :](
+    nb.float32[:, :, :]
+), nogil=True)
+def remap_labels(Labels):
+    """
+    :param Labels: {n_frames x 11}
+    :return: {n_frames x 10}
+    """
+    # 'kneeling',  # 0
+    # 'kneeling down',  # 1
+    # 'leaning down',  # 2
+    # 'sitting chair',  # 3
+    # 'sitting down',  # 4
+    # 'sitting floor',  # 5
+    # 'squatting',  # 6
+    # 'standing',  # 7
+    # 'standing up',  # 8
+    # 'steps',  # 9
+    # 'walking']  # 10
+    mapping = [
+        5,  # 0 => kneeling --> sitting midway
+        2,  # 1 => kneeling down --> sitting down
+        7,  # 2 => leaning down --> leaning down
+        3,  # 3 => sitting chair --> sitting chair
+        2,  # 4 => sitting down --> sitting down
+        4,  # 5 => sitting floor --> sitting floor
+        5,  # 6 => squatting --> sitting midway
+        0,  # 7 => standing --> standing
+        6,  # 8 => standing up --> standing up
+        0,  # 9 => steps --> standing
+        1]  # 10=> walking --> walking
+    n_frames = Labels.shape[0]
+    Labels_as_class = np.argmax(Labels, axis=2)
+    result = np.zeros((n_frames, 8), np.float32)
+    for t in range(n_frames):
+        src_label = Labels_as_class[t]
+        target_label = mapping[src_label]
+        result[t, target_label] = 1.0
+    return result
+
+
 def get_labels(actor, action, sid):
     fname = join(join(data_dir, 'labels'), actor + '_' + action + '_' + str(sid) + '_label.txt')
+    seq = np.loadtxt(fname, dtype=np.float32)
+    return seq
+
+
+def get_simplified_labels(actor, action, sid):
+    fname = join(join(data_dir, 'labels_simple'), actor + '_' + action + '_' + str(sid) + '_label.txt')
+    if not isfile(fname):
+        seq = get_labels(actor, action, sid)
+        seq = remap_labels(seq)
+        np.savetxt(fname, seq, fmt='d')
     seq = np.loadtxt(fname, dtype=np.float32)
     return seq
 
@@ -313,6 +364,33 @@ class H36M_FixedSkeleton_withActivities(DataSet):
                          mirror_fn=mirror_p3d)
 
 
+class H36M_FixedSkeleton_withSimplifiedActivities(DataSet):
+
+    def __init__(self, actors, actions=ACTIONS,
+                 iterate_with_framerate=False,
+                 iterate_with_keys=False,
+                 remove_global_Rt=False):
+        seqs = []
+        labels = []
+        keys = []
+        for actor in actors:
+            for action in actions:
+                for sid in [1, 2]:
+                    seq = get3d_fixed(actor, action, sid)
+                    if remove_global_Rt:
+                        seq = norm.remove_rotation_and_translation(seq, j_root=0, j_left=6, j_right=1)
+                    label = get_simplified_labels(actor, action, sid)
+                    seqs.append(seq)
+                    labels.append(label)
+                    keys.append((actor, action, sid))
+        super().__init__([seqs, labels], Keys=keys, framerate=50,
+                         iterate_with_framerate=iterate_with_framerate,
+                         iterate_with_keys=iterate_with_keys,
+                         j_root=0, j_left=6, j_right=1,
+                         n_joints=32,
+                         mirror_fn=mirror_p3d)
+
+
 class H36M_withActivities(DataSet):
 
     def __init__(self, actors, actions=ACTIONS,
@@ -338,6 +416,34 @@ class H36M_withActivities(DataSet):
                          j_root=0, j_left=6, j_right=1,
                          n_joints=32,
                          mirror_fn=mirror_p3d)
+
+
+class H36M_withSimplifiedActivities(DataSet):
+
+    def __init__(self, actors, actions=ACTIONS,
+                 iterate_with_framerate=False,
+                 iterate_with_keys=False,
+                 remove_global_Rt=False):
+        seqs = []
+        labels = []
+        keys = []
+        for actor in actors:
+            for action in actions:
+                for sid in [1, 2]:
+                    seq = get3d(actor, action, sid)
+                    label = get_simplified_labels(actor, action, sid)
+                    if remove_global_Rt:
+                        seq = norm.remove_rotation_and_translation(seq, j_root=0, j_left=6, j_right=1)
+                    seqs.append(seq)
+                    labels.append(label)
+                    keys.append((actor, action, sid))
+        super().__init__([seqs, labels], Keys=keys, framerate=50,
+                         iterate_with_framerate=iterate_with_framerate,
+                         iterate_with_keys=iterate_with_keys,
+                         j_root=0, j_left=6, j_right=1,
+                         n_joints=32,
+                         mirror_fn=mirror_p3d)
+
 
 class H36M_FixedSkeletonFromRotation(DataSet):
 
@@ -376,6 +482,30 @@ class H36M_FixedSkeletonFromRotation_withActivities(DataSet):
                 for sid in [1, 2]:
                     seq = get3d_fixed_from_rotation(actor, action, sid)
                     label = get_labels(actor, action, sid)
+                    seqs.append(seq)
+                    labels.append(label)
+                    keys.append((actor, action, sid))
+        super().__init__([seqs, labels], Keys=keys, framerate=50,
+                         iterate_with_framerate=iterate_with_framerate,
+                         iterate_with_keys=iterate_with_keys,
+                         j_root=0, j_left=6, j_right=1,
+                         n_joints=32,
+                         mirror_fn=mirror_p3d)
+
+
+class H36M_FixedSkeletonFromRotation_withSimplifiedActivities(DataSet):
+
+    def __init__(self, actors, actions=ACTIONS,
+                 iterate_with_framerate=False,
+                 iterate_with_keys=False):
+        seqs = []
+        labels = []
+        keys = []
+        for actor in actors:
+            for action in actions:
+                for sid in [1, 2]:
+                    seq = get3d_fixed_from_rotation(actor, action, sid)
+                    label = get_simplified_labels(actor, action, sid)
                     seqs.append(seq)
                     labels.append(label)
                     keys.append((actor, action, sid))
