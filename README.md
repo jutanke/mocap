@@ -230,6 +230,11 @@ The following _11_ human-labeled acitivites are used:
 Default skeleton with _31_ joints:
 <img width="164" alt="Screenshot 2020-01-10 at 15 23 35" src="https://user-images.githubusercontent.com/831215/72164251-40f73600-33bd-11ea-9653-b5a12adf5720.png">
 
+### Combined:
+
+Combined skeleton that works for both CMU and h36m data with _14_ joints:
+<img width="204" alt="Screenshot 2020-02-29 at 16 43 30" src="https://user-images.githubusercontent.com/831215/75610569-b2787880-5b12-11ea-801a-ec52dd0f5af0.png">
+
 ## Download data
 
 ### Human3.6M
