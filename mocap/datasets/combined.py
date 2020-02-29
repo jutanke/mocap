@@ -1,12 +1,33 @@
 from mocap.datasets.dataset import DataSet
+from mocap.datasets.h36m import reflect_over_x
 import numpy as np
+
+
+def mirror_p3d(seq):
+    """
+    :param seq: {n_frames x 14*3}
+    :return:
+    """
+    assert len(seq.shape) == 2, str(seq.shape)
+    n_frames = len(seq)
+    LS = [0, 1, 2, 6, 7, 8]
+    RS = [3, 4, 5, 9, 10, 11]
+    lr = np.array(LS + RS)
+    rl = np.array(RS + LS)
+    x = seq.reshape((n_frames, -1, 3))
+    x_copy = x.copy()
+    x = reflect_over_x(x_copy)
+    x[:, lr] = x[:, rl]
+    return x.reshape((n_frames, -1))
 
 
 class Combined(DataSet):
 
-    def __init__(self, dataset, data_target=0):
+    def __init__(self, dataset, data_target=0, force_flatten=True):
         """
         :param dataset: {mocap.datasets.dataset.DataSet}
+        :param force_flatten: {boolean} if True we flatten the poses
+                            into vectors
         """
         assert data_target < dataset.n_data_entries
 
@@ -41,7 +62,7 @@ class Combined(DataSet):
                 (17, 9),
                 (18, 10),
                 (19, 11),
-                (26, 12),
+                (13, 12),
                 (15, 13)
             ]
         elif dataset.n_joints == 17:  # h36m simplified
@@ -82,9 +103,10 @@ class Combined(DataSet):
                     for jid_src, jid_tar in translate:
                         new_seq[:, jid_tar, :] = seq[:, jid_src, :]
                     
-                    if flattend:
+                    if flattend or force_flatten:
                         new_seq = new_seq.reshape((n_frames, -1))
                     seqs.append(new_seq)
+                Data_new.append(seqs)
             else:
                 Data_new.append(data)
         
@@ -95,4 +117,3 @@ class Combined(DataSet):
                          j_root=-1, j_left=0, j_right=3,
                          n_joints=14,
                          mirror_fn=None)
-        

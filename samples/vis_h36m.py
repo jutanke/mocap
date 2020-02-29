@@ -19,7 +19,9 @@ ds = H36M.H36M_FixedSkeleton_withSimplifiedActivities(actors=['S5'], actions=['w
                                                       remove_global_Rt=True)
 
 ds = H36M.H36M_Simplified(ds)
-Seq = ds.get_sequence(0)
+Seq, Labels = ds.get_sequence(0)
+
+print("SEQ", Seq.shape)
 
 start = random.randint(0, len(Seq) - 251)
 seq = Seq[start:start+300:5]
@@ -37,7 +39,8 @@ seq_norm = seq
 
 # views = [(0, 90)]
 views = [(45, 45)]
-vis.plot(seq_norm, name='norm', create_video=False, plot_jid=False, views=views, noaxis=False)
+vis.plot(seq_norm, name='norm', create_video=False, plot_jid=False,
+         views=views, noaxis=False)
 
 
 exit(1)
