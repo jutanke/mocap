@@ -116,4 +116,4 @@ class Combined(DataSet):
                          iterate_with_keys=dataset.iterate_with_keys,
                          j_root=-1, j_left=0, j_right=3,
                          n_joints=14,
-                         mirror_fn=None)
+                         mirror_fn=mirror_p3d)
