@@ -12,9 +12,11 @@ if not isdir(vis_dir):
 
 print('go')
 
-ds = CMU.CMU(['01'], remove_global_Rt=True)
+ds = CMU.CMU(['01', '05'], remove_global_Rt=True)
 
 print("len", len(ds))
+
+exit(1)
 
 seq = ds[0]
 # seq_norm = norm.normalize_sequence_at_frame(seq, 15,

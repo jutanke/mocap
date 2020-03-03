@@ -139,7 +139,7 @@ class CMU(DataSet):
                                                        j_root=-1,
                                                        j_left=1,
                                                        j_right=6)
-        seqs.append([seq])
+        seqs.append(seq)
         keys.append((subject, action))
 
         if subject in subjects_with_60fps:
@@ -148,7 +148,7 @@ class CMU(DataSet):
           framerates.append(120)
 
 
-    super().__init__(seqs, Keys=keys,
+    super().__init__([seqs], Keys=keys,
                      framerate=framerates,
                      iterate_with_framerate=iterate_with_framerate,
                      iterate_with_keys=iterate_with_keys,
