@@ -68,7 +68,7 @@ class DataSet:
         assert isinstance(index, int)
         assert index >= 0 and index < self.n_sequences, 'out of bounds: ' + str(self.n_sequences) + ' vs ' + str(index)
         if self.n_data_entries == 1:
-            return self.Data[index][0]
+            return self.Data[0][index]
         result = []
         for data in self.Data:
             result.append(data[index])
