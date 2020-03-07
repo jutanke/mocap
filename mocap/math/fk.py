@@ -1,5 +1,7 @@
 import numpy as np
+import torch
 import mocap.datasets.h36m as H36M
+from mocap.math.quaternion import qrot, qmul, q_inv_batch_of_sequences
 
 
 # -- hardcoded data --
@@ -13,7 +15,12 @@ bone_lengths = bone_lengths.reshape((-1, 3)).astype('float32')
 assert len(parent) == len(bone_lengths)
 n_joints = len(parent)
 
+if torch.cuda.is_available():
+    device = torch.device('cuda')
+else:
+    device = torch.device('cpu')
 
+offsets = torch.from_numpy(bone_lengths).to(device)
 
 chain_per_joint = []
 for jid in range(n_joints):
@@ -25,6 +32,53 @@ for jid in range(n_joints):
     chain.reverse()
     chain.pop(0)
     chain_per_joint.append(chain)
+
+
+def quaternion_fk(rotations):
+    """
+    :param rotations: {n_batch x n_frames x J x 4}
+    :return:
+    """
+    parent = np.array([-1, 0, 1, 2, 3, 4, 0, 6, 7, 8, 9, 0, 11, 12, 13, 14, 12,
+               16, 17, 18, 19, 20, 19, 22, 12, 24, 25, 26, 27, 28, 27, 30])
+    parent = torch.from_numpy(parent).to(device)
+    is_numpy = False
+    if isinstance(rotations, np.ndarray):
+        is_numpy = True
+        rotations = torch.from_numpy(rotations).to(device)
+
+    n_batch = rotations.size(0)
+    n_frames = rotations.size(1)
+    if len(rotations.size()) == 3:
+        rotations = rotations.reshape((n_batch, n_frames, -1, 4))
+    rotations = q_inv_batch_of_sequences(rotations)
+
+    positions_world = []
+    rotations_world = []
+    root_positions = torch.zeros((n_batch, n_frames, 3), device=device)
+    expanded_offsets = offsets.expand(rotations.shape[0], rotations.shape[1],
+                                      offsets.shape[0], offsets.shape[1])
+
+    for i in range(offsets.shape[0]):
+        if parent[i] == -1:
+            positions_world.append(root_positions)
+            rotations_world.append(rotations[:, :, 0])
+        else:
+            positions_world.append(qrot(rotations_world[parent[i]], expanded_offsets[:, :, i]) \
+                                   + positions_world[parent[i]])
+            rotations_world.append(qmul(rotations_world[parent[i]], rotations[:, :, i]))
+
+    result = torch.stack(positions_world, dim=3).permute(0, 1, 3, 2)
+    if is_numpy:
+        result = result.cpu().numpy()
+
+        n_batch = result.shape[0]
+        n_frames = result.shape[1]
+        result = result.reshape((n_batch * n_frames, 32, 3))
+        result[:, :, (0, 1, 2)] = result[:, :, (0, 2, 1)]
+        result = H36M.mirror_p3d(result)
+        result = result.reshape((n_batch, n_frames, 32, 3))
+    return result
 
 
 def euler_fk(angles):
@@ -66,7 +120,6 @@ def euler_fk(angles):
     Pts3d = H36M.mirror_p3d(Pts3d)
 
     return Pts3d
-
 
 
 def batch_rot3d(r):

@@ -8,6 +8,7 @@ from mocap.datasets.dataset import DataSet
 import mocap.math.fk as FK
 import mocap.dataaquisition.h36m as H36M_DA
 import mocap.processing.normalize as norm
+from mocap.math.quaternion import expmap_to_quaternion, qfix
 
 local_data_dir = join(dirname(__file__), '../data/h36m')
 data_dir = H36M_DA.DATA_DIR
@@ -105,6 +106,24 @@ def get_euler(actor, action, sid):
     fname = join(join(data_dir, 'euler'), actor + '_' + action + '_' + str(sid) + '.npy')
     seq = np.load(fname)
     return seq
+
+
+def get_quaternion(actor, action, sid):
+    quat_dir = join(data_dir, 'quaternions')
+    if not isdir(quat_dir):
+        makedirs(quat_dir)
+    fname = join(quat_dir, actor + '_' + action + '_' + str(sid) + '.npy')
+    if not isfile(fname):
+        seq_exp = get_expmap(actor, action, sid)
+        n_frames = len(seq_exp)
+        seq_exp = seq_exp.reshape((n_frames, -1, 3))
+        seq_exp = seq_exp[:, 1:]  # discard first entry which represents translation
+        seq_quat = qfix(expmap_to_quaternion(seq_exp))
+        seq_quat = seq_quat.reshape((n_frames, -1))
+        np.save(fname, seq_quat)
+        return seq_quat
+    else:
+        return np.load(fname)
 
 
 @nb.njit(nb.float32[:, :](
@@ -215,6 +234,28 @@ def mirror_p3d(seq):
     x = reflect_over_x(x_copy)
     x[:, lr] = x[:, rl]
     return x
+
+
+def mirror_quaternion(seq):
+    """
+    :param seq: [n_frames x 32*4]
+    :return:
+    """
+    flatten = False
+    n_frames = seq.shape[0]
+    if len(seq.shape) == 2:
+        flatten = True
+        seq = seq.reshape((n_frames, 32, 4))
+    joints_left = [1, 2, 3, 4, 5, 24, 25, 26, 27, 28, 29, 30, 31]
+    joints_right = [6, 7, 8, 9, 10, 16, 17, 18, 19, 20, 21, 22, 23]
+    seq_mirror = seq.copy()
+    seq_mirror[:, joints_left] = seq[:, joints_right]
+    seq_mirror[:, joints_right] = seq[:, joints_left]
+    seq_mirror[:, :, [2, 3]] *= -1
+    seq_mirror = qfix(seq_mirror)
+    if flatten:
+        seq_mirror = seq_mirror.reshape((n_frames, -1))
+    return seq_mirror
 
 
 # =======================
@@ -541,3 +582,52 @@ class H36M_FixedSkeletonFromRotation_withSimplifiedActivities(DataSet):
                          j_root=0, j_left=6, j_right=1,
                          n_joints=32,
                          mirror_fn=mirror_p3d)
+
+
+class H36M_Quaternions(DataSet):
+
+    def __init__(self, actors, actions=ACTIONS,
+                 iterate_with_framerate=False,
+                 iterate_with_keys=False):
+        seqs = []
+        keys = []
+        for actor in actors:
+            for action in actions:
+                for sid in [1, 2]:
+                    seq = get_quaternion(actor, action, sid)
+                    n_frames = len(seq)
+                    seq = seq.reshape((n_frames, -1))
+                    seqs.append(seq)
+                    keys.append((actor, action, sid))
+        super().__init__([seqs], Keys=keys, framerate=50,
+                         iterate_with_framerate=iterate_with_framerate,
+                         iterate_with_keys=iterate_with_keys,
+                         j_root=0, j_left=6, j_right=1,
+                         n_joints=32,
+                         mirror_fn=mirror_quaternion)
+
+
+class H36M_Quaternions_withSimplifiedActivities(DataSet):
+
+    def __init__(self, actors, actions=ACTIONS,
+                 iterate_with_framerate=False,
+                 iterate_with_keys=False):
+        seqs = []
+        labels = []
+        keys = []
+        for actor in actors:
+            for action in actions:
+                for sid in [1, 2]:
+                    seq = get_quaternion(actor, action, sid)
+                    n_frames = len(seq)
+                    seq = seq.reshape((n_frames, -1))
+                    label = get_simplified_labels(actor, action, sid)
+                    seqs.append(seq)
+                    labels.append(label)
+                    keys.append((actor, action, sid))
+        super().__init__([seqs, labels], Keys=keys, framerate=50,
+                         iterate_with_framerate=iterate_with_framerate,
+                         iterate_with_keys=iterate_with_keys,
+                         j_root=0, j_left=6, j_right=1,
+                         n_joints=32,
+                         mirror_fn=mirror_quaternion)

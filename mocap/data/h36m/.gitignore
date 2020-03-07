@@ -2,5 +2,6 @@
 expmap/
 euler/
 p3d/
+quaternions/
 fixed_skeleton/*.npy
 fixed_skeleton_from_rotation/
