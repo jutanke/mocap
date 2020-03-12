@@ -61,6 +61,8 @@ class SequenceVisualizer:
              toggle_color=False,
              plot_cbc=None, last_frame=None,
              definite_cbc=None,
+             do_scatter=True,
+             linewidth=2,
              name='',
              plot_jid=False,
              create_video=False,
@@ -86,6 +88,8 @@ class SequenceVisualizer:
         :param definite_cbc: def plot_cbc(ax, i, t): will be called for sure
         :param last_frame:
         :param name: string added to the newly created folder name
+        :param do_scatter: if True use scatter
+        :param linewidth:
         :param plot_jid:
         :param create_video: if True create an .mp4 from the png files
         :param if_video_keep_pngs: if True keep the PNG files after creating the mp4 video
@@ -156,11 +160,13 @@ class SequenceVisualizer:
                         T1 = np.array([parallel_distance / 2, 0, 0])
                         T2 = np.array([-parallel_distance / 2, 0, 0])
                         if plot_fn1 is None:
-                            hviz.plot(ax, seq1[t], lcolor=lcolor, rcolor=rcolor, plot_jid=plot_jid)
+                            hviz.plot(ax, seq1[t], lcolor=lcolor, rcolor=rcolor, plot_jid=plot_jid,
+                                      do_scatter=do_scatter, linewidth=linewidth)
                         else:
                             plot_fn1(ax, seq1[t], lcolor=lcolor, rcolor=rcolor, plot_jid=plot_jid, T=T1)
                         if plot_fn2 is None:
-                            hviz.plot(ax, seq2[t], lcolor=lcolor2, rcolor=rcolor2, plot_jid=plot_jid)
+                            hviz.plot(ax, seq2[t], lcolor=lcolor2, rcolor=rcolor2, plot_jid=plot_jid,
+                                      do_scatter=do_scatter, linewidth=linewidth)
                         else:
                             plot_fn2(ax, seq2[t], lcolor=lcolor2, rcolor=rcolor2, plot_jid=plot_jid, T=T2)
 
@@ -168,18 +174,21 @@ class SequenceVisualizer:
                         _lcolor = lcolor if t % 2 == 0 else lcolor2
                         _rcolor = rcolor if t % 2 == 0 else rcolor2
                         if plot_fn1 is None:
-                            hviz.plot(ax, seq1[t], lcolor=_lcolor, rcolor=_rcolor, plot_jid=plot_jid)
+                            hviz.plot(ax, seq1[t], lcolor=_lcolor, rcolor=_rcolor, plot_jid=plot_jid,
+                                      do_scatter=do_scatter, linewidth=linewidth)
                         else:
                             plot_fn1(ax, seq1[t], lcolor=_lcolor, rcolor=_rcolor, plot_jid=plot_jid)
                     else:  # temporal
                         if t < n:
                             if plot_fn1 is None:
-                                hviz.plot(ax, seq1[t], lcolor=lcolor, rcolor=rcolor, plot_jid=plot_jid)
+                                hviz.plot(ax, seq1[t], lcolor=lcolor, rcolor=rcolor, plot_jid=plot_jid,
+                                          do_scatter=do_scatter, linewidth=linewidth)
                             else:
                                 plot_fn1(ax, seq1[t], lcolor=lcolor, rcolor=rcolor, plot_jid=plot_jid)
                         else:
                             if plot_fn2 is None:
-                                hviz.plot(ax, seq1[t], lcolor=lcolor2, rcolor=rcolor2, plot_jid=plot_jid)
+                                hviz.plot(ax, seq1[t], lcolor=lcolor2, rcolor=rcolor2, plot_jid=plot_jid,
+                                          do_scatter=do_scatter, linewidth=linewidth)
                             else:
                                 plot_fn2(ax, seq1[t], lcolor=lcolor2, rcolor=rcolor2, plot_jid=plot_jid)
                 else:
