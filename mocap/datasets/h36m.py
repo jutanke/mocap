@@ -121,9 +121,11 @@ def get_quaternion(actor, action, sid):
         seq_quat = qfix(expmap_to_quaternion(seq_exp))
         seq_quat = seq_quat.reshape((n_frames, -1))
         np.save(fname, seq_quat)
-        return seq_quat
     else:
-        return np.load(fname)
+        seq_quat = np.load(fname)
+    seq_quat[:, 3:4] = 0  # ignore global rotation
+    seq_quat[:, 0] = 1
+    return seq_quat
 
 
 @nb.njit(nb.float32[:, :](
