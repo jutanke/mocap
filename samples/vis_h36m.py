@@ -5,6 +5,7 @@ from os.path import isdir
 from os import makedirs
 from mocap.visualization.sequence import SequenceVisualizer
 import mocap.processing.normalize as norm
+import mocap.processing.activities as act
 import random
 
 vis_dir = '../output/'
@@ -20,6 +21,12 @@ ds = H36M.H36M_FixedSkeleton_withSimplifiedActivities(actors=['S5'], actions=['w
 
 ds = H36M.H36M_Simplified(ds)
 Seq, Labels = ds.get_sequence(0)
+
+print('lab', Labels.shape)
+
+Labels_ = act.reshape_for_forecasting(Labels, num_forecast=10)
+print('lab2', Labels_.shape)
+exit(1)
 
 print("SEQ", Seq.shape)
 
