@@ -6,7 +6,9 @@ from os import makedirs
 from mocap.visualization.sequence import SequenceVisualizer
 import mocap.processing.normalize as norm
 import mocap.processing.activities as act
+import mocap.evaluation.h36m as Eval_h36m
 import random
+
 
 vis_dir = '../output/'
 if not isdir(vis_dir):
@@ -18,6 +20,13 @@ ds = H36M.H36M_FixedSkeleton_withSimplifiedActivities(actors=['S5'], actions=['w
                                                       iterate_with_framerate=True,
                                                       iterate_with_keys=True,
                                                       remove_global_Rt=True)
+
+
+
+Seq = Eval_h36m.get('walking', H36M.H36M_FixedSkeleton)
+print('Walking:', Seq.shape)
+exit(1)
+
 
 ds = H36M.H36M_Simplified(ds)
 Seq, Labels = ds.get_sequence(0)
