@@ -1,6 +1,11 @@
 import numpy as np
 
 
+def get_frames_for_short_term_evaluation_nout25_hz25():
+    frames = [1, 3, 7, 9, 13, 24]
+    return np.array(frames)
+
+
 def find_indices_srnn(T1, T2, num_seeds):
     """ THIS METHOD IS TAKING FROM QUATERNET!
     This method replicates the behavior of the same method in
