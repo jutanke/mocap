@@ -1,4 +1,5 @@
 import numpy as np
+import numba as nb
 
 
 def get_frames_for_short_term_evaluation_nout25_hz25():
@@ -74,3 +75,36 @@ def get(action, DS_class):
     else:
         Labels = np.array(Labels)
         return Seq, Labels
+
+    
+@nb.njit(nb.float64[:](
+    nb.float32[:, :, :], nb.float32[:, :, :]
+), nogil=True)
+def calculate_euclidean_distance(Y, Y_hat):
+    """
+    :param Y: [n_sequences, n_frames, 96]
+    :param Y_hat: [n_sequences, n_frames, 96]
+    :return : [n_frames]
+    """
+    n_sequences, n_frames, dim = Y.shape
+    J = dim // 3
+    result = np.zeros(shape=(n_frames,), dtype=np.float64)
+    for s in range(n_sequences):
+        for t in range(n_frames):
+            total_euc_error = 0
+            for jid in range(0, dim, 3):
+                x_gt = Y[s, t, jid]
+                y_gt = Y[s, t, jid + 1]
+                z_gt = Y[s, t, jid + 2]
+                x_pr = Y_hat[s, t, jid]
+                y_pr = Y_hat[s, t, jid + 1]
+                z_pr = Y_hat[s, t, jid + 2]
+                val = (x_gt - x_pr) ** 2 + \
+                      (y_gt - y_pr) ** 2 + \
+                      (z_gt - z_pr) ** 2
+                val = max(val, 0.00000001)
+                euc = m.sqrt(val)
+                total_euc_error += euc
+            result[t] += (total_euc_error / J)
+    result = result / n_sequences
+    return result
