@@ -27,7 +27,7 @@ def find_indices_srnn(T1, T2, num_seeds):
     return idx
 
 
-def get(action, DS_class):
+def get(action, DS_class, actor='S5'):
     """
     :param action: {String} one of the 15 actions present in the h36m dataset
     :param DS_class: {mocap::datasets::h36m::*DataSet} any h36m dataset defined
@@ -35,7 +35,7 @@ def get(action, DS_class):
     returns:
     Evaluation sequence for Human36M
     """
-    ds_test = DS_class(actors=['S5'], actions=[action], 
+    ds_test = DS_class(actors=[actor], actions=[action], 
                        remove_global_Rt=True)
     assert len(ds_test) == 2  # each action has two videos 
     if ds_test.n_data_entries == 1:
