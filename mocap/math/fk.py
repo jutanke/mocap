@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-import mocap.datasets.h36m as H36M
+from mocap.math.mirror_h36m import mirror_p3d
 from mocap.math.quaternion import qrot, qmul, q_inv_batch_of_sequences
 
 
@@ -76,7 +76,7 @@ def quaternion_fk(rotations):
         n_frames = result.shape[1]
         result = result.reshape((n_batch * n_frames, 32, 3))
         result[:, :, (0, 1, 2)] = result[:, :, (0, 2, 1)]
-        result = H36M.mirror_p3d(result)
+        result = mirror_p3d(result)
         result = result.reshape((n_batch, n_frames, 32, 3))
     return result
 
@@ -117,7 +117,7 @@ def euler_fk(angles):
 
     Pts3d[:, :, (0, 1, 2)] = Pts3d[:, :, (0, 2, 1)]
 
-    Pts3d = H36M.mirror_p3d(Pts3d)
+    Pts3d = mirror_p3d(Pts3d)
 
     return Pts3d
 
