@@ -6,6 +6,8 @@ from tqdm import tqdm
 from zipfile import ZipFile
 from mocap.datasets.dataset import DataSet
 import mocap.math.fk as FK
+import mocap.math.kabsch as KB
+import mocap.processing.conversion as conv
 from mocap.datasets.h36m_constants import ACTORS, LABEL_NAMES, ACTIONS
 from mocap.dataaquisition.h36m import acquire_expmap, acquire_h36m, DATA_DIR
 import mocap.processing.normalize as norm
