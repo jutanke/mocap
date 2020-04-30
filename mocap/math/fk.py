@@ -15,13 +15,6 @@ bone_lengths = bone_lengths.reshape((-1, 3)).astype('float32')
 assert len(parent) == len(bone_lengths)
 n_joints = len(parent)
 
-if torch.cuda.is_available():
-    device = torch.device('cuda')
-else:
-    device = torch.device('cpu')
-
-offsets = torch.from_numpy(bone_lengths).to(device)
-
 chain_per_joint = []
 for jid in range(n_joints):
     current = parent[jid]
@@ -39,6 +32,13 @@ def quaternion_fk(rotations):
     :param rotations: {n_batch x n_frames x J x 4}
     :return:
     """
+    if torch.cuda.is_available():
+        device = torch.device('cuda')
+    else:
+        device = torch.device('cpu')
+
+    offsets = torch.from_numpy(bone_lengths).to(device)
+    
     parent = np.array([-1, 0, 1, 2, 3, 4, 0, 6, 7, 8, 9, 0, 11, 12, 13, 14, 12,
                16, 17, 18, 19, 20, 19, 22, 12, 24, 25, 26, 27, 28, 27, 30])
     parent = torch.from_numpy(parent).to(device)
