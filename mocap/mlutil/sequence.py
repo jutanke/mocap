@@ -51,6 +51,6 @@ class PoseDataset(Dataset):
         if self.ds.n_data_entries == 2:
             labels = labels[t:t + n_frames * ss:ss]
             return seq, labels
-        elses:
+        else:
             return seq
  
