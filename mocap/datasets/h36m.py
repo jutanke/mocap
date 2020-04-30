@@ -202,13 +202,13 @@ def acquire_fixed_skeleton():
     if not isdir(data_dir):
         print('[mocap][Human3.6M] generate fixed skeletons:', data_dir)
         makedirs(data_dir)
-        for actor in H36M.ACTORS:
+        for actor in ACTORS:
             print('\thandle actor ', actor)
-            for action in tqdm(H36M.ACTIONS):
+            for action in tqdm(ACTIONS):
                 for sid in [1, 2]:
                     fname = join(data_dir, actor + '_' + action + '_' + str(sid) + '.txt')
-                    seq1 = H36M.get3d_fixed_from_rotation(actor, action, sid)
-                    seq2 = H36M.get3d(actor, action, sid)
+                    seq1 = get3d_fixed_from_rotation(actor, action, sid)
+                    seq2 = get3d(actor, action, sid)
                     assert len(seq1) == len(seq2), actor + ' ' + action + ' -> ' + str(seq1.shape) + '|' + str(seq2.shape)
 
                     seq1_ = []
