@@ -6,6 +6,7 @@ from tqdm import tqdm
 from zipfile import ZipFile
 from mocap.datasets.dataset import DataSet
 import mocap.math.fk as FK
+from mocap.datasets.h36m_constants import ACTORS, LABEL_NAMES, ACTIONS
 import mocap.dataaquisition.h36m as H36M_DA
 import mocap.processing.normalize as norm
 from mocap.math.mirror_h36m import reflect_over_x, mirror_p3d, mirror_quaternion
@@ -191,39 +192,6 @@ def get_simplified_labels(actor, action, sid):
 # =======================
 # D A T A S E T S
 # =======================
-
-ACTIONS = [
-    'directions',
-    'discussion',
-    'eating',
-    'greeting',
-    'phoning',
-    'posing',
-    'purchases',
-    'sitting',
-    'sittingdown',
-    'smoking',
-    'takingphoto',
-    'waiting',
-    'walking',
-    'walkingdog',
-    'walkingtogether'
-]
-
-ACTORS = ['S1', 'S5', 'S6', 'S7', 'S8', 'S9', 'S11']
-
-LABEL_NAMES = [
-    'kneeling',         # 0
-    'kneeling down',    # 1
-    'leaning down',     # 2
-    'sitting chair',    # 3
-    'sitting down',     # 4
-    'sitting floor',    # 5
-    'squatting',        # 6
-    'standing',         # 7
-    'standing up',      # 8
-    'steps',            # 9
-    'walking']          # 10
 
 
 class H36M_Simplified(DataSet):
