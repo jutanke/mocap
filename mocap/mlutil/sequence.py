@@ -38,7 +38,10 @@ class PoseDataset(Dataset):
     def __getitem__(self, item):
         n_frames = self.n_frames
         seqid, t, ss, flip_lr = self.meta[item]
-        seq, labels = self.ds[seqid]
+        if self.ds.n_data_entries == 2:
+            seq, labels = self.ds[seqid]
+        else:
+            seq = self.ds[seqid]
         seq = seq[t:t + n_frames * ss:ss]
         if flip_lr:
             seq = self.ds.mirror(seq)
