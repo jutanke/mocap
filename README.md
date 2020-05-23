@@ -235,6 +235,10 @@ Default skeleton with _31_ joints:
 Combined skeleton that works for both CMU and h36m data with _14_ joints:
 <img width="204" alt="Screenshot 2020-02-29 at 16 43 30" src="https://user-images.githubusercontent.com/831215/75610569-b2787880-5b12-11ea-801a-ec52dd0f5af0.png">
 
+### AMASS
+
+![image](https://user-images.githubusercontent.com/831215/82733026-42dce880-9d11-11ea-8cae-cfe724c0e16f.png)
+
 ## Download data
 
 ### Human3.6M
