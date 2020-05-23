@@ -1,4 +1,11 @@
 import numpy as np
+import numba as nb
+import math as m
+
+
+def get_frames_for_short_term_evaluation_nout25_hz25():
+    frames = [1, 3, 7, 9, 13, 24]
+    return np.array(frames)
 
 
 def find_indices_srnn(T1, T2, num_seeds):
@@ -20,16 +27,19 @@ def find_indices_srnn(T1, T2, num_seeds):
     return idx
 
 
-def get(action, DS_class):
+def get(action, DS_class, actor='S5', Wrapper_class=None):
     """
     :param action: {String} one of the 15 actions present in the h36m dataset
     :param DS_class: {mocap::datasets::h36m::*DataSet} any h36m dataset defined
         in this library
+    :param Wrapper_class: {mocap::datasts::wrapper} any wrapper dataset, e.g. Combined
     returns:
     Evaluation sequence for Human36M
     """
-    ds_test = DS_class(actors=['S5'], actions=[action], 
+    ds_test = DS_class(actors=[actor], actions=[action], 
                        remove_global_Rt=True)
+    if Wrapper_class is not None:
+        ds_test = Wrapper_class(ds_test)
     assert len(ds_test) == 2  # each action has two videos 
     if ds_test.n_data_entries == 1:
         seq1 = np.ascontiguousarray(ds_test[0][::2])  # sub-sample to 25Hz
@@ -69,3 +79,36 @@ def get(action, DS_class):
     else:
         Labels = np.array(Labels)
         return Seq, Labels
+
+    
+@nb.njit(nb.float64[:](
+    nb.float32[:, :, :], nb.float32[:, :, :]
+), nogil=True)
+def calculate_euclidean_distance(Y, Y_hat):
+    """
+    :param Y: [n_sequences, n_frames, 96]
+    :param Y_hat: [n_sequences, n_frames, 96]
+    :return : [n_frames]
+    """
+    n_sequences, n_frames, dim = Y.shape
+    J = dim // 3
+    result = np.zeros(shape=(n_frames,), dtype=np.float64)
+    for s in range(n_sequences):
+        for t in range(n_frames):
+            total_euc_error = 0
+            for jid in range(0, dim, 3):
+                x_gt = Y[s, t, jid]
+                y_gt = Y[s, t, jid + 1]
+                z_gt = Y[s, t, jid + 2]
+                x_pr = Y_hat[s, t, jid]
+                y_pr = Y_hat[s, t, jid + 1]
+                z_pr = Y_hat[s, t, jid + 2]
+                val = (x_gt - x_pr) ** 2 + \
+                      (y_gt - y_pr) ** 2 + \
+                      (z_gt - z_pr) ** 2
+                val = max(val, 0.00000001)
+                euc = m.sqrt(val)
+                total_euc_error += euc
+            result[t] += (total_euc_error / J)
+    result = result / n_sequences
+    return result

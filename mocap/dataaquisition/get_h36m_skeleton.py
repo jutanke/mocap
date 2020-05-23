@@ -1,12 +1,12 @@
 from os.path import isfile, isdir, join, dirname
 from os import listdir, makedirs
 import shutil
-from spacepy import pycdf
 import numpy as np
 from tqdm import tqdm
 
 
 def transform(h36m_path, target_dir):
+    from spacepy import pycdf  # make sure that this is only imported when actually needed..
     assert isdir(h36m_path), h36m_path
     if isdir(target_dir):
         shutil.rmtree(target_dir)

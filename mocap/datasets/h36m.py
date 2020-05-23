@@ -6,12 +6,16 @@ from tqdm import tqdm
 from zipfile import ZipFile
 from mocap.datasets.dataset import DataSet
 import mocap.math.fk as FK
-import mocap.dataaquisition.h36m as H36M_DA
+import mocap.math.kabsch as KB
+import mocap.processing.conversion as conv
+from mocap.datasets.h36m_constants import ACTORS, LABEL_NAMES, ACTIONS
+from mocap.dataaquisition.h36m import acquire_expmap, acquire_h36m, DATA_DIR
 import mocap.processing.normalize as norm
+from mocap.math.mirror_h36m import reflect_over_x, mirror_p3d, mirror_quaternion
 from mocap.math.quaternion import expmap_to_quaternion, qfix
 
 local_data_dir = join(dirname(__file__), '../data/h36m')
-data_dir = H36M_DA.DATA_DIR
+data_dir = DATA_DIR
 password_file = join(dirname(__file__), '../data/password.txt')
 assert isdir(local_data_dir), local_data_dir
 if not isdir(data_dir):
@@ -50,14 +54,14 @@ for subdir, needs_password in zip(['labels'], [True]):
 
 
 def get3d(actor, action, sid):
-    H36M_DA.acquire_h36m()
+    acquire_h36m()
     fname = join(join(data_dir, 'p3d'), actor + '_' + action + '_' + str(sid) + '.npy')
     seq = np.load(fname)
     return seq
 
 
 def get3d_fixed(actor, action, sid):
-    H36M_DA.acquire_fixed_skeleton()
+    acquire_fixed_skeleton()
     fname_binary = join(join(data_dir, 'fixed_skeleton'), actor + '_' + action + '_' + str(sid) + '.npy')
     if isfile(fname_binary):
         seq = np.load(fname_binary)
@@ -95,14 +99,14 @@ def get3d_fixed_from_rotation(actor, action, sid):
 
 
 def get_expmap(actor, action, sid):
-    H36M_DA.acquire_expmap()
+    acquire_expmap()
     fname = join(join(join(data_dir, 'expmap/h3.6m/dataset'), actor), action + '_' + str(sid) + '.txt')
     seq = np.loadtxt(fname, delimiter=',', dtype=np.float32)
     return seq
 
 
 def get_euler(actor, action, sid):
-    H36M_DA.acquire_euler()
+    acquire_euler()
     fname = join(join(data_dir, 'euler'), actor + '_' + action + '_' + str(sid) + '.npy')
     seq = np.load(fname)
     return seq
@@ -186,116 +190,72 @@ def get_simplified_labels(actor, action, sid):
     seq = np.loadtxt(fname, dtype=np.float32)
     return seq
 
+# =======================
+# D A T A  A Q U I S I T I O N
+# =======================
+#TODO this is an AWFUL fix
 
-@nb.jit(nb.float32[:, :, :](
-    nb.float32[:, :, :]
-), nopython=True, nogil=True)
-def reflect_over_x(seq):
-    """ reflect sequence over x-y (exchange left-right)
-    INPLACE
-    """
-    I = np.array([
-        [-1, 0, 0],
-        [0, 1, 0],
-        [0, 0, 1]
-        ], np.float32)
-    # ensure we do not fuck up memory
-    for frame in range(len(seq)):
-        person = seq[frame]
-        for jid in range(len(person)):
-            pt3d = np.ascontiguousarray(person[jid])
-            seq[frame, jid] = I @ pt3d
-    return seq
+def acquire_fixed_skeleton():
+    acquire_euler()
+    global DATA_DIR
+    data_dir = join(DATA_DIR, 'fixed_skeleton')
+    if not isdir(data_dir):
+        print('[mocap][Human3.6M] generate fixed skeletons:', data_dir)
+        makedirs(data_dir)
+        for actor in ACTORS:
+            print('\thandle actor ', actor)
+            for action in tqdm(ACTIONS):
+                for sid in [1, 2]:
+                    fname = join(data_dir, actor + '_' + action + '_' + str(sid) + '.txt')
+                    seq1 = get3d_fixed_from_rotation(actor, action, sid)
+                    seq2 = get3d(actor, action, sid)
+                    assert len(seq1) == len(seq2), actor + ' ' + action + ' -> ' + str(seq1.shape) + '|' + str(seq2.shape)
 
-
-def mirror_p3d(seq):
-    """
-    :param seq: [n_frames, 32*3]
-    """
-    if len(seq.shape) == 2:
-        n_joints = seq.shape[1]//3
-    elif len(seq.shape) == 3:
-        n_joints = seq.shape[1]
-    else:
-        raise ValueError("incorrect shape:" + str(seq.shape))
-    
-    assert n_joints in [32, 17], 'wrong joint number:' + str(n_joints)
-
-    if n_joints == 32:
-        LS = [6, 7, 8, 9, 10, 16, 17, 18, 19, 20, 21, 22, 23]
-        RS = [1, 2, 3, 4, 5, 24, 25, 26, 27, 28, 29, 30, 31]
-    elif n_joints == 17:
-        LS = [4, 5, 6, 11, 12, 13]
-        RS = [1, 2, 3, 14, 15, 16]
-
-    lr = np.array(LS + RS)
-    rl = np.array(RS + LS)
-    n_frames = len(seq)
-    x = seq.reshape((n_frames, -1, 3))
-    x_copy = x.copy()
-    x = reflect_over_x(x_copy)
-    x[:, lr] = x[:, rl]
-    return x
+                    seq1_ = []
+                    for p, q in zip(seq1, seq2):
+                        p = KB.rotate_P_to_Q(p, q)
+                        seq1_.append(p)
+                    n_frames = len(seq1)
+                    seq1 = np.reshape(seq1_, (n_frames, -1))
+                    np.savetxt(fname, seq1)
 
 
-def mirror_quaternion(seq):
-    """
-    :param seq: [n_frames x 32*4]
-    :return:
-    """
-    flatten = False
-    n_frames = seq.shape[0]
-    if len(seq.shape) == 2:
-        flatten = True
-        seq = seq.reshape((n_frames, 32, 4))
-    joints_left = [1, 2, 3, 4, 5, 24, 25, 26, 27, 28, 29, 30, 31]
-    joints_right = [6, 7, 8, 9, 10, 16, 17, 18, 19, 20, 21, 22, 23]
-    seq_mirror = seq.copy()
-    seq_mirror[:, joints_left] = seq[:, joints_right]
-    seq_mirror[:, joints_right] = seq[:, joints_left]
-    seq_mirror[:, :, [2, 3]] *= -1
-    seq_mirror = qfix(seq_mirror)
-    if flatten:
-        seq_mirror = seq_mirror.reshape((n_frames, -1))
-    return seq_mirror
+def acquire_fixed_skeleton_from_rotation():
+    acquire_euler()
+    global DATA_DIR
+    data_dir = join(DATA_DIR, 'fixed_skeleton_from_rotation')
+    if not isdir(data_dir):
+        print('[mocap][Human3.6M] generate fixed skeletons from rotation:', data_dir)
+        makedirs(data_dir)
+        for actor in ACTORS:
+            print('\thandle actor ', actor)
+            for action in tqdm(ACTIONS):
+                for sid in [1, 2]:
+                    fname = join(data_dir, actor + '_' + action + '_' + str(sid) + '.npy')
+                    seq1 = get3d_fixed_from_rotation(actor, action, sid)
+                    np.save(fname, seq1)
+
+
+def acquire_euler():
+    acquire_expmap()
+    global DATA_DIR
+    euler_dir = join(DATA_DIR, 'euler')
+    if not isdir(euler_dir):
+        makedirs(euler_dir)
+        for actor in ACTORS:
+            for action in ACTIONS:
+                for sid in [1, 2]:
+                    fname = join(euler_dir, actor + '_' + action + '_' + str(sid) + '.npy')
+                    if not isfile(fname):
+                        print('[data aquisition] - h36m - extract euler ', (actor, action, sid))
+                        exp_seq = get_expmap(actor, action, sid)
+                        euler_seq = conv.expmap2euler(exp_seq).astype('float32')
+                        np.save(fname, euler_seq)
 
 
 # =======================
 # D A T A S E T S
 # =======================
-
-ACTIONS = [
-    'directions',
-    'discussion',
-    'eating',
-    'greeting',
-    'phoning',
-    'posing',
-    'purchases',
-    'sitting',
-    'sittingdown',
-    'smoking',
-    'takingphoto',
-    'waiting',
-    'walking',
-    'walkingdog',
-    'walkingtogether'
-]
-
-ACTORS = ['S1', 'S5', 'S6', 'S7', 'S8', 'S9', 'S11']
-
-LABEL_NAMES = [
-    'kneeling',         # 0
-    'kneeling down',    # 1
-    'leaning down',     # 2
-    'sitting chair',    # 3
-    'sitting down',     # 4
-    'sitting floor',    # 5
-    'squatting',        # 6
-    'standing',         # 7
-    'standing up',      # 8
-    'steps',            # 9
-    'walking']          # 10
 
 
 class H36M_Simplified(DataSet):
