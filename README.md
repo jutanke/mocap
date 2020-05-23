@@ -247,6 +247,9 @@ $ cd mocap/dataaquisition/scripts
 $ python get_h36m_skeleton.py /path/to/h36m/folder/human3.6m
 ```
 
+### AMASS
+For "Archive of Motion Capture as Surface Shapes", please download the [preprocessed files](http://dip.is.tue.mpg.de/downloads). 
+
 ### CMU
 
 The CMU mocap dataset is automatically downloaded once make use of it. This may take some time!
