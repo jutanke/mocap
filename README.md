@@ -237,7 +237,7 @@ Combined skeleton that works for both CMU and h36m data with _14_ joints:
 
 ### AMASS
 
-![image](https://user-images.githubusercontent.com/831215/82733026-42dce880-9d11-11ea-8cae-cfe724c0e16f.png)
+<img width="164" src="https://user-images.githubusercontent.com/831215/82733026-42dce880-9d11-11ea-8cae-cfe724c0e16f.png">
 
 ## Download data
 
