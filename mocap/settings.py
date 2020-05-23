@@ -19,6 +19,29 @@ def get_data_path():
         return SETTINGS['data_path']
 
 
+def set_AMASS_path(path):
+    global SETTINGS, SETTINGS_FILE
+    if SETTINGS is None:
+        SETTINGS = {}
+    SETTINGS['amass_path'] = path
+    if isfile(SETTINGS_FILE):
+        remove(SETTINGS_FILE)
+        sleep(0.5)
+    with open(SETTINGS_FILE, 'w') as f:
+        json.dump(SETTINGS, f)
+    print()
+    print('\033[92mAMASS path is set\033[0m')
+    print()
+
+
+def get_AMASS_path():
+    global SETTINGS
+    if SETTINGS is None or 'amass_path' not in SETTINGS:
+        raise ValueError("Settings do not contain {amass_path}!")
+    else:
+        return SETTINGS['amass_path']
+
+
 def set_h36m_path(path):
     global SETTINGS, SETTINGS_FILE
     if SETTINGS is None:
@@ -56,6 +79,42 @@ def set_data_path(path):
     print('\033[92mData path is set\033[0m')
     print()
 
+
+def get_amass_training_files():
+    fname = join(abspath(dirname(__file__)), 'data/amass/training_fnames.txt')
+    assert isfile(fname)
+    with open(fname, 'r') as f:
+        x = f.readlines()
+    return preprocess_amass_files(x)
+
+
+def get_amass_validation_files():
+    fname = join(abspath(dirname(__file__)), 'data/amass/validation_fnames.txt')
+    assert isfile(fname)
+    with open(fname, 'r') as f:
+        x = f.readlines()
+    return preprocess_amass_files(x)
+
+
+def preprocess_amass_files(files):
+    files = [s.replace('\n', '') for s in sorted(files)]
+    files_out = []
+    for file in files:
+        if file.startswith('CMU') or\
+            file.startswith('HEva') or\
+            file.startswith('JointLimit'):
+            files_out.append(file)
+        else:
+            files_out.append('AMASS_' + file)
+    return files_out
+    
+
+def get_amass_test_files():
+    fname = join(abspath(dirname(__file__)), 'data/amass/test_fnames.txt')
+    assert isfile(fname)
+    with open(fname, 'r') as f:
+        x = f.readlines()
+    return preprocess_amass_files(x)
 
 def set_password(password):
     password_file = join(abspath(dirname(__file__)), 'data/password.txt')
