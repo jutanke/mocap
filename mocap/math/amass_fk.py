@@ -17,6 +17,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import numpy as np
 from mocap.math.mirror_h36m import reflect_over_x
+import cv2
+import quaternion
 
 
 SMPL_MAJOR_JOINTS = [1, 2, 3, 4, 5, 6, 9, 12, 13, 14, 15, 16, 17, 18, 19]
@@ -68,6 +70,19 @@ def rotmat2euclidean(seq):
 
     return seq3d.reshape(-1, 24 * 3)
 
+def exp2euclidean(joint_angles):
+    angles = np.reshape(joint_angles, [-1, 15, 3])
+    angles_rot = np.zeros(angles.shape + (3,))
+    for i in range(angles.shape[0]):
+        for j in range(15):
+            angles_rot[i, j] = cv2.Rodrigues(angles[i, j])[0]
+    return rotmat2euclidean(np.reshape(angles_rot, [-1, 15 * 9]))
+
+
+def quat2euclidean(self, joint_angles):
+    qs = quaternion.from_float_array(np.reshape(joint_angles, [-1, 15, 4]))
+    aa = quaternion.as_rotation_matrix(qs)
+    return rotmat2euclidean(np.reshape(aa, [-1, 15 * 3]))
 
 # ------------------------
 class ForwardKinematics(object):
