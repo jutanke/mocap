@@ -37,6 +37,27 @@ def plot(ax, human, plot_jid=False, do_scatter=True, linewidth=2,
             True, True, True, True,
             False, False, False, False
         ]
+    elif n_joints == 38:  # CMU Eval
+        connect = [
+            (2, 8),
+            (2, 3), (3, 4), (4, 5), (5, 6),
+            (8, 9), (9, 10), (10, 11), (11, 12),
+            (2, 21), (8, 30),
+            (30, 31), (31, 32),
+            (21, 22), (22, 23),
+            (21, 17), (17, 30),
+            (17, 18), (18, 19)
+        ]
+        LR = [
+            False, False, False, False, False,
+            False, False, False, True,  True,
+            True,  True,  True,  False, False,
+            False, False, False, False, False,
+            False, False, False, False, False,
+            False, False, False, False, False,
+            True,  True,  True,  True,  True,
+            True,  True,  True
+        ]
     elif n_joints == 24:  # SMPL
         connect = [
             (0, 1), (0, 2), #(0, 3),

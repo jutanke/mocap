@@ -10,7 +10,6 @@ if isfile(SETTINGS_FILE):
     with open(SETTINGS_FILE, 'r') as f:
         SETTINGS = json.load(f)
 
-
 def get_data_path():
     global SETTINGS
     if SETTINGS is None or 'data_path' not in SETTINGS:
