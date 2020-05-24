@@ -213,6 +213,12 @@ vis.plot(seq,
 Default skeleton with _32_ joints:
 <img width="198" alt="Screenshot 2019-12-27 at 19 58 32" src="https://user-images.githubusercontent.com/831215/71535250-565f6100-28e3-11ea-8a0b-232e9dce3fa4.png">
 
+#### Removed duplicates 
+Default skeleton with _25_ joints:
+
+<img width="200" src="https://user-images.githubusercontent.com/831215/82758314-15ae3a00-9de6-11ea-9811-5d0c2be27f2b.png">
+
+
 #### Simplified
 
 Simplified skeleton with _17_ joints:
