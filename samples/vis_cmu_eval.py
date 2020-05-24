@@ -6,6 +6,8 @@ from mocap.datasets.cmu_eval import CMUEval, ACTIVITES, DataType
 from mocap.visualization.sequence import SequenceVisualizer
 import mocap.processing.normalize as norm
 import mocap.math.fk_cmueval as FK
+from mocap.evaluation.npss import NPSS 
+import numpy as np
 
 
 vis_dir = '../output/'
@@ -20,6 +22,15 @@ print('seq', seq.shape)
 seq3d = FK.angular2euclidean(seq)
 seq3d = norm.remove_rotation_and_translation(
     seq3d, j_root=-1, j_left=8, j_right=2)
+
+
+a = np.reshape(seq3d[0:25], (1, 25, -1))
+b = np.reshape(seq3d[1:26], (1, 25, -1))
+
+print('a', a.shape)
+score = NPSS(a, b)
+
+print('score', score)
 
 print('seq', seq3d.shape)
 exit(1)
