@@ -8,6 +8,7 @@ import mocap.processing.normalize as norm
 import mocap.processing.activities as act
 import mocap.evaluation.h36m as Eval_h36m
 import random
+import numpy as np
 
 
 vis_dir = '../output/'
@@ -22,9 +23,50 @@ ds = H36M.H36M_FixedSkeleton_withSimplifiedActivities(actors=['S5'], actions=['w
                                                       remove_global_Rt=True)
 
 
+ds = H36M.H36M_Reduced(ds)
+
+seq, labels = ds[1]
+
+print('labels', labels.shape)
+print('seq', seq.shape)
+exit(1)
+
 
 Seq = Eval_h36m.get('walking', H36M.H36M_FixedSkeleton)
 print('Walking:', Seq.shape)
+
+# Seq_red = H36M.batch_remove_duplicate_joints(Seq)
+# Seq_rec = H36M.batch_recover_duplicate_joints(Seq_red)
+
+print('Seq_red', Seq_red.shape)
+
+vis.plot(
+    seq1=Seq_red[0],
+    name='cmp', 
+    parallel=False,
+    create_video=True, plot_jid=True, noaxis=True)
+
+
+
+
+# pose = Seq[0, 0].reshape((32, 3))
+
+# SAME = []
+# import numpy.linalg as la
+# for j in range(32):
+#     for i in range(j+1, 32):
+#         dif = pose[i] - pose[j]
+#         d = la.norm(pose[i] - pose[j])
+#         if d < 0.01:
+#             SAME.append((j, i))
+
+# print('po', pose.shape)
+
+# for jid in range(32):
+#     d = la.norm(pose[jid] - pose[27])
+#     print(str(jid) + ' --> ', d)
+
+# print(SAME)
 exit(1)
 
 
@@ -34,8 +76,8 @@ Seq, Labels = ds.get_sequence(0)
 print('lab', Labels.shape)
 
 Labels_ = act.reshape_for_forecasting(Labels, num_forecast=10)
-print('lab2', Labels_.shape)
-exit(1)
+# # print('lab2', Labels_.shape)
+# exit(1)
 
 print("SEQ", Seq.shape)
 
