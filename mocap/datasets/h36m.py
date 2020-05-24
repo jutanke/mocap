@@ -21,6 +21,106 @@ assert isdir(local_data_dir), local_data_dir
 if not isdir(data_dir):
     makedirs(data_dir)
 
+DUPLICATES = [
+    (24, 13, 16),
+    (27, 28), (30, 31), (19, 20), (22, 23),
+    (11, 0)
+]
+
+def batch_remove_duplicate_joints(seq):
+    """
+    :param seq: [n_batch x n_frames x 96]
+    """
+    n_batch = seq.shape[0]
+    n_frames = seq.shape[1]
+    seq = seq.reshape((n_batch * n_frames, -1))
+    assert seq.shape[1] == 96, str(seq.shape)
+    return remove_duplicate_joints(seq).reshape((n_batch, n_frames, -1))
+
+def remove_duplicate_joints(seq):
+    """
+    :param seq: [n_frames x 96]
+    """
+    n_frames = len(seq)
+    if len(seq.shape) == 2:
+        assert seq.shape[1] == 96, str(seq.shape)
+        seq = seq.reshape((n_frames, 32, 3))
+    assert len(seq.shape) == 3, str(seq.shape)
+    valid_jids = [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        12, # 11
+        13, # 12
+        14, # 13
+        15, # 14
+        17, # 15
+        18, # 16
+        19, # 17
+        21, # 18
+        22, # 19
+        25, # 20
+        26, # 21
+        27, # 22
+        29, # 23
+        30  # 24
+    ]
+    result = np.empty((n_frames, 25, 3), dtype=np.float32)
+    for i, j in enumerate(valid_jids):
+        result[:, i] = seq[:, j]
+    return result.reshape((n_frames, -1))
+
+
+def batch_recover_duplicate_joints(seq):
+    """
+    :param seq: [n_batch x n_frames x 75]
+    """
+    n_batch = seq.shape[0]
+    n_frames = seq.shape[1]
+    seq = seq.reshape((n_batch * n_frames, -1))
+    assert seq.shape[1] == 75, str(seq.shape)
+    return recover_duplicate_joints(seq).reshape((n_batch, n_frames, -1))
+
+
+def recover_duplicate_joints(seq):
+    """
+    :param seq: [n_batch x 75]
+    """
+    n_frames = len(seq)
+    if len(seq.shape) == 2:
+        assert seq.shape[1] == 75, str(seq.shape)
+        seq = seq.reshape((n_frames, 25, 3))
+    assert len(seq.shape) == 3, str(seq.shape)
+
+    jid_map = [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        0, # 11
+        11, # 12
+        12, # 13
+        13, # 14
+        14, # 15
+        12, # 16
+        15, # 17
+        16, # 18
+        17, # 19,
+        17, # 20,
+        18, # 21
+        19, # 22
+        19, # 23
+        12, # 24
+        20, # 25
+        21, # 26
+        22, # 27
+        22, # 28
+        23, # 29
+        24, # 30
+        24  # 31
+    ]
+
+    result = np.empty((n_frames, 32, 3), dtype=np.float32)
+    for i, j in enumerate(jid_map):
+        result[:, i] = seq[:, j]
+    return result.reshape((n_frames, -1))
+
+
 CACHE_get3d_fixed_from_rotation = {}
 
 # -- check if we need to extract the zip files --
@@ -593,3 +693,59 @@ class H36M_Quaternions_withSimplifiedActivities(DataSet):
                          j_root=0, j_left=6, j_right=1,
                          n_joints=32,
                          mirror_fn=mirror_quaternion)
+
+
+
+
+def mirror_p3d_reduced(seq):
+    """
+    :param seq: {n_frames x 14*3}
+    :return:
+    """
+    assert len(seq.shape) == 2, str(seq.shape)
+    n_frames = len(seq)
+    LS = [6, 7, 8, 9, 10, 15, 16, 17, 18, 19]
+    RS = [1, 2, 3, 4,  5, 20, 21, 22, 23, 24]
+    lr = np.array(LS + RS)
+    rl = np.array(RS + LS)
+    x = seq.reshape((n_frames, -1, 3))
+    x_copy = x.copy()
+    x = reflect_over_x(x_copy)
+    x[:, lr] = x[:, rl]
+    return x.reshape((n_frames, -1))
+
+
+class H36M_Reduced(DataSet):
+
+    def __init__(self, dataset, data_target=0, force_flatten=True):
+        """
+        :param dataset: {mocap.datasets.dataset.DataSet}
+        :param force_flatten: {boolean} if True we flatten the poses
+                            into vectors
+        """
+        assert dataset.n_joints == 32
+        assert data_target < dataset.n_data_entries
+
+        Data_new = []
+        Keys = dataset.Keys
+
+        for did, data in enumerate(dataset.Data):
+            if did == data_target:
+                seqs = []
+                for seq in data:
+                    n_frames = len(seq)
+                    new_seq = remove_duplicate_joints(seq)
+                    if force_flatten:
+                        new_seq = new_seq.reshape((n_frames, -1))
+                    seqs.append(new_seq)
+                Data_new.append(seqs)
+            else:
+                Data_new.append(data)
+        
+        super().__init__(Data_new, Keys=Keys,
+                         framerate=dataset.framerate,
+                         iterate_with_framerate=dataset.iterate_with_framerate,
+                         iterate_with_keys=dataset.iterate_with_keys,
+                         j_root=0, j_left=6, j_right=1,
+                         n_joints=25,
+                         mirror_fn=mirror_p3d_reduced)

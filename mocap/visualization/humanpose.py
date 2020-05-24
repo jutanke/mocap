@@ -58,6 +58,22 @@ def plot(ax, human, plot_jid=False, do_scatter=True, linewidth=2,
             True,  True,  True,  True,  True,
             True,  True,  True
         ]
+    elif n_joints == 25:  # h36m REMOVED DUPLICATES
+        connect = [
+            (0, 1), (0, 6), (1, 2), (2, 3), (3, 4), (4, 5),
+            (6, 7), (7, 8), (8, 9), (9, 10),
+            (1, 20), (6, 15), (15, 16), (16, 17), (17, 18),
+            (18, 19), (20, 21), (21, 22), (22, 23), (23, 24),
+            (20, 12), (12, 15),
+            (12, 13), (13, 14)
+        ]
+        LR = [
+            False, False, False, False, False,
+            False, True, True, True, True,
+            True, False, False, False, False,
+            True, True, True, True, True,
+            False, False, False, False, False,
+        ]
     elif n_joints == 24:  # SMPL
         connect = [
             (0, 1), (0, 2), #(0, 3),
