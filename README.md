@@ -230,6 +230,12 @@ The following _11_ human-labeled acitivites are used:
 Default skeleton with _31_ joints:
 <img width="164" alt="Screenshot 2020-01-10 at 15 23 35" src="https://user-images.githubusercontent.com/831215/72164251-40f73600-33bd-11ea-9653-b5a12adf5720.png">
 
+### CMU Mocap (Evaluation for Anticipation)
+
+Default skeleton with _38_ joints, obtained from [ConvSeq2Seq](https://github.com/chaneyddtt/Convolutional-Sequence-to-Sequence-Model-for-Human-Dynamics).
+<img width="300" src="https://user-images.githubusercontent.com/831215/82752978-55632a80-9dc2-11ea-9089-314742f59a80.png">
+
+
 ### Combined:
 
 Combined skeleton that works for both CMU and h36m data with _14_ joints:
