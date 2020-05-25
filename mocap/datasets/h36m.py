@@ -21,11 +21,6 @@ assert isdir(local_data_dir), local_data_dir
 if not isdir(data_dir):
     makedirs(data_dir)
 
-DUPLICATES = [
-    (24, 13, 16),
-    (27, 28), (30, 31), (19, 20), (22, 23),
-    (11, 0)
-]
 
 def batch_remove_duplicate_joints(seq):
     """

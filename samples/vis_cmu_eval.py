@@ -2,7 +2,7 @@ import sys
 sys.path.insert(0, './..')
 from os.path import isdir
 from os import makedirs
-from mocap.datasets.cmu_eval import CMUEval, CMUEval3D, ACTIVITES, DataType
+from mocap.datasets.cmu_eval import CMUEval, CMUEval3D, ACTIVITES, DataType, remove_duplicate_joints, recover_duplicate_joints
 from mocap.visualization.sequence import SequenceVisualizer
 import mocap.processing.normalize as norm
 import mocap.math.fk_cmueval as FK
@@ -17,8 +17,20 @@ if not isdir(vis_dir):
 ds = CMUEval3D(ACTIVITES, DataType.TEST)
 
 seq = ds[0][:50]
-print('seq', seq.shape)
 
+
+# pose = seq[0].reshape(38, 3)
+
+# print('pose', pose.shape)
+
+# import numpy.linalg as la
+# for i in range(37):
+#     for j in range(i+1, 38):
+#         a = pose[i]
+#         b = pose[j]
+#         dif = la.norm(a-b)
+#         if dif < 0.0001:
+#             print(str(i) + ', ' + str(j))
 
 exit(1)
 
@@ -27,6 +39,9 @@ seq3d = norm.remove_rotation_and_translation(
     seq3d, j_root=-1, j_left=8, j_right=2)
 
 
+
+
+exit(1)
 a = np.reshape(seq3d[0:25], (1, 25, -1))
 b = np.reshape(seq3d[1:26], (1, 25, -1))
 
@@ -35,7 +50,6 @@ score = NPSS(a, b)
 
 print('score', score)
 
-print('seq', seq3d.shape)
 exit(1)
 
 

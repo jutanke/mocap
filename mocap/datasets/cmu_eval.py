@@ -53,6 +53,128 @@ class CMUEval(DataSet):
             mirror_fn=None)
     
 
+def batch_remove_duplicate_joints(seq):
+    """
+    :param seq: [n_batch x n_frames x 96]
+    """
+    n_batch = seq.shape[0]
+    n_frames = seq.shape[1]
+    seq = seq.reshape((n_batch * n_frames, -1))
+    assert seq.shape[1] == 96, str(seq.shape)
+    return remove_duplicate_joints(seq).reshape((n_batch, n_frames, -1))
+
+def remove_duplicate_joints(seq):
+    """
+    :param seq: [n_frames x 96]
+    """
+    n_frames = len(seq)
+    if len(seq.shape) == 2:
+        assert seq.shape[1] == 114, str(seq.shape)
+        seq = seq.reshape((n_frames, 38, 3))
+    assert len(seq.shape) == 3, str(seq.shape)
+    valid_jids = [
+        0,  # 0
+        2,  # 1
+        3,  # 2
+        4,  # 3
+        5,  # 4
+        6,  # 5
+        8,  # 6
+        9,  # 7
+        10, # 8
+        11, # 9
+        12, # 10
+        14, # 11
+        15, # 12
+        17, # 13
+        18, # 14
+        19, # 15
+        21, # 16
+        22, # 17
+        23, # 18
+        25, # 19
+        26, # 20
+        28, # 21
+        30, # 22
+        31, # 23
+        32, # 24
+        34, # 25
+        35, # 26
+        37, # 27
+    ]
+    result = np.empty((n_frames, 28, 3), dtype=np.float32)
+    for i, j in enumerate(valid_jids):
+        result[:, i] = seq[:, j]
+    return result.reshape((n_frames, -1))
+
+
+def batch_recover_duplicate_joints(seq):
+    """
+    :param seq: [n_batch x n_frames x 75]
+    """
+    n_batch = seq.shape[0]
+    n_frames = seq.shape[1]
+    seq = seq.reshape((n_batch * n_frames, -1))
+    assert seq.shape[1] == 75, str(seq.shape)
+    return recover_duplicate_joints(seq).reshape((n_batch, n_frames, -1))
+
+
+def recover_duplicate_joints(seq):
+    """
+    :param seq: [n_batch x 75]
+    """
+    n_frames = len(seq)
+    if len(seq.shape) == 2:
+        assert seq.shape[1] == 84, str(seq.shape)
+        seq = seq.reshape((n_frames, 28, 3))
+    assert len(seq.shape) == 3, str(seq.shape)
+
+    jid_map = [
+        0,  # 0
+        0,  # 1
+        1,  # 2
+        2,  # 3
+        3,  # 4
+        4,  # 5
+        5,  # 6
+        0,  # 7
+        6,  # 8
+        7,  # 9
+        8,  # 10
+        9,  # 11
+        10, # 12
+        0,  # 13
+        11, # 14
+        12, # 15
+        12, # 16
+        13, # 17
+        14, # 18
+        15, # 19
+        12, # 20
+        16, # 21
+        17, # 22
+        18, # 23
+        18, # 24
+        19, # 25
+        20, # 26
+        18, # 27
+        21, # 28
+        12, # 29
+        22, # 30
+        23, # 31
+        24, # 32
+        24, # 33
+        25, # 34
+        26, # 35
+        24, # 36
+        27, # 37
+    ]
+
+    result = np.empty((n_frames, 38, 3), dtype=np.float32)
+    for i, j in enumerate(jid_map):
+        result[:, i] = seq[:, j]
+    return result.reshape((n_frames, -1))
+
 
 class CMUEval3D(DataSet):
 
