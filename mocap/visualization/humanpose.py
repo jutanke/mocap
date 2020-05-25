@@ -58,6 +58,22 @@ def plot(ax, human, plot_jid=False, do_scatter=True, linewidth=2,
             True,  True,  True,  True,  True,
             True,  True,  True
         ]
+    elif n_joints == 28:  # cmu eval REDUCED
+        connect = [
+            (1, 6), (1, 2), (2, 3), (3, 4), (4, 5),
+            (6, 7), (7, 8), (8, 9), (9, 10), (1, 16), (6, 22),
+            (16, 13), (13, 22),
+            (16, 17), (17, 18), (18, 19),
+            (22, 23), (23, 24), (24, 25),
+            (13, 14), (14, 15)
+        ]
+        LR = [
+            False, False, False, False, False, False,
+            True, True, True, True, True,
+            False, False, False, False, False,
+            False, False, False, False, False,
+            False, True, True, True, True, True, True
+        ]
     elif n_joints == 25:  # h36m REMOVED DUPLICATES
         connect = [
             (0, 1), (0, 6), (1, 2), (2, 3), (3, 4), (4, 5),

@@ -5,6 +5,7 @@ from os import makedirs
 from mocap.datasets.cmu_eval import CMUEval, CMUEval3D, ACTIVITES, DataType, remove_duplicate_joints, recover_duplicate_joints
 from mocap.visualization.sequence import SequenceVisualizer
 import mocap.processing.normalize as norm
+import mocap.math.mirror_cmueval as MIR
 import mocap.math.fk_cmueval as FK
 from mocap.evaluation.npss import NPSS 
 import numpy as np
@@ -16,8 +17,23 @@ if not isdir(vis_dir):
 
 ds = CMUEval3D(ACTIVITES, DataType.TEST)
 
-seq = ds[0][:50]
+seq = remove_duplicate_joints(ds[0][:50])
+seq = norm.remove_rotation_and_translation(
+    seq, j_root=-1, j_left=6, j_right=1)
 
+seq_mir = MIR.mirror_p3d(seq)
+
+vis = SequenceVisualizer(vis_dir, 'vis_cmueval', 
+                         to_file=True,
+                         vmin=-1, vmax=1,
+                         mark_origin=False)
+
+vis.plot(seq[0:50], create_video=True,
+         noaxis=True,
+         plot_jid=True)
+vis.plot(seq_mir[0:50], create_video=True,
+         noaxis=True,
+         plot_jid=True)
 
 # pose = seq[0].reshape(38, 3)
 
