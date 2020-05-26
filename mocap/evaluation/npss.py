@@ -5,8 +5,8 @@ import numpy as np
 # ==============================================
 def NPSS(euler_gt_sequences, euler_pred_sequences):
     # computing 1) fourier coeffs 2)power of fft 3) normalizing power of fft dim-wise 4) cumsum over freq. 5) EMD
-    gt_fourier_coeffs = np.zeros(euler_gt_sequences.shape)
-    pred_fourier_coeffs = np.zeros(euler_pred_sequences.shape)
+    gt_fourier_coeffs = np.zeros(euler_gt_sequences.shape, dtype=np.complex)
+    pred_fourier_coeffs = np.zeros(euler_pred_sequences.shape, dtype=np.complex)
 
     # power vars
     gt_power = np.zeros((gt_fourier_coeffs.shape))
