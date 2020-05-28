@@ -27,7 +27,7 @@ def find_indices_srnn(T1, T2, num_seeds):
     return idx
 
 
-def get(action, DS_class, actor='S5', Wrapper_class=None):
+def get(action, DS_class, actor='S5', Wrapper_class=None, num_seeds=256):
     """
     :param action: {String} one of the 15 actions present in the h36m dataset
     :param DS_class: {mocap::datasets::h36m::*DataSet} any h36m dataset defined
@@ -53,7 +53,7 @@ def get(action, DS_class, actor='S5', Wrapper_class=None):
     T1 = len(seq1)
     T2 = len(seq2)
 
-    idx = find_indices_srnn(T1, T2, 256)
+    idx = find_indices_srnn(T1, T2, num_seeds)
     
     if ds_test.n_data_entries == 2:
         Labels = []
