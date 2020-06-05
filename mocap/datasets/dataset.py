@@ -6,7 +6,7 @@ class DataSet:
 
     def __init__(self, Data, Keys, framerate, iterate_with_framerate,
                  iterate_with_keys, j_root, j_left, j_right,
-                 n_joints,
+                 n_joints, name,
                  mirror_fn=None):
         """
         :param Data: [data0, data1, ...] lists of sequences, all
@@ -20,6 +20,7 @@ class DataSet:
         :param mirror_fn: def mirror(seq): -->
         :param n_joints:
         """
+        self.name = name
         self.n_joints = n_joints
         self.iterate_with_framerate = iterate_with_framerate
         self.iterate_with_keys = iterate_with_keys
@@ -144,7 +145,8 @@ class Dataset_NormalizedJoints(DataSet):
             iterate_with_framerate=ds.iterate_with_framerate,
             iterate_with_keys=ds.iterate_with_keys,
             j_root=ds.j_root, j_left=ds.j_left, j_right=ds.j_right,
-            n_joints=ds.n_joints, mirror_fn=ds.mirror_fn
+            n_joints=ds.n_joints, mirror_fn=ds.mirror_fn,
+            name=ds.name + '_nj'
         )
 
     def normalize(self, seq):
@@ -208,7 +210,8 @@ class Dataset_Normalized(DataSet):
             iterate_with_framerate=ds.iterate_with_framerate,
             iterate_with_keys=ds.iterate_with_keys,
             j_root=ds.j_root, j_left=ds.j_left, j_right=ds.j_right,
-            n_joints=ds.n_joints, mirror_fn=ds.mirror_fn
+            n_joints=ds.n_joints, mirror_fn=ds.mirror_fn,
+            name=ds.name + '_n'
         )
 
     def normalize(self, seq):

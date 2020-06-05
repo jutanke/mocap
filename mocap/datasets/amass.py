@@ -33,7 +33,7 @@ class AMASS_SMPL3d(DataSet):
         super().__init__(
             Data=[seqs], Keys=keys, framerate=60,
             iterate_with_framerate=False,
-            iterate_with_keys=False,
+            iterate_with_keys=False, name='amass_smpl3d',
             j_root=j_root, j_left=j_left, j_right=j_right,
             n_joints=24, mirror_fn=mirror_p3d
         )
@@ -51,7 +51,7 @@ class AMASS(DataSet):
         super().__init__(
             Data=[seqs], Keys=keys, framerate=60,
             iterate_with_framerate=False,
-            iterate_with_keys=False,
+            iterate_with_keys=False, name='amass',
             j_root=0, j_left=False, j_right=False,
             n_joints=15, mirror_fn=None
         )
@@ -81,7 +81,7 @@ class AMASS_QUAT(DataSet):
         super().__init__(
             Data=[seqs], Keys=keys, framerate=60,
             iterate_with_framerate=False,
-            iterate_with_keys=False,
+            iterate_with_keys=False, name='amassq',
             j_root=0, j_left=False, j_right=False,
             n_joints=15, mirror_fn=None
         )
@@ -111,7 +111,7 @@ class AMASS_EXP(DataSet):
         super().__init__(
             Data=[seqs], Keys=keys, framerate=60,
             iterate_with_framerate=False,
-            iterate_with_keys=False,
+            iterate_with_keys=False, name='amassexp',
             j_root=0, j_left=False, j_right=False,
             n_joints=15, mirror_fn=None
         )

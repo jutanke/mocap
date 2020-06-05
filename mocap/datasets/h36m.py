@@ -385,7 +385,7 @@ class H36M_Simplified(DataSet):
                          iterate_with_framerate=dataset.iterate_with_framerate,
                          iterate_with_keys=dataset.iterate_with_keys,
                          j_root=0, j_left=4, j_right=1,
-                         n_joints=17,
+                         n_joints=17, name=dataset.name + '_sfied',
                          mirror_fn=mirror_p3d)
 
 
@@ -409,7 +409,7 @@ class H36M(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
-                         n_joints=32,
+                         n_joints=32, name='h36m',
                          mirror_fn=mirror_p3d)
 
 
@@ -433,7 +433,7 @@ class H36M_FixedSkeleton(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
-                         n_joints=32,
+                         n_joints=32, name='h36mf',
                          mirror_fn=mirror_p3d)
 
 
@@ -460,7 +460,7 @@ class H36M_FixedSkeleton_withActivities(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
-                         n_joints=32,
+                         n_joints=32, name='h36mf_wa',
                          mirror_fn=mirror_p3d)
 
 
@@ -484,7 +484,7 @@ class H36M_Exp_withSimplifiedActivities(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
-                         n_joints=33,
+                         n_joints=33, name='h36mexp_sa',
                          mirror_fn=mirror_p3d)
 
 
@@ -511,7 +511,7 @@ class H36M_FixedSkeleton_withSimplifiedActivities(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
-                         n_joints=32,
+                         n_joints=32, name='h36mf_sa',
                          mirror_fn=mirror_p3d)
 
 
@@ -538,7 +538,7 @@ class H36M_withActivities(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
-                         n_joints=32,
+                         n_joints=32, name='h36m_a',
                          mirror_fn=mirror_p3d)
 
 
@@ -565,7 +565,7 @@ class H36M_withSimplifiedActivities(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
-                         n_joints=32,
+                         n_joints=32, name='h36m_sa',
                          mirror_fn=mirror_p3d)
 
 
@@ -589,7 +589,7 @@ class H36M_FixedSkeletonFromRotation(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
-                         n_joints=32,
+                         n_joints=32, name='h36mffr',
                          mirror_fn=mirror_p3d)
 
 
@@ -613,7 +613,7 @@ class H36M_FixedSkeletonFromRotation_withActivities(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
-                         n_joints=32,
+                         n_joints=32, name='h36mffr_a',
                          mirror_fn=mirror_p3d)
 
 
@@ -637,7 +637,7 @@ class H36M_FixedSkeletonFromRotation_withSimplifiedActivities(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
-                         n_joints=32,
+                         n_joints=32, name='h36mffr_sa',
                          mirror_fn=mirror_p3d)
 
 
@@ -660,7 +660,7 @@ class H36M_Quaternions(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
-                         n_joints=32,
+                         n_joints=32, name='h36mq',
                          mirror_fn=mirror_quaternion)
 
 
@@ -686,7 +686,7 @@ class H36M_Quaternions_withSimplifiedActivities(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
-                         n_joints=32,
+                         n_joints=32, name='h36mq_sa',
                          mirror_fn=mirror_quaternion)
 
 
@@ -742,5 +742,5 @@ class H36M_Reduced(DataSet):
                          iterate_with_framerate=dataset.iterate_with_framerate,
                          iterate_with_keys=dataset.iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
-                         n_joints=25,
+                         n_joints=25, name=dataset.name + '_red',
                          mirror_fn=mirror_p3d_reduced)

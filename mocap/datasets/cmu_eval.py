@@ -49,7 +49,7 @@ class CMUEval(DataSet):
             iterate_with_framerate=False,
             iterate_with_keys=False,
             j_root=0, j_left=0, j_right=0,
-            n_joints=38,
+            n_joints=38, name='cmueval',
             mirror_fn=None)
     
 
