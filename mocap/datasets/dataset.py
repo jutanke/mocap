@@ -114,7 +114,7 @@ class Dataset_NormalizedJoints(DataSet):
     Normalize data on joint level
     """
 
-    def __init__(self, ds, dataid=0):
+    def __init__(self, ds, dataid=0, base_ds=None):
         Data = ds.Data
         indices = []
         for dd in Data[dataid]:
@@ -122,7 +122,10 @@ class Dataset_NormalizedJoints(DataSet):
         data = np.concatenate(Data[dataid], axis=0)
         n_data = len(data)
         data = data.reshape((n_data, ds.n_joints, -1))
-        mu = np.expand_dims(np.mean(data, axis=0), axis=0)
+        if base_ds is None:
+            mu = np.expand_dims(np.mean(data, axis=0), axis=0)
+        else:
+            mu = base_ds.mu
         data = data - mu
         self.mu = mu
         Seq_new = []
@@ -176,14 +179,17 @@ class Dataset_Normalized(DataSet):
     Normalize data on joint level
     """
 
-    def __init__(self, ds, dataid=0):
+    def __init__(self, ds, dataid=0, base_ds=None):
         Data = ds.Data
         indices = []
         for dd in Data[dataid]:
             indices.append(len(dd))
         data = np.concatenate(Data[dataid], axis=0)
         n_data = len(data)
-        mu = np.expand_dims(np.mean(data, axis=0), axis=0)
+        if base_ds is None:
+            mu = np.expand_dims(np.mean(data, axis=0), axis=0)
+        else:
+            mu = base_ds.mu
         data = data - mu
         self.mu = mu
         Seq_new = []
