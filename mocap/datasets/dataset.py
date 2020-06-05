@@ -61,6 +61,24 @@ class DataSet:
             return self.framerate
         else:
             return self.framerate[index]
+    
+    def normalize_per_joint(self, other_dataset=None, dataid=0):
+        """ WARNING: this function overwrites 
+        :param other_dataset: {Dataset} normalize based on other dataset (relevant for train/test splits)
+        :param dataid: {int} in what "data folder" is the data stored?
+        """
+
+        for dd in self.Data[dataid]:
+            print('d', len(dd))
+        assert not self.is_joint_normalized
+        data = np.concatenate(self.Data[dataid], axis=0)
+        n_data = len(data)
+        data = data.reshape((n_data, self.n_joints, -1))
+        mu = np.expand_dims(np.mean(data, axis=0), axis=0)
+        self.joint_mu = mu
+        data = data - mu
+
+        exit(1)
 
     def get_sequence(self, index):
         """ return all data entries for the given sequence
@@ -89,6 +107,119 @@ class DataSet:
             return DataSetWithKeysIterator(self)
         else:
             return DataSetIterator(self)
+
+
+class Dataset_NormalizedJoints(DataSet):
+    """
+    Normalize data on joint level
+    """
+
+    def __init__(self, ds, dataid=0):
+        Data = ds.Data
+        indices = []
+        for dd in Data[dataid]:
+            indices.append(len(dd))
+        data = np.concatenate(Data[dataid], axis=0)
+        n_data = len(data)
+        data = data.reshape((n_data, ds.n_joints, -1))
+        mu = np.expand_dims(np.mean(data, axis=0), axis=0)
+        data = data - mu
+        self.mu = mu
+        Seq_new = []
+        start = 0
+        end = 0
+        for n_frames in indices:
+            end += n_frames
+            seq = data[start:end].reshape((n_frames, -1))
+            Seq_new.append(seq)
+            start += n_frames
+        assert end == len(data)
+        Data[dataid] = Seq_new
+        super().__init__(
+            Data=Data, Keys=ds.Keys,
+            framerate=ds.framerate,
+            iterate_with_framerate=ds.iterate_with_framerate,
+            iterate_with_keys=ds.iterate_with_keys,
+            j_root=ds.j_root, j_left=ds.j_left, j_right=ds.j_right,
+            n_joints=ds.n_joints, mirror_fn=ds.mirror_fn
+        )
+
+    def normalize(self, seq):
+        """
+        :param seq: [n_frames x dim]
+        """
+        assert len(seq.shape) == 2, str(seq.shape)
+        n_frames = len(seq)
+        n_joints = self.n_joints
+        seq = seq.reshape((n_frames, n_joints, -1))
+        assert seq.shape[2] == 3 or seq.shape[2] == 4, str(seq.shape)
+        seq = seq - self.mu
+        seq = seq.reshape((n_frames, -1))
+        return seq
+    
+    def denormalize(self, seq):
+        """
+        :param seq: [n_frames x dim]
+        """
+        assert len(seq.shape) == 2, str(seq.shape)
+        n_frames = len(seq)
+        n_joints = self.n_joints
+        seq = seq.reshape((n_frames, n_joints, -1))
+        assert seq.shape[2] == 3 or seq.shape[2] == 4, str(seq.shape)
+        seq = seq + self.mu
+        seq = seq.reshape((n_frames, -1))
+        return seq
+
+
+class Dataset_Normalized(DataSet):
+    """
+    Normalize data on joint level
+    """
+
+    def __init__(self, ds, dataid=0):
+        Data = ds.Data
+        indices = []
+        for dd in Data[dataid]:
+            indices.append(len(dd))
+        data = np.concatenate(Data[dataid], axis=0)
+        n_data = len(data)
+        mu = np.expand_dims(np.mean(data, axis=0), axis=0)
+        data = data - mu
+        self.mu = mu
+        Seq_new = []
+        start = 0
+        end = 0
+        for n_frames in indices:
+            end += n_frames
+            seq = data[start:end]
+            Seq_new.append(seq)
+            start += n_frames
+        assert end == len(data)
+        Data[dataid] = Seq_new
+        super().__init__(
+            Data=Data, Keys=ds.Keys,
+            framerate=ds.framerate,
+            iterate_with_framerate=ds.iterate_with_framerate,
+            iterate_with_keys=ds.iterate_with_keys,
+            j_root=ds.j_root, j_left=ds.j_left, j_right=ds.j_right,
+            n_joints=ds.n_joints, mirror_fn=ds.mirror_fn
+        )
+
+    def normalize(self, seq):
+        """
+        :param seq: [n_frames x dim]
+        """
+        assert len(seq.shape) == 2, str(seq.shape)
+        seq = seq - self.mu
+        return seq
+
+    def denormalize(self, seq):
+        """
+        :param seq: [n_frames x dim]
+        """
+        assert len(seq.shape) == 2, str(seq.shape)
+        seq = seq + self.mu
+        return seq
 
 
 class DataSetIterator:

@@ -3,6 +3,7 @@ sys.path.insert(0, './..')
 import mocap.datasets.h36m as H36M
 from os.path import isdir
 from os import makedirs
+from mocap.datasets.dataset import Dataset_NormalizedJoints, Dataset_Normalized
 from mocap.visualization.sequence import SequenceVisualizer
 import mocap.processing.normalize as norm
 import mocap.processing.activities as act
@@ -24,8 +25,21 @@ ds = H36M.H36M_FixedSkeleton_withSimplifiedActivities(actors=['S5'], actions=['w
 
 
 ds = H36M.H36M_Reduced(ds)
+ds = Dataset_NormalizedJoints(ds)
+
+# ds.normalize_per_joint()
 
 seq, labels = ds[1]
+
+seq = ds.denormalize(seq)
+
+vis.plot(
+    seq1=seq[50:200],
+    name='walking', 
+    parallel=False,
+    create_video=True, plot_jid=False, noaxis=True)
+
+
 
 print('labels', labels.shape)
 print('seq', seq.shape)

@@ -15,29 +15,31 @@ vis_dir = '../output/'
 if not isdir(vis_dir):
     makedirs(vis_dir)
 
+ACTIVITES = ['walking']
 ds = CMUEval3D(ACTIVITES, DataType.TEST)
 
-seq = remove_duplicate_joints(ds[0][:50])
+seq = remove_duplicate_joints(ds[0][10:160])
 seq = norm.remove_rotation_and_translation(
     seq, j_root=-1, j_left=6, j_right=1)
 
+# print('seq', seq.shape)
 
-a = np.reshape(seq[0:25], (1, 25, -1))
-b = np.reshape(seq[1:26], (1, 25, -1))
+# a = np.reshape(seq[0:25], (1, 25, -1))
+# b = np.reshape(seq[1:26], (1, 25, -1))
 
-print('a', a.shape)
-score = NPSS(a, b)
+# print('a', a.shape)
+# score = NPSS(a, b)
 
-print('score', score)
+# print('score', score)
 
-exit(1)
+# exit(1)
 
 
 vis = SequenceVisualizer(vis_dir, 'vis_cmueval', 
                          to_file=True,
                          mark_origin=False)
 
-vis.plot(seq3d, create_video=True,
+vis.plot(seq, create_video=True,
          noaxis=True,
-         plot_jid=True,
+         plot_jid=False,
 )
