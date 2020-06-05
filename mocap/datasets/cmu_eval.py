@@ -115,13 +115,13 @@ def batch_recover_duplicate_joints(seq):
     n_batch = seq.shape[0]
     n_frames = seq.shape[1]
     seq = seq.reshape((n_batch * n_frames, -1))
-    assert seq.shape[1] == 75, str(seq.shape)
+    assert seq.shape[1] == 84, str(seq.shape)
     return recover_duplicate_joints(seq).reshape((n_batch, n_frames, -1))
 
 
 def recover_duplicate_joints(seq):
     """
-    :param seq: [n_batch x 75]
+    :param seq: [n_batch x 84]
     """
     n_frames = len(seq)
     if len(seq.shape) == 2:
