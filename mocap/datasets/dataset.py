@@ -62,24 +62,6 @@ class DataSet:
             return self.framerate
         else:
             return self.framerate[index]
-    
-    def normalize_per_joint(self, other_dataset=None, dataid=0):
-        """ WARNING: this function overwrites 
-        :param other_dataset: {Dataset} normalize based on other dataset (relevant for train/test splits)
-        :param dataid: {int} in what "data folder" is the data stored?
-        """
-
-        for dd in self.Data[dataid]:
-            print('d', len(dd))
-        assert not self.is_joint_normalized
-        data = np.concatenate(self.Data[dataid], axis=0)
-        n_data = len(data)
-        data = data.reshape((n_data, self.n_joints, -1))
-        mu = np.expand_dims(np.mean(data, axis=0), axis=0)
-        self.joint_mu = mu
-        data = data - mu
-
-        exit(1)
 
     def get_sequence(self, index):
         """ return all data entries for the given sequence
