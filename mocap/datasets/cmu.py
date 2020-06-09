@@ -6,7 +6,7 @@ from os import listdir
 from transforms3d.euler import euler2mat
 from mpl_toolkits.mplot3d import Axes3D
 import mocap.dataaquisition.cmu as CMU_DA
-from mocap.datasets.dataset import DataSet
+from mocap.datasets.dataset import DataSet, Limb
 import mocap.processing.normalize as norm
 
 
@@ -125,6 +125,16 @@ class CMU(DataSet):
                iterate_with_framerate=False,
                remove_global_Rt=False,
                iterate_with_keys=False):
+    
+    joints_per_limb = {
+        Limb.HEAD: [14, 15, 16],
+        Limb.LEFT_ARM: [17, 18, 19, 20],
+        Limb.LEFT_LEG: [1, 2, 3, 4, 5],
+        Limb.RIGHT_ARM: [24, 25, 26, 27],
+        Limb.RIGHT_LEG: [6, 7, 8, 9, 10],
+        Limb.BODY: [6, 1, 24, 17, 14]
+    }
+
     subjects_with_60fps = {'60', '61', '75', '87', '88', '89'}
     seqs = []
     keys = []
@@ -154,7 +164,8 @@ class CMU(DataSet):
                      iterate_with_keys=iterate_with_keys,
                      j_root=-1, j_left=1, j_right=6,
                      n_joints=31, name='cmu',
-                     mirror_fn=mirror)
+                     mirror_fn=mirror,
+                     joints_per_limb=joints_per_limb)
 
 # =====================================================================
 # External code taken from: Yuxiao Zhou (https://calciferzh.github.io/)

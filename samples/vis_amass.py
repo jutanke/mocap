@@ -4,6 +4,7 @@ from mocap.settings import get_amass_validation_files, get_amass_test_files
 from mocap.math.amass_fk import rotmat2euclidean, exp2euclidean
 from mocap.visualization.sequence import SequenceVisualizer
 from mocap.math.mirror_smpl import mirror_p3d
+from mocap.datasets.dataset import Limb
 
 
 from mocap.datasets.amass import AMASS_SMPL3d, AMASS_QUAT, AMASS_EXP
@@ -15,6 +16,9 @@ test = get_amass_test_files()
 
 ds = AMASS_EXP(val, data_loc=data_loc)
 
+print(ds.get_joints_for_limb(Limb.LEFT_LEG))
+
+exit(1)
 
 seq = ds[0]
 

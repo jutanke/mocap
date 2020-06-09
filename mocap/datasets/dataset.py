@@ -1,12 +1,22 @@
 import numpy as np
 import hashlib
+from enum import IntEnum
+
+
+class Limb(IntEnum):
+    HEAD = 0
+    LEFT_ARM = 1
+    LEFT_LEG = 2
+    RIGHT_ARM = 3
+    RIGHT_LEG = 4
+    BODY = 5
 
 
 class DataSet:
 
     def __init__(self, Data, Keys, framerate, iterate_with_framerate,
                  iterate_with_keys, j_root, j_left, j_right,
-                 n_joints, name,
+                 n_joints, name, joints_per_limb,
                  mirror_fn=None):
         """
         :param Data: [data0, data1, ...] lists of sequences, all
@@ -19,6 +29,7 @@ class DataSet:
         :param iterate_with_keys: if True the iterator returns the key as well
         :param mirror_fn: def mirror(seq): -->
         :param n_joints:
+        :param joints_per_limb: {dict} [{Limb}: [{jid1}, {jid2}, ...]]
         """
         self.name = name
         self.n_joints = n_joints
@@ -27,6 +38,7 @@ class DataSet:
         self.j_root = j_root
         self.j_left = j_left
         self.j_right = j_right
+        self.joints_per_limb = joints_per_limb
         self.mirror_fn = mirror_fn
         n_sequences = -1
         for data in Data:
@@ -43,12 +55,18 @@ class DataSet:
         self.n_data_entries = len(Data)
         self.n_sequences = n_sequences
     
+    def get_joints_for_limb(self, limb):
+        """
+        :param limb: {Limb}
+        """
+        return self.joints_per_limb[limb]
+    
     def mirror(self, seq):
         assert self.mirror_fn is not None
         return self.mirror_fn(seq)
     
     def get_unique_id(self):
-        txt = ''
+        txt = self.name
         for key in sorted(self.Keys):
             txt += str(key)
         return hashlib.sha256(txt.encode('utf-8')).hexdigest()
@@ -128,7 +146,8 @@ class Dataset_NormalizedJoints(DataSet):
             iterate_with_keys=ds.iterate_with_keys,
             j_root=ds.j_root, j_left=ds.j_left, j_right=ds.j_right,
             n_joints=ds.n_joints, mirror_fn=ds.mirror_fn,
-            name=ds.name + '_nj'
+            name=ds.name + '_nj',
+            joints_per_limb=ds.joints_per_limb
         )
 
     def normalize(self, seq):
@@ -193,7 +212,8 @@ class Dataset_Normalized(DataSet):
             iterate_with_keys=ds.iterate_with_keys,
             j_root=ds.j_root, j_left=ds.j_left, j_right=ds.j_right,
             n_joints=ds.n_joints, mirror_fn=ds.mirror_fn,
-            name=ds.name + '_n'
+            name=ds.name + '_n',
+            joints_per_limb=ds.joints_per_limb
         )
 
     def normalize(self, seq):

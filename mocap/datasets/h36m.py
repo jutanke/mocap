@@ -4,7 +4,7 @@ from os import listdir, makedirs
 from os.path import join, dirname, isdir, isfile
 from tqdm import tqdm
 from zipfile import ZipFile
-from mocap.datasets.dataset import DataSet
+from mocap.datasets.dataset import DataSet, Limb
 import mocap.math.fk as FK
 import mocap.math.kabsch as KB
 import mocap.processing.conversion as conv
@@ -359,6 +359,14 @@ class H36M_Simplified(DataSet):
         """
         :param dataset: {mocap.datasets.dataset.DataSet}
         """
+        joints_per_limb = {
+            Limb.HEAD: [8, 9, 10],
+            Limb.LEFT_ARM: [11, 12, 13],
+            Limb.LEFT_LEG: [4, 5, 6],
+            Limb.RIGHT_ARM: [14, 15, 16],
+            Limb.RIGHT_LEG: [1, 2, 3],
+            Limb.BODY: [14, 8, 7, 11, 1, 4]
+        }
         assert data_target < dataset.n_data_entries
         used_joints = [0, 1, 2, 3, 6, 7, 8, 12, 13, 14, 15, 17, 18, 19, 25, 26, 27]
         Keys = dataset.Keys
@@ -386,7 +394,8 @@ class H36M_Simplified(DataSet):
                          iterate_with_keys=dataset.iterate_with_keys,
                          j_root=0, j_left=4, j_right=1,
                          n_joints=17, name=dataset.name + '_sfied',
-                         mirror_fn=mirror_p3d)
+                         mirror_fn=mirror_p3d,
+                         joints_per_limb=joints_per_limb)
 
 
 class H36M(DataSet):
@@ -395,6 +404,14 @@ class H36M(DataSet):
                  iterate_with_framerate=False,
                  iterate_with_keys=False,
                  remove_global_Rt=False):
+        joints_per_limb = {
+            Limb.HEAD: [15, 14, 16],
+            Limb.LEFT_ARM: [17, 18, 19, 21, 22],
+            Limb.LEFT_LEG: [6, 7, 8, 9, 10],
+            Limb.RIGHT_ARM: [25, 26, 27, 29, 30],
+            Limb.RIGHT_LEG: [1, 2, 3, 4, 5],
+            Limb.BODY: [0, 1, 6, 17, 25, 12]
+        }
         seqs = []
         keys = []
         for actor in actors:
@@ -410,7 +427,8 @@ class H36M(DataSet):
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
                          n_joints=32, name='h36m',
-                         mirror_fn=mirror_p3d)
+                         mirror_fn=mirror_p3d,
+                         joints_per_limb=joints_per_limb)
 
 
 class H36M_FixedSkeleton(DataSet):
@@ -419,6 +437,14 @@ class H36M_FixedSkeleton(DataSet):
                  iterate_with_framerate=False,
                  iterate_with_keys=False,
                  remove_global_Rt=False):
+        joints_per_limb = {
+            Limb.HEAD: [15, 14, 16],
+            Limb.LEFT_ARM: [17, 18, 19, 21, 22],
+            Limb.LEFT_LEG: [6, 7, 8, 9, 10],
+            Limb.RIGHT_ARM: [25, 26, 27, 29, 30],
+            Limb.RIGHT_LEG: [1, 2, 3, 4, 5],
+            Limb.BODY: [0, 1, 6, 17, 25, 12]
+        }
         seqs = []
         keys = []
         for actor in actors:
@@ -434,7 +460,8 @@ class H36M_FixedSkeleton(DataSet):
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
                          n_joints=32, name='h36mf',
-                         mirror_fn=mirror_p3d)
+                         mirror_fn=mirror_p3d,
+                         joints_per_limb=joints_per_limb)
 
 
 class H36M_FixedSkeleton_withActivities(DataSet):
@@ -443,6 +470,14 @@ class H36M_FixedSkeleton_withActivities(DataSet):
                  iterate_with_framerate=False,
                  iterate_with_keys=False,
                  remove_global_Rt=False):
+        joints_per_limb = {
+            Limb.HEAD: [15, 14, 16],
+            Limb.LEFT_ARM: [17, 18, 19, 21, 22],
+            Limb.LEFT_LEG: [6, 7, 8, 9, 10],
+            Limb.RIGHT_ARM: [25, 26, 27, 29, 30],
+            Limb.RIGHT_LEG: [1, 2, 3, 4, 5],
+            Limb.BODY: [0, 1, 6, 17, 25, 12]
+        }
         seqs = []
         labels = []
         keys = []
@@ -461,7 +496,8 @@ class H36M_FixedSkeleton_withActivities(DataSet):
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
                          n_joints=32, name='h36mf_wa',
-                         mirror_fn=mirror_p3d)
+                         mirror_fn=mirror_p3d,
+                         joints_per_limb=joints_per_limb)
 
 
 class H36M_Exp_withSimplifiedActivities(DataSet):
@@ -469,6 +505,14 @@ class H36M_Exp_withSimplifiedActivities(DataSet):
     def __init__(self, actors, actions=ACTIONS,
                  iterate_with_framerate=False,
                  iterate_with_keys=False):
+        joints_per_limb = {
+            Limb.HEAD: [15, 14, 16],
+            Limb.LEFT_ARM: [17, 18, 19, 21, 22],
+            Limb.LEFT_LEG: [6, 7, 8, 9, 10],
+            Limb.RIGHT_ARM: [25, 26, 27, 29, 30],
+            Limb.RIGHT_LEG: [1, 2, 3, 4, 5],
+            Limb.BODY: [0, 1, 6, 17, 25, 12]
+        }
         seqs = []
         labels = []
         keys = []
@@ -485,7 +529,8 @@ class H36M_Exp_withSimplifiedActivities(DataSet):
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
                          n_joints=33, name='h36mexp_sa',
-                         mirror_fn=mirror_p3d)
+                         mirror_fn=mirror_p3d,
+                         joints_per_limb=joints_per_limb)
 
 
 class H36M_FixedSkeleton_withSimplifiedActivities(DataSet):
@@ -494,6 +539,14 @@ class H36M_FixedSkeleton_withSimplifiedActivities(DataSet):
                  iterate_with_framerate=False,
                  iterate_with_keys=False,
                  remove_global_Rt=False):
+        joints_per_limb = {
+            Limb.HEAD: [15, 14, 16],
+            Limb.LEFT_ARM: [17, 18, 19, 21, 22],
+            Limb.LEFT_LEG: [6, 7, 8, 9, 10],
+            Limb.RIGHT_ARM: [25, 26, 27, 29, 30],
+            Limb.RIGHT_LEG: [1, 2, 3, 4, 5],
+            Limb.BODY: [0, 1, 6, 17, 25, 12]
+        }
         seqs = []
         labels = []
         keys = []
@@ -512,7 +565,8 @@ class H36M_FixedSkeleton_withSimplifiedActivities(DataSet):
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
                          n_joints=32, name='h36mf_sa',
-                         mirror_fn=mirror_p3d)
+                         mirror_fn=mirror_p3d,
+                         joints_per_limb=joints_per_limb)
 
 
 class H36M_withActivities(DataSet):
@@ -521,6 +575,14 @@ class H36M_withActivities(DataSet):
                  iterate_with_framerate=False,
                  iterate_with_keys=False,
                  remove_global_Rt=False):
+        joints_per_limb = {
+            Limb.HEAD: [15, 14, 16],
+            Limb.LEFT_ARM: [17, 18, 19, 21, 22],
+            Limb.LEFT_LEG: [6, 7, 8, 9, 10],
+            Limb.RIGHT_ARM: [25, 26, 27, 29, 30],
+            Limb.RIGHT_LEG: [1, 2, 3, 4, 5],
+            Limb.BODY: [0, 1, 6, 17, 25, 12]
+        }
         seqs = []
         labels = []
         keys = []
@@ -539,7 +601,8 @@ class H36M_withActivities(DataSet):
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
                          n_joints=32, name='h36m_a',
-                         mirror_fn=mirror_p3d)
+                         mirror_fn=mirror_p3d,
+                         joints_per_limb=joints_per_limb)
 
 
 class H36M_withSimplifiedActivities(DataSet):
@@ -548,6 +611,14 @@ class H36M_withSimplifiedActivities(DataSet):
                  iterate_with_framerate=False,
                  iterate_with_keys=False,
                  remove_global_Rt=False):
+        joints_per_limb = {
+            Limb.HEAD: [15, 14, 16],
+            Limb.LEFT_ARM: [17, 18, 19, 21, 22],
+            Limb.LEFT_LEG: [6, 7, 8, 9, 10],
+            Limb.RIGHT_ARM: [25, 26, 27, 29, 30],
+            Limb.RIGHT_LEG: [1, 2, 3, 4, 5],
+            Limb.BODY: [0, 1, 6, 17, 25, 12]
+        }
         seqs = []
         labels = []
         keys = []
@@ -566,7 +637,8 @@ class H36M_withSimplifiedActivities(DataSet):
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
                          n_joints=32, name='h36m_sa',
-                         mirror_fn=mirror_p3d)
+                         mirror_fn=mirror_p3d,
+                         joints_per_limb=joints_per_limb)
 
 
 class H36M_FixedSkeletonFromRotation(DataSet):
@@ -575,6 +647,14 @@ class H36M_FixedSkeletonFromRotation(DataSet):
                  iterate_with_framerate=False,
                  iterate_with_keys=False,
                  remove_global_Rt=False):
+        joints_per_limb = {
+            Limb.HEAD: [15, 14, 16],
+            Limb.LEFT_ARM: [17, 18, 19, 21, 22],
+            Limb.LEFT_LEG: [6, 7, 8, 9, 10],
+            Limb.RIGHT_ARM: [25, 26, 27, 29, 30],
+            Limb.RIGHT_LEG: [1, 2, 3, 4, 5],
+            Limb.BODY: [0, 1, 6, 17, 25, 12]
+        }
         seqs = []
         keys = []
         for actor in actors:
@@ -590,7 +670,8 @@ class H36M_FixedSkeletonFromRotation(DataSet):
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
                          n_joints=32, name='h36mffr',
-                         mirror_fn=mirror_p3d)
+                         mirror_fn=mirror_p3d,
+                         joints_per_limb=joints_per_limb)
 
 
 class H36M_FixedSkeletonFromRotation_withActivities(DataSet):
@@ -598,6 +679,14 @@ class H36M_FixedSkeletonFromRotation_withActivities(DataSet):
     def __init__(self, actors, actions=ACTIONS,
                  iterate_with_framerate=False,
                  iterate_with_keys=False):
+        joints_per_limb = {
+            Limb.HEAD: [15, 14, 16],
+            Limb.LEFT_ARM: [17, 18, 19, 21, 22],
+            Limb.LEFT_LEG: [6, 7, 8, 9, 10],
+            Limb.RIGHT_ARM: [25, 26, 27, 29, 30],
+            Limb.RIGHT_LEG: [1, 2, 3, 4, 5],
+            Limb.BODY: [0, 1, 6, 17, 25, 12]
+        }
         seqs = []
         labels = []
         keys = []
@@ -614,7 +703,8 @@ class H36M_FixedSkeletonFromRotation_withActivities(DataSet):
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
                          n_joints=32, name='h36mffr_a',
-                         mirror_fn=mirror_p3d)
+                         mirror_fn=mirror_p3d,
+                         joints_per_limb=joints_per_limb)
 
 
 class H36M_FixedSkeletonFromRotation_withSimplifiedActivities(DataSet):
@@ -622,6 +712,14 @@ class H36M_FixedSkeletonFromRotation_withSimplifiedActivities(DataSet):
     def __init__(self, actors, actions=ACTIONS,
                  iterate_with_framerate=False,
                  iterate_with_keys=False):
+        joints_per_limb = {
+            Limb.HEAD: [15, 14, 16],
+            Limb.LEFT_ARM: [17, 18, 19, 21, 22],
+            Limb.LEFT_LEG: [6, 7, 8, 9, 10],
+            Limb.RIGHT_ARM: [25, 26, 27, 29, 30],
+            Limb.RIGHT_LEG: [1, 2, 3, 4, 5],
+            Limb.BODY: [0, 1, 6, 17, 25, 12]
+        }
         seqs = []
         labels = []
         keys = []
@@ -638,7 +736,8 @@ class H36M_FixedSkeletonFromRotation_withSimplifiedActivities(DataSet):
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
                          n_joints=32, name='h36mffr_sa',
-                         mirror_fn=mirror_p3d)
+                         mirror_fn=mirror_p3d,
+                         joints_per_limb=joints_per_limb)
 
 
 class H36M_Quaternions(DataSet):
@@ -646,6 +745,14 @@ class H36M_Quaternions(DataSet):
     def __init__(self, actors, actions=ACTIONS,
                  iterate_with_framerate=False,
                  iterate_with_keys=False):
+        joints_per_limb = {
+            Limb.HEAD: [15, 14, 16],
+            Limb.LEFT_ARM: [17, 18, 19, 21, 22],
+            Limb.LEFT_LEG: [6, 7, 8, 9, 10],
+            Limb.RIGHT_ARM: [25, 26, 27, 29, 30],
+            Limb.RIGHT_LEG: [1, 2, 3, 4, 5],
+            Limb.BODY: [0, 1, 6, 17, 25, 12]
+        }
         seqs = []
         keys = []
         for actor in actors:
@@ -661,7 +768,8 @@ class H36M_Quaternions(DataSet):
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
                          n_joints=32, name='h36mq',
-                         mirror_fn=mirror_quaternion)
+                         mirror_fn=mirror_quaternion,
+                         joints_per_limb=joints_per_limb)
 
 
 class H36M_Quaternions_withSimplifiedActivities(DataSet):
@@ -669,6 +777,14 @@ class H36M_Quaternions_withSimplifiedActivities(DataSet):
     def __init__(self, actors, actions=ACTIONS,
                  iterate_with_framerate=False,
                  iterate_with_keys=False):
+        joints_per_limb = {
+            Limb.HEAD: [15, 14, 16],
+            Limb.LEFT_ARM: [17, 18, 19, 21, 22],
+            Limb.LEFT_LEG: [6, 7, 8, 9, 10],
+            Limb.RIGHT_ARM: [25, 26, 27, 29, 30],
+            Limb.RIGHT_LEG: [1, 2, 3, 4, 5],
+            Limb.BODY: [0, 1, 6, 17, 25, 12]
+        }
         seqs = []
         labels = []
         keys = []
@@ -687,7 +803,8 @@ class H36M_Quaternions_withSimplifiedActivities(DataSet):
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
                          n_joints=32, name='h36mq_sa',
-                         mirror_fn=mirror_quaternion)
+                         mirror_fn=mirror_quaternion,
+                         joints_per_limb=joints_per_limb)
 
 
 
@@ -718,6 +835,14 @@ class H36M_Reduced(DataSet):
         :param force_flatten: {boolean} if True we flatten the poses
                             into vectors
         """
+        joints_per_limb = {
+            Limb.HEAD: [12, 13, 14],
+            Limb.LEFT_ARM: [15, 16, 17, 18, 19],
+            Limb.LEFT_LEG: [6, 7, 8, 9, 10],
+            Limb.RIGHT_ARM: [20, 21, 22, 23, 24],
+            Limb.RIGHT_LEG: [1, 2, 3, 4, 5],
+            Limb.BODY: [1, 0, 6, 11, 15, 20, 12]
+        }
         assert dataset.n_joints == 32
         assert data_target < dataset.n_data_entries
 
@@ -743,4 +868,5 @@ class H36M_Reduced(DataSet):
                          iterate_with_keys=dataset.iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
                          n_joints=25, name=dataset.name + '_red',
-                         mirror_fn=mirror_p3d_reduced)
+                         mirror_fn=mirror_p3d_reduced,
+                         joints_per_limb=joints_per_limb)

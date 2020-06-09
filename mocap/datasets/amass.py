@@ -1,4 +1,4 @@
-from mocap.datasets.dataset import DataSet
+from mocap.datasets.dataset import DataSet, Limb
 from os.path import isdir, join, isfile, abspath, dirname
 from os import makedirs
 import pickle as pkl
@@ -19,6 +19,14 @@ class AMASS_SMPL3d(DataSet):
         :param output_dir: location where we store preprocessed files for
             faster access
         """
+        joints_per_limb = {
+            Limb.HEAD: [15],
+            Limb.LEFT_ARM: [16, 18, 20, 22],
+            Limb.LEFT_LEG: [1, 4, 7, 10],
+            Limb.RIGHT_ARM: [17, 19, 21, 23],
+            Limb.RIGHT_LEG: [2, 5, 8, 11],
+            Limb.BODY: [0, 1, 2, 17, 14, 12, 13, 16]
+        }
         j_root = 0
         j_left = 1
         j_right = 2
@@ -35,7 +43,8 @@ class AMASS_SMPL3d(DataSet):
             iterate_with_framerate=False,
             iterate_with_keys=False, name='amass_smpl3d',
             j_root=j_root, j_left=j_left, j_right=j_right,
-            n_joints=24, mirror_fn=mirror_p3d
+            n_joints=24, mirror_fn=mirror_p3d,
+            joints_per_limb=joints_per_limb,
         )
         
 
@@ -47,13 +56,22 @@ class AMASS(DataSet):
         :param output_dir: location where we store preprocessed files for
             faster access
         """
+        joints_per_limb = {
+            Limb.HEAD: [15],
+            Limb.LEFT_ARM: [16, 18, 20, 22],
+            Limb.LEFT_LEG: [1, 4, 7, 10],
+            Limb.RIGHT_ARM: [17, 19, 21, 23],
+            Limb.RIGHT_LEG: [2, 5, 8, 11],
+            Limb.BODY: [0, 1, 2, 17, 14, 12, 13, 16]
+        }
         seqs, keys = get_seqs_and_keys_rotmat(files, data_loc, output_dir)
         super().__init__(
             Data=[seqs], Keys=keys, framerate=60,
             iterate_with_framerate=False,
             iterate_with_keys=False, name='amass',
             j_root=0, j_left=False, j_right=False,
-            n_joints=15, mirror_fn=None
+            n_joints=15, mirror_fn=None,
+            joints_per_limb=joints_per_limb
         )
 
 
@@ -65,6 +83,14 @@ class AMASS_QUAT(DataSet):
         :param output_dir: location where we store preprocessed files for
             faster access
         """
+        joints_per_limb = {
+            Limb.HEAD: [15],
+            Limb.LEFT_ARM: [16, 18, 20, 22],
+            Limb.LEFT_LEG: [1, 4, 7, 10],
+            Limb.RIGHT_ARM: [17, 19, 21, 23],
+            Limb.RIGHT_LEG: [2, 5, 8, 11],
+            Limb.BODY: [0, 1, 2, 17, 14, 12, 13, 16]
+        }
         seqs_rot, keys = get_seqs_and_keys_rotmat(files, data_loc, output_dir)
         
         seqs = []
@@ -83,7 +109,8 @@ class AMASS_QUAT(DataSet):
             iterate_with_framerate=False,
             iterate_with_keys=False, name='amassq',
             j_root=0, j_left=False, j_right=False,
-            n_joints=15, mirror_fn=None
+            n_joints=15, mirror_fn=None,
+            joints_per_limb=joints_per_limb
         )
 
 
@@ -95,6 +122,14 @@ class AMASS_EXP(DataSet):
         :param output_dir: location where we store preprocessed files for
             faster access
         """
+        joints_per_limb = {
+            Limb.HEAD: [15],
+            Limb.LEFT_ARM: [16, 18, 20, 22],
+            Limb.LEFT_LEG: [1, 4, 7, 10],
+            Limb.RIGHT_ARM: [17, 19, 21, 23],
+            Limb.RIGHT_LEG: [2, 5, 8, 11],
+            Limb.BODY: [0, 1, 2, 17, 14, 12, 13, 16]
+        }
         seqs_rot, keys = get_seqs_and_keys_rotmat(files, data_loc, output_dir)
         
         seqs = []
@@ -113,7 +148,8 @@ class AMASS_EXP(DataSet):
             iterate_with_framerate=False,
             iterate_with_keys=False, name='amassexp',
             j_root=0, j_left=False, j_right=False,
-            n_joints=15, mirror_fn=None
+            n_joints=15, mirror_fn=None,
+            joints_per_limb=joints_per_limb
         )
 
 

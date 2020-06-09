@@ -1,4 +1,4 @@
-from mocap.datasets.dataset import DataSet
+from mocap.datasets.dataset import DataSet, Limb
 from mocap.datasets.h36m import reflect_over_x
 import numpy as np
 
@@ -30,6 +30,14 @@ class Combined(DataSet):
                             into vectors
         """
         assert data_target < dataset.n_data_entries
+        joints_per_limb = {
+            Limb.HEAD: [12, 13],
+            Limb.LEFT_ARM: [9, 10, 11],
+            Limb.LEFT_LEG: [3, 4, 5],
+            Limb.RIGHT_ARM: [6, 7, 8],
+            Limb.RIGHT_LEG: [0, 1, 2],
+            Limb.BODY: [0, 3, 6, 9]
+        }
 
         if dataset.n_joints == 31:  # cmu
             translate = [
@@ -116,4 +124,5 @@ class Combined(DataSet):
                          iterate_with_keys=dataset.iterate_with_keys,
                          j_root=-1, j_left=0, j_right=3,
                          n_joints=14, name=dataset.name + '_comb',
-                         mirror_fn=mirror_p3d)
+                         mirror_fn=mirror_p3d,
+                         joints_per_limb=joints_per_limb)

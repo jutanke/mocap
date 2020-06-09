@@ -6,7 +6,7 @@ from os import listdir, makedirs
 from transforms3d.euler import euler2mat
 from mpl_toolkits.mplot3d import Axes3D
 from mocap.math.fk_cmueval import angular2euclidean
-from mocap.datasets.dataset import DataSet
+from mocap.datasets.dataset import DataSet, Limb
 import mocap.processing.normalize as norm
 from enum import IntEnum
 
@@ -30,6 +30,15 @@ class CMUEval(DataSet):
         else:
             local_data_dir = join(local_data_dir, 'train')
         
+        joints_per_limb = {
+            Limb.HEAD: [19, 18, 17],
+            Limb.LEFT_ARM: [30, 31, 35],
+            Limb.LEFT_LEG: [8, 9, 10, 11, 12],
+            Limb.RIGHT_ARM: [21, 22, 28],
+            Limb.RIGHT_LEG: [2, 3, 4, 5, 6],
+            Limb.BODY: [2, 8, 21, 30, 17]
+        }
+        
         seqs = []
         keys = []
         for activity in activities:
@@ -50,7 +59,8 @@ class CMUEval(DataSet):
             iterate_with_keys=False,
             j_root=0, j_left=0, j_right=0,
             n_joints=38, name='cmueval',
-            mirror_fn=None)
+            mirror_fn=None,
+            joints_per_limb=joints_per_limb)
     
 
 def batch_remove_duplicate_joints(seq):
@@ -179,6 +189,14 @@ def recover_duplicate_joints(seq):
 class CMUEval3D(DataSet):
 
     def __init__(self, activities, datatype, data_storage_dir='/tmp'):
+        joints_per_limb = {
+            Limb.HEAD: [19, 18, 17],
+            Limb.LEFT_ARM: [30, 31, 35],
+            Limb.LEFT_LEG: [8, 9, 10, 11, 12],
+            Limb.RIGHT_ARM: [21, 22, 28],
+            Limb.RIGHT_LEG: [2, 3, 4, 5, 6],
+            Limb.BODY: [2, 8, 21, 30, 17]
+        }
         local_data_dir = abspath(join(dirname(__file__), '../data/cmu_eval'))
         data_storage_dir = join(data_storage_dir, 'cmueval')
         if datatype == DataType.TEST:
@@ -217,7 +235,7 @@ class CMUEval3D(DataSet):
             iterate_with_framerate=False,
             iterate_with_keys=False,
             j_root=-1, j_left=8, j_right=2,
-            n_joints=38,
+            n_joints=38, joints_per_limb=joints_per_limb,
             mirror_fn=None)
 
 
