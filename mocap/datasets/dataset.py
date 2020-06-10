@@ -12,6 +12,9 @@ class Limb(IntEnum):
     BODY = 5
 
 
+ALL_LIMBS = [Limb.HEAD, Limb.LEFT_ARM, Limb.LEFT_LEG, Limb.RIGHT_ARM, Limb.RIGHT_LEG, Limb.BODY]
+
+
 class DataSet:
 
     def __init__(self, Data, Keys, framerate, iterate_with_framerate,
