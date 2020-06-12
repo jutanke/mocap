@@ -27,12 +27,13 @@ def find_indices_srnn(T1, T2, num_seeds):
     return idx
 
 
-def get(action, DS_class, actor='S5', Wrapper_class=None, num_seeds=256):
+def get(action, DS_class, actor='S5', Wrapper_class=None, num_seeds=256, data_cbc=None):
     """
     :param action: {String} one of the 15 actions present in the h36m dataset
     :param DS_class: {mocap::datasets::h36m::*DataSet} any h36m dataset defined
         in this library
     :param Wrapper_class: {mocap::datasts::wrapper} any wrapper dataset, e.g. Combined
+    :param data_cbc: {function} callback with: def data_cbc(actor, action, sids, start_frames)
     returns:
     Evaluation sequence for Human36M
     """
@@ -59,20 +60,29 @@ def get(action, DS_class, actor='S5', Wrapper_class=None, num_seeds=256):
         Labels = []
 
     Seq = []
+    Sids = []
+    Frames = []
     for pos, t in enumerate(idx):
+        Frames.append(t)
         if pos % 2 == 0:
+            Sids.append(1)
             seq = seq1
             if ds_test.n_data_entries == 2:
                 labels = labels1
         else:
+            Sids.append(2)
             seq = seq2
             if ds_test.n_data_entries == 2:
                 labels = labels2
         Seq.append(seq[t:t+150])
         if ds_test.n_data_entries == 2:
             Labels.append(labels[t:t+150])
-
+    
     Seq = np.array(Seq)
+    
+    assert len(Frames) == len(Sids)
+    if data_cbc is not None:
+        data_cbc(actor, action, np.array(Sids), np.array(Frames))
 
     if ds_test.n_data_entries == 1:
         return Seq
