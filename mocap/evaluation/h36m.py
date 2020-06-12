@@ -27,12 +27,13 @@ def find_indices_srnn(T1, T2, num_seeds):
     return idx
 
 
-def get(action, DS_class, actor='S5', Wrapper_class=None, num_seeds=256, data_cbc=None):
+def get(action, DS_class, actor='S5', Wrapper_class=None, Wrapper_fn=None, num_seeds=256, data_cbc=None):
     """
     :param action: {String} one of the 15 actions present in the h36m dataset
     :param DS_class: {mocap::datasets::h36m::*DataSet} any h36m dataset defined
         in this library
     :param Wrapper_class: {mocap::datasts::wrapper} any wrapper dataset, e.g. Combined
+    :param Wrapper_fn: {function} takes as input the Dataset class and returns another dataset
     :param data_cbc: {function} callback with: def data_cbc(actor, action, sids, start_frames)
     returns:
     Evaluation sequence for Human36M
@@ -41,6 +42,8 @@ def get(action, DS_class, actor='S5', Wrapper_class=None, num_seeds=256, data_cb
                        remove_global_Rt=True)
     if Wrapper_class is not None:
         ds_test = Wrapper_class(ds_test)
+    if Wrapper_fn is not None:
+        ds_test = Wrapper_fn(ds_test)
     assert len(ds_test) == 2  # each action has two videos 
     if ds_test.n_data_entries == 1:
         seq1 = np.ascontiguousarray(ds_test[0][::2])  # sub-sample to 25Hz
