@@ -57,6 +57,12 @@ class DataSet:
         self.framerate = framerate
         self.n_data_entries = len(Data)
         self.n_sequences = n_sequences
+       
+    def get_sequence_by_key(self, key):
+        for kid, k in enumerate(self.Keys):
+            if k == key:
+                return self.get_sequence(kid)
+        raise ValueError("cannot find key " + str(key))
     
     def get_joints_for_limb(self, limb):
         """
