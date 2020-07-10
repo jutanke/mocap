@@ -178,7 +178,7 @@ class SMPLForwardKinematics(ForwardKinematics):
         for idx, pid in enumerate(SMPL_PARENTS[1:]):
             smpl_offsets[idx+1] = offsets[idx + 1] - offsets[pid]
 
-        # normalize so that right thigh has length 1
+        # normalize so that right thigh has length 1  (4)
         super(SMPLForwardKinematics, self).__init__(smpl_offsets, SMPL_PARENTS, norm_idx=4,
                                                     left_mult=False, major_joints=SMPL_MAJOR_JOINTS)
 

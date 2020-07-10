@@ -56,6 +56,23 @@ class Combined(DataSet):
                 (14, 12),
                 (16, 13)
             ]
+        elif dataset.n_joints == 24:  # AMASS
+            translate = [
+                (2,  0),
+                (5,  1),
+                (8,  2),
+                (1,  3),
+                (4,  4),
+                (7,  5),
+                (17, 6),
+                (19, 7),
+                (21, 8),
+                (16, 9),
+                (18, 10),
+                (20, 11),
+                (12, 12),
+                (15, 13)
+            ]
         elif dataset.n_joints == 32:  # h36m
             translate = [
                 (1, 0),

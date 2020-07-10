@@ -10,6 +10,7 @@ import mocap.processing.activities as act
 import mocap.evaluation.h36m as Eval_h36m
 import random
 import numpy as np
+import numpy.linalg as la
 
 
 vis_dir = '../output/'
@@ -24,12 +25,25 @@ ds = H36M.H36M_FixedSkeleton_withSimplifiedActivities(actors=['S5'], actions=['w
                                                       remove_global_Rt=True)
 
 
-ds = H36M.H36M_Reduced(ds)
-ds = Dataset_NormalizedJoints(ds)
+# ds = H36M.H36M_Reduced(ds)
+# ds = Dataset_NormalizedJoints(ds)
 
 # ds.normalize_per_joint()
 
 seq, labels = ds[1]
+
+n_frames = len(seq)
+seq = seq.reshape((n_frames, 32, 3))
+print('seq', seq.shape)
+
+rh = seq[:, 1]
+rk = seq[:, 2]
+
+d = np.mean(la.norm(rh - rk, axis=1))
+
+print('d', d)
+
+exit(1)
 
 seq = ds.denormalize(seq)
 

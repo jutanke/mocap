@@ -12,10 +12,11 @@ import cv2
 
 
 class AMASS_SMPL3d(DataSet):
-    def __init__(self, files, data_loc,
+    def __init__(self, files, data_loc, scaling=0.44289464/0.5095154,
                  output_dir='/tmp/amass'):
         """
         :param data_loc: location where the original data is stored
+        :param scaling: how to scale the pose: values where calculated as: right_righ (H36M) / right tigh (AMASS)
         :param output_dir: location where we store preprocessed files for
             faster access
         """
@@ -33,7 +34,7 @@ class AMASS_SMPL3d(DataSet):
         seqs_rot, keys = get_seqs_and_keys_rotmat(files, data_loc, output_dir)
         seqs = []
         for seq in seqs_rot:
-            seq = rotmat2euclidean(seq)
+            seq = scaling * rotmat2euclidean(seq)
             seq = remove_rotation_and_translation(
                 seq, j_root=j_root, j_left=j_left, j_right=j_right
             )
