@@ -32,7 +32,7 @@ make install #no sudo
 
 Add to _.bashrc_:
 ```
-export CDF_BASE=$HOME/Libraries/cdf/cdf36_3-dist
+export CDF_BASE=$HOME/Libraries/cdf/cdf37_0-dist
 export CDF_INC=$CDF_BASE/include
 export CDF_LIB=$CDF_BASE/lib
 export CDF_BIN=$CDF_BASE/bin
