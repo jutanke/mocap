@@ -2,6 +2,7 @@ from mocap.datasets.dataset import DataSet
 import numpy as np
 import numba as nb
 from math import ceil, floor
+from os.path import isfile, isdir
 
 
 @nb.njit(
@@ -35,11 +36,13 @@ def interpolate(seq, target_framerate, source_framerate):
 
 class AdaptFramerate(DataSet):
 
-    def __init__(self, dataset, target_framerate):
+    def __init__(self, dataset, target_framerate, storage=None):
         """
         :param dataset: {DataSet}
         :param target_framerate: {int}
         """
+        if storage is not None:
+            assert isdir(storage), storage
         Data_new = []
         Keys = dataset.Keys
         assert dataset.n_data_entries == 1
@@ -47,8 +50,18 @@ class AdaptFramerate(DataSet):
         for data in dataset.Data:
             new_data = []
             for seqid, seq in enumerate(data):
-                source_framerate = dataset.get_framerate(seqid)
-                seq_new = interpolate(seq, target_framerate, source_framerate)
+                if storage is not None:
+                    fname = '_'.join([str(k) for k in Keys[seqid]]) + '_tf' + str(target_framerate) + '.npy'
+                    fname = join(storage, fname)
+                    if isfile(fname):
+                        seq_new = np.load(fname)
+                    else:
+                        source_framerate = dataset.get_framerate(seqid)
+                        seq_new = interpolate(seq, target_framerate, source_framerate)
+                        np.save(fname, seq_new)
+                else: 
+                    source_framerate = dataset.get_framerate(seqid)
+                    seq_new = interpolate(seq, target_framerate, source_framerate)
                 new_data.append(seq_new)
             Data_new.append(new_data)
         
