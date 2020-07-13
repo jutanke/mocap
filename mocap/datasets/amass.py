@@ -245,6 +245,8 @@ def get_seqs_and_keys_rotmat(files, data_loc, output_dir):
                 makedirs(loc_prep)
             
             fname = join(data_loc, file)
+            if not isfile(fname):
+                fname = join(data_loc, 'AMASS_' + file)
             assert isfile(fname), fname
 
             # HEAVILY inspired by https://github.com/eth-ait/spl/blob/master/preprocessing/preprocess_dip.py
