@@ -2,7 +2,7 @@ from mocap.datasets.dataset import DataSet
 import numpy as np
 import numba as nb
 from math import ceil, floor
-from os.path import isfile, isdir
+from os.path import isfile, isdir, join
 
 
 @nb.njit(
