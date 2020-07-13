@@ -51,7 +51,11 @@ class AdaptFramerate(DataSet):
             new_data = []
             for seqid, seq in enumerate(data):
                 if storage is not None:
-                    fname = '_'.join([str(k) for k in Keys[seqid]]) + '_tf' + str(target_framerate) + '.npy'
+                    key = Keys[seqid]
+                    if isinstance(key, tuple) or isinstance(key, list):
+                        fname = '_'.join([str(k) for k in key]) + '_tf' + str(target_framerate) + '.npy'
+                    elif isinstance(key, str):
+                        fname = key.replace('/', '_t_') + '_tf' + str(target_framerate) + '.npy'
                     fname = join(storage, fname)
                     if isfile(fname):
                         seq_new = np.load(fname)
