@@ -13,7 +13,7 @@ import cv2
 
 class AMASS_SMPL3d(DataSet):
     def __init__(self, files, data_loc, scaling=0.44289464/0.5095154,
-                 output_dir='/tmp/amass'):
+                 output_dir='/tmp/amass', storage=None):
         """
         :param data_loc: location where the original data is stored
         :param scaling: how to scale the pose: values where calculated as: right_righ (H36M) / right tigh (AMASS)
@@ -33,12 +33,25 @@ class AMASS_SMPL3d(DataSet):
         j_right = 2
         seqs_rot, keys = get_seqs_and_keys_rotmat(files, data_loc, output_dir)
         seqs = []
-        for seq in seqs_rot:
-            seq = scaling * rotmat2euclidean(seq)
-            seq = remove_rotation_and_translation(
-                seq, j_root=j_root, j_left=j_left, j_right=j_right
-            )
-            seqs.append(seq)
+        for seq, key in zip(seqs_rot, keys):
+            if storage is not None:
+                assert isinstance(key, str)
+                assert isdir(storage), storage
+                fname = join(storage, key.replace('/', '_t_') + '_3d.npy')
+                if isfile(fname):
+                    seq = np.load(fname)
+                else:
+                    seq = rotmat2euclidean(seq)
+                    seq = remove_rotation_and_translation(
+                        seq, j_root=j_root, j_left=j_left, j_right=j_right
+                    )
+                    np.save(fname, seq)
+            else:
+                seq = rotmat2euclidean(seq)
+                seq = remove_rotation_and_translation(
+                    seq, j_root=j_root, j_left=j_left, j_right=j_right
+                )
+            seqs.append(seq * scaling)
         super().__init__(
             Data=[seqs], Keys=keys, framerate=60,
             iterate_with_framerate=False,
