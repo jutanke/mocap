@@ -52,7 +52,8 @@ class PoseDataset(Dataset):
             seq += noise
            
         if self.ds.n_data_entries == 2:
-            labels = labels[t:t + n_frames * ss:ss]
+            if not isinstance(labels, int):
+                labels = labels[t:t + n_frames * ss:ss]
             return seq, labels
         else:
             return seq
