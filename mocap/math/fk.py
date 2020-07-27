@@ -4,6 +4,99 @@ from mocap.math.mirror_h36m import mirror_p3d
 from mocap.math.quaternion import qrot, qmul, q_inv_batch_of_sequences
 
 
+# DEFAULT h36m
+# parent = [
+#     -1,    # 0
+#     0,     # 1
+#     1,     # 2
+#     2,     # 3
+#     3,     # 4
+#     4,     # 5
+#     0,     # 6
+#     6,     # 7
+#     7,     # 8
+#     8,     # 9
+#     9,     # 10
+#     0,     # 11
+#     11,    # 12
+#     12,    # 13
+#     13,    # 14
+#     14,    # 15
+#     12,    # 16
+#     16,    # 17
+#     17,    # 18
+#     18,    # 19
+#     19,    # 20
+#     20,    # 21
+#     19,    # 22
+#     22,    # 23
+#     12,    # 24
+#     24,    # 25
+#     25,    # 26
+#     26,    # 27
+#     27,    # 28
+#     28,    # 29
+#     27,    # 30
+#     30]    # 31
+
+# simplified skeleton
+
+#                      (18)
+#                        |
+# (13)-(12)-(11) --  (10, 9,14) -- (15)-(16)-(17)
+#                        |
+#                       ( 8)
+#                        |
+#             ( 1) -- ( 7, 0) -- ( 4)
+#              |                   |
+#             ( 2)               ( 5)
+#              |                   |
+#             ( 3)               ( 6)
+
+map_large2simplified = np.array([
+    0,  # 0
+    1,  # 1
+    2,  # 2
+    3,  # 3
+    6,  # 4
+    7,  # 5
+    8,  # 6
+    11,  # 7
+    12,  # 8
+    13,  # 9
+    24,  # 10
+    25,  # 11
+    26,  # 12
+    27,  # 13
+    16,  # 14
+    17,  # 15
+    18,  # 16
+    19,  # 17
+    14,  # 18
+]).astype('int64')
+
+parent_simplified = np.array([
+    -1,  # 0
+     0,  # 1
+     1,  # 2
+     2,  # 3
+     0,  # 4
+     4,  # 5
+     5,  # 6
+     0,  # 7
+     7,  # 8
+     8,  # 9
+     9,  # 10
+     10, # 11
+     11, # 12
+     12, # 13
+     9,  # 14
+     14, # 15
+     15, # 16
+     16, # 17
+     9,  # 18
+]).astype('int64')
+
 # -- hardcoded data --
 parent = np.array([0, 1, 2, 3, 4, 5, 1, 7, 8, 9,10, 1,12,13,14,15,13,
                    17,18,19,20,21,20,23,13,25,26,27,28,29,28,31])-1
@@ -15,16 +108,22 @@ bone_lengths = bone_lengths.reshape((-1, 3)).astype('float32')
 assert len(parent) == len(bone_lengths)
 n_joints = len(parent)
 
-chain_per_joint = []
-for jid in range(n_joints):
-    current = parent[jid]
-    chain = [current]
-    while current > -1:
-        current = parent[current]
-        chain.append(current)
-    chain.reverse()
-    chain.pop(0)
-    chain_per_joint.append(chain)
+
+def calculate_chain(parent, n_joints):
+    chain_per_joint = []
+    for jid in range(n_joints):
+        current = parent[jid]
+        chain = [current]
+        while current > -1:
+            current = parent[current]
+            chain.append(current)
+        chain.reverse()
+        chain.pop(0)
+        chain_per_joint.append(chain)
+    return chain_per_joint
+
+
+chain_per_joint = calculate_chain(parent, n_joints=n_joints)
 
 
 def quaternion_fk(rotations):
@@ -79,6 +178,50 @@ def quaternion_fk(rotations):
         result = mirror_p3d(result)
         result = result.reshape((n_batch, n_frames, 32, 3))
     return result
+
+
+
+def euler_fk_with_parameters(angles, n_joints, chain_per_joint, bone_lengths):
+    """
+    :param [n_batch x 3 * n_joints]
+    """
+    n_batch = np.shape(angles)[0]
+    angles = np.reshape(angles, (-1, 3))
+    Rs = batch_rot3d(angles)
+    Rs = np.reshape(Rs, (n_batch, n_joints, 3, 3))
+    Pts3d = []
+    for jid in range(n_joints):
+        bone = bone_lengths[jid]
+        bone = np.tile(bone, n_batch)
+        bone = np.reshape(bone, (n_batch, 3))
+        bone = np.expand_dims(bone, axis=1)
+        chain = chain_per_joint[jid]
+
+        p_xyz = np.zeros((n_batch, 1, 3), dtype=np.float32)
+        p_R = np.tile(np.eye(3, dtype=np.float32), (n_batch, 1))
+        p_R = np.reshape(p_R, (n_batch, 3, 3))
+
+        for jid2 in chain:
+            cur_R = Rs[:, jid2]
+            cur_bone = bone_lengths[jid2]
+            cur_bone = np.tile(cur_bone, n_batch)
+            cur_bone = np.reshape(cur_bone, (n_batch, 3))
+            cur_bone = np.expand_dims(cur_bone, axis=1)
+            p_xyz = p_xyz + np.matmul(cur_bone, p_R)
+            p_R = np.matmul(cur_R, p_R)
+        xyz = np.matmul(bone, p_R) + p_xyz
+        xyz = np.reshape(xyz, (n_batch, 3))
+        Pts3d.append(xyz)
+
+    Pts3d = np.stack(Pts3d, axis=1).astype(np.float32)
+
+    Pts3d[:, :, (0, 1, 2)] = Pts3d[:, :, (0, 2, 1)]
+
+    # Pts3d = mirror_p3d(Pts3d)
+
+    return Pts3d
+
+
 
 
 def euler_fk(angles):

@@ -21,6 +21,14 @@ def plot(ax, human, plot_jid=False, do_scatter=True, linewidth=2,
     if n_joints == 19:
         assert n_joints == 19
 
+        # connect = [
+        #     (0, 1), (1, 2), (2, 3),
+        #     (0, 4), (4, 5), (5, 6),
+        #     (1, 11), (15, 4), (15, 16), (16, 17),
+        #     (11, 12), (12, 13), (11, 9), (9, 15),
+        #     (9, 18)
+        # ]
+
         connect = [
             (1, 2),
             (1, 3), (3, 4), (4, 5), (5, 6),
@@ -37,6 +45,23 @@ def plot(ax, human, plot_jid=False, do_scatter=True, linewidth=2,
             True, True, True, True,
             False, False, False, False
         ]
+    # elif n_joints == 16:  # H36M reduced ExpMaps
+
+    #     connect = [
+    #         (0, 1), (0, 4),
+    #         (1, 2), (2, 3), (4, 5), (5, 6),
+    #         (1, 9), (4, 12),
+    #         (9, 10), (10, 11),
+    #         (12, 13), (13, 14),
+    #         (9, 8), (8, 12), (8, 15)
+    #     ]
+    #     LR = [
+    #         False, False, False, False, True,
+    #         True, True, False, False, False,
+    #         False, False, True, True, True, 
+    #         False
+    #     ]
+
     elif n_joints == 38:  # CMU Eval
         connect = [
             (2, 8),
