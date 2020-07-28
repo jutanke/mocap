@@ -222,8 +222,6 @@ def euler_fk_with_parameters(angles, n_joints, chain_per_joint, bone_lengths):
     return Pts3d
 
 
-
-
 def euler_fk(angles):
     """
     :param [n_batch x 3 * n_joints]
