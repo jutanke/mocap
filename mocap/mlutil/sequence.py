@@ -7,11 +7,14 @@ import mocap.processing.normalize as norm
 class PoseDataset(Dataset):
 
     def __init__(self, ds, n_frames, framerates, add_noise=False,
-                 noise_var=0.001, mirror_data=False):
+                 noise_var=0.001, mirror_data=False, labels_fliplr_cbc=None):
         self.n_frames = n_frames
         self.add_noise = add_noise
         self.noise_var = noise_var
         assert ds.n_data_entries == 2 or ds.n_data_entries == 1
+        if labels_fliplr_cbc is not None:
+            assert ds.n_data_entries == 2
+        self.labels_fliplr_cbc = labels_fliplr_cbc
         self.ds = ds
         meta = []
         for seqid in range(len(ds)):
@@ -53,7 +56,9 @@ class PoseDataset(Dataset):
            
         if self.ds.n_data_entries == 2:
             if not isinstance(labels, int):
-                labels = labels[t:t + n_frames * ss:ss]
+                labels = np.ascontiguousarray(labels[t:t + n_frames * ss:ss])
+                if flip_lr and self.labels_fliplr_cbc is not None:
+                    self.labels_fliplr_cbc(labels)
             return seq, labels
         else:
             return seq
