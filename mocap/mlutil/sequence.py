@@ -58,7 +58,7 @@ class PoseDataset(Dataset):
             if not isinstance(labels, int):
                 labels = np.ascontiguousarray(labels[t:t + n_frames * ss:ss])
                 if flip_lr and self.labels_fliplr_cbc is not None:
-                    self.labels_fliplr_cbc(labels)
+                    labels = self.labels_fliplr_cbc(labels)
             return seq, labels
         else:
             return seq
