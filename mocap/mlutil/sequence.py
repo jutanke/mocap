@@ -7,7 +7,7 @@ import mocap.processing.normalize as norm
 class PoseDataset(Dataset):
 
     def __init__(self, ds, n_frames, framerates, add_noise=False,
-                 noise_var=0.001, mirror_data=False, labels_fliplr_cbc=None):
+                 noise_var=0.001, mirror_data=False, labels_fliplr_cbc=None, stepsize=1):
         self.n_frames = n_frames
         self.add_noise = add_noise
         self.noise_var = noise_var
@@ -29,7 +29,7 @@ class PoseDataset(Dataset):
                 min_length = n_frames * ss
                 last_possible_start_frame = n - min_length
                 if last_possible_start_frame > 0:
-                    for t in range(last_possible_start_frame):
+                    for t in range(0, last_possible_start_frame, stepsize):
                         meta.append((seqid, t, ss, False))  # seq-id, t, ss, flip-left/right
                         if mirror_data:
                             meta.append((seqid, t, ss, True))
