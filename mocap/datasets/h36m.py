@@ -8,7 +8,7 @@ from mocap.datasets.dataset import DataSet, Limb
 import mocap.math.fk as FK
 import mocap.math.kabsch as KB
 import mocap.processing.conversion as conv
-from mocap.datasets.h36m_constants import ACTORS, LABEL_NAMES, ACTIONS
+from mocap.datasets.h36m_constants import ACTORS, LABEL_NAMES, ACTIONS, EXP_MEANPOSE, EXP_STDPOSE, EXP_DIMS2IGNORE, EXP_DIMS2USE
 from mocap.dataaquisition.h36m import acquire_expmap, acquire_h36m, DATA_DIR
 import mocap.processing.normalize as norm
 from mocap.math.mirror_h36m import reflect_over_x, mirror_p3d, mirror_quaternion
@@ -198,6 +198,45 @@ def get_expmap(actor, action, sid):
     fname = join(join(join(data_dir, 'expmap/h3.6m/dataset'), actor), action + '_' + str(sid) + '.txt')
     seq = np.loadtxt(fname, delimiter=',', dtype=np.float32)
     return seq
+
+
+def get_reduced_expmap(actor, action, sid):
+    global EXP_MEANPOSE, EXP_DIMS2IGNORE, EXP_STDPOSE, EXP_DIMS2USE
+    seq = get_expmap(actor, action, sid)
+    seq = (seq - EXP_MEANPOSE) / EXP_STDPOSE
+    seq = np.ascontiguousarray(seq[:, EXP_DIMS2USE])
+    return seq
+
+
+def batch_recover_reduced_expmap(Seq):
+    """
+    :param seq: n_batch x n_frames x 54
+    :return:
+    """
+    assert len(Seq.shape) == 3 and Seq.shape[2] == 54, str(Seq.shape)
+    n_batch = Seq.shape[0]
+    n_frames = Seq.shape[1]
+    Seq = np.reshape(Seq, (n_batch * n_frames, 54))
+    Seq = np.reshape(recover_reduced_expmap(Seq), (n_batch, n_frames, 99))
+    return  Seq
+
+
+def recover_reduced_expmap(seq):
+    """
+    :param seq: n_frames x 54
+    :return:
+    """
+    global EXP_MEANPOSE, EXP_DIMS2IGNORE, EXP_STDPOSE, EXP_DIMS2USE
+    data_mean = np.expand_dims(EXP_MEANPOSE, axis=0)
+    data_std = np.expand_dims(EXP_STDPOSE, axis=0)
+    n_frames = seq.shape[0]
+    dim_reduced = seq.shape[1]
+    assert len(seq.shape) == 2 and dim_reduced == 54, 'nope..' + str(seq.shape)
+    recovered = np.zeros((n_frames, 99), dtype=np.float32)
+    recovered[:, EXP_DIMS2USE] = seq
+    recovered = recovered * data_std + data_mean
+    # recovered = recovered + data_mean
+    return recovered
 
 
 def get_euler(actor, action, sid):
@@ -500,6 +539,62 @@ class H36M_FixedSkeleton_withActivities(DataSet):
                          joints_per_limb=joints_per_limb)
 
 
+class H36M_ReducedExp_withSimplifiedActivities(DataSet):
+    """
+    Reduced as at Martinz
+    """
+
+    def __init__(self, actors, actions=ACTIONS,
+                 iterate_with_framerate=False,
+                 iterate_with_keys=False):
+        seqs = []
+        labels = []
+        keys = []
+        for actor in actors:
+            for action in actions:
+                for sid in [1, 2]:
+                    seq = get_reduced_expmap(actor, action, sid)
+                    label = get_simplified_labels(actor, action, sid)
+                    seqs.append(seq)
+                    labels.append(label)
+                    keys.append((actor, action, sid))
+        super().__init__([seqs, labels], Keys=keys, framerate=50,
+                         iterate_with_framerate=iterate_with_framerate,
+                         iterate_with_keys=iterate_with_keys,
+                         j_root=0, j_left=6, j_right=1,
+                         n_joints=33, name='h36mexpred_sa',
+                         mirror_fn=None,
+                         joints_per_limb=None)
+
+
+class H36M_ReducedExp_withActivities(DataSet):
+    """
+    Reduced as at Martinz
+    """
+
+    def __init__(self, actors, actions=ACTIONS,
+                 iterate_with_framerate=False,
+                 iterate_with_keys=False):
+        seqs = []
+        labels = []
+        keys = []
+        for actor in actors:
+            for action in actions:
+                for sid in [1, 2]:
+                    seq = get_reduced_expmap(actor, action, sid)
+                    label = get_labels(actor, action, sid)
+                    seqs.append(seq)
+                    labels.append(label)
+                    keys.append((actor, action, sid))
+        super().__init__([seqs, labels], Keys=keys, framerate=50,
+                         iterate_with_framerate=iterate_with_framerate,
+                         iterate_with_keys=iterate_with_keys,
+                         j_root=0, j_left=6, j_right=1,
+                         n_joints=33, name='h36mexpred_a',
+                         mirror_fn=None,
+                         joints_per_limb=None)
+
+
 class H36M_Exp_withSimplifiedActivities(DataSet):
 
     def __init__(self, actors, actions=ACTIONS,
@@ -561,7 +656,7 @@ class H36M_Exp_withActivities(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
-                         n_joints=33, name='h36mexp_sa',
+                         n_joints=33, name='h36mexp_a',
                          mirror_fn=mirror_p3d,
                          joints_per_limb=joints_per_limb)
         
