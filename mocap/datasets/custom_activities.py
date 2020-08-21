@@ -53,6 +53,6 @@ class CustomActivities(DataSet):
                      j_right=dataset.j_right,
                      n_joints=dataset.n_joints, 
                      name=dataset.name + '_' + uid,
-                     mirror_fn=dataset.mirror_p3d,
+                     mirror_fn=dataset.mirror_fn,
                      joints_per_limb=dataset.joints_per_limb)
     
