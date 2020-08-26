@@ -222,13 +222,13 @@ def euler_fk_with_parameters(angles, n_joints, chain_per_joint, bone_lengths):
     return Pts3d
 
 
-def euler_fk(angles):
+def euler_fk(angles, inv_rot=False):
     """
     :param [n_batch x 3 * n_joints]
     """
     n_batch = np.shape(angles)[0]
     angles = np.reshape(angles, (-1, 3))
-    Rs = batch_rot3d(angles)
+    Rs = batch_rot3d(angles, inv_rot=inv_rot)
     Rs = np.reshape(Rs, (n_batch, n_joints, 3, 3))
     Pts3d = []
     for jid in range(n_joints):
@@ -263,7 +263,7 @@ def euler_fk(angles):
     return Pts3d
 
 
-def batch_rot3d(r):
+def batch_rot3d(r, inv_rot=False):
     n_batch = np.shape(r)[0]
     const0 = np.zeros((n_batch,))
     const1 = np.ones((n_batch,))
@@ -305,5 +305,6 @@ def batch_rot3d(r):
     Rz = np.stack([r1, r2, r3], axis=1)
     Rzy = np.matmul(Rz, Ry)
     R = np.matmul(Rzy, Rx)
-    # R = np.transpose(R, [0, 2, 1])
+    if inv_rot:
+        R = np.transpose(R, [0, 2, 1])
     return R
