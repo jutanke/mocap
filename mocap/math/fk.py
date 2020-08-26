@@ -126,7 +126,7 @@ def calculate_chain(parent, n_joints):
 chain_per_joint = calculate_chain(parent, n_joints=n_joints)
 
 
-def quaternion_fk(rotations):
+def quaternion_fk(rotations, inv_rot=True):
     """
     :param rotations: {n_batch x n_frames x J x 4}
     :return:
@@ -150,7 +150,9 @@ def quaternion_fk(rotations):
     n_frames = rotations.size(1)
     if len(rotations.size()) == 3:
         rotations = rotations.reshape((n_batch, n_frames, -1, 4))
-    rotations = q_inv_batch_of_sequences(rotations)
+    
+    if inv_rot:
+        rotations = q_inv_batch_of_sequences(rotations)
 
     positions_world = []
     rotations_world = []
