@@ -235,6 +235,7 @@ class CMUEval3D(DataSet):
             iterate_with_framerate=False,
             iterate_with_keys=False,
             j_root=-1, j_left=8, j_right=2,
+            name='CMUEval3D',
             n_joints=38, joints_per_limb=joints_per_limb,
             mirror_fn=None)
 
