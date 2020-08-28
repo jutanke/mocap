@@ -10,6 +10,8 @@ import mocap.math.kabsch as KB
 from tqdm import tqdm
 from mocap.dataaquisition.get_h36m_skeleton import transform
 
+def GET_DATA_DIR():
+    return join(settings.get_data_path(), 'h36m')
 
 def acquire_h36m():
     target_dir = join(settings.get_data_path(), 'h36m/p3d')
@@ -17,7 +19,7 @@ def acquire_h36m():
         transform(settings.get_h36m_path(), target_dir)
 
 def acquire_expmap():
-    DATA_DIR = join(settings.get_data_path(), 'h36m')
+    DATA_DIR = GET_DATA_DIR()
     exp_dir = join(DATA_DIR, 'expmap')
     zip_fname = join(exp_dir, 'h3.6m.zip')
     if not isdir(exp_dir):
