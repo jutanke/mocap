@@ -188,7 +188,8 @@ def recover_duplicate_joints(seq):
 
 class CMUEval3D(DataSet):
 
-    def __init__(self, activities, datatype, data_storage_dir='/tmp'):
+    def __init__(self, activities, datatype, data_storage_dir='/tmp',
+                 remove_global_Rt=False):
         joints_per_limb = {
             Limb.HEAD: [19, 18, 17],
             Limb.LEFT_ARM: [30, 31, 35],
@@ -227,7 +228,10 @@ class CMUEval3D(DataSet):
                     seq = angular2euclidean(seq).astype('float32')
                     np.save(f_npy, seq)
                 keys.append(fname)
-                seqs.append(seq.astype('float32'))
+                seq = seq.astype('float32')
+                if remove_global_Rt:
+                    seq = norm.remove_rotation_and_translation(seq, j_root=-1, j_left=8, j_right=2)
+                seqs.append(seq)
         
         super().__init__(
             [seqs], Keys=keys,
