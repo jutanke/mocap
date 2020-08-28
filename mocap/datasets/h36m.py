@@ -9,13 +9,13 @@ import mocap.math.fk as FK
 import mocap.math.kabsch as KB
 import mocap.processing.conversion as conv
 from mocap.datasets.h36m_constants import ACTORS, LABEL_NAMES, ACTIONS, EXP_MEANPOSE, EXP_STDPOSE, EXP_DIMS2IGNORE, EXP_DIMS2USE
-from mocap.dataaquisition.h36m import acquire_expmap, acquire_h36m, DATA_DIR
+from mocap.dataaquisition.h36m import acquire_expmap, acquire_h36m, GET_DATA_DIR
 import mocap.processing.normalize as norm
 from mocap.math.mirror_h36m import reflect_over_x, mirror_p3d, mirror_quaternion
 from mocap.math.quaternion import expmap_to_quaternion, qfix
 
 local_data_dir = join(dirname(__file__), '../data/h36m')
-data_dir = DATA_DIR
+data_dir = GET_DATA_DIR()
 password_file = join(dirname(__file__), '../data/password.txt')
 assert isdir(local_data_dir), local_data_dir
 if not isdir(data_dir):
@@ -331,8 +331,7 @@ def get_simplified_labels(actor, action, sid):
 
 def acquire_fixed_skeleton():
     acquire_euler()
-    global DATA_DIR
-    data_dir = join(DATA_DIR, 'fixed_skeleton')
+    data_dir = join(GET_DATA_DIR(), 'fixed_skeleton')
     if not isdir(data_dir):
         print('[mocap][Human3.6M] generate fixed skeletons:', data_dir)
         makedirs(data_dir)
@@ -356,8 +355,7 @@ def acquire_fixed_skeleton():
 
 def acquire_fixed_skeleton_from_rotation():
     acquire_euler()
-    global DATA_DIR
-    data_dir = join(DATA_DIR, 'fixed_skeleton_from_rotation')
+    data_dir = join(GET_DATA_DIR(), 'fixed_skeleton_from_rotation')
     if not isdir(data_dir):
         print('[mocap][Human3.6M] generate fixed skeletons from rotation:', data_dir)
         makedirs(data_dir)
@@ -372,8 +370,7 @@ def acquire_fixed_skeleton_from_rotation():
 
 def acquire_euler():
     acquire_expmap()
-    global DATA_DIR
-    euler_dir = join(DATA_DIR, 'euler')
+    euler_dir = join(GET_DATA_DIR(), 'euler')
     if not isdir(euler_dir):
         makedirs(euler_dir)
         for actor in ACTORS:
