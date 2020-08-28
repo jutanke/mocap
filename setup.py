@@ -9,7 +9,7 @@ site_package = 'lib/python' + p1 + '.' + p2 + '/site-packages/mocap'
 
 setup(
     name="mocap",
-    version="1.2.16",
+    version="1.2.17",
     packages=["mocap",
               "mocap/datasets",
               "mocap/visualization",
