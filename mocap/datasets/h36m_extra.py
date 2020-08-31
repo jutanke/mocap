@@ -83,7 +83,7 @@ class MotionGAN17(DataSet):
                          framerate=dataset.framerate,
                          iterate_with_framerate=dataset.iterate_with_framerate,
                          iterate_with_keys=dataset.iterate_with_keys,
-                         j_root=0, j_left=1, j_right=4,
+                         j_root=0, j_left=4, j_right=1,
                          n_joints=17, name=dataset.name + '_mgan',
                          mirror_fn=mirror_p3d,
                          joints_per_limb=joints_per_limb)
