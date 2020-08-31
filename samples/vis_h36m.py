@@ -1,6 +1,11 @@
 import sys
 sys.path.insert(0, './..')
+
+import mocap.settings as SET#
+SET.set_data_path('/Users/work/Data/data')
+
 import mocap.datasets.h36m as H36M
+import mocap.datasets.h36m_extra as H36M_EXTRA
 from os.path import isdir
 from os import makedirs
 from mocap.datasets.dataset import Dataset_NormalizedJoints, Dataset_Normalized
@@ -13,6 +18,8 @@ import numpy as np
 import numpy.linalg as la
 
 
+
+
 vis_dir = '../output/'
 if not isdir(vis_dir):
     makedirs(vis_dir)
@@ -23,7 +30,7 @@ ds = H36M.H36M_FixedSkeleton_withSimplifiedActivities(actors=['S5'], actions=['w
                                                       iterate_with_framerate=True,
                                                       iterate_with_keys=True,
                                                       remove_global_Rt=True)
-
+ds = H36M_EXTRA.MotionGAN17(ds)
 
 # ds = H36M.H36M_Reduced(ds)
 # ds = Dataset_NormalizedJoints(ds)
@@ -32,16 +39,19 @@ ds = H36M.H36M_FixedSkeleton_withSimplifiedActivities(actors=['S5'], actions=['w
 
 seq, labels = ds[1]
 
+
 n_frames = len(seq)
-seq = seq.reshape((n_frames, 32, 3))
+
 print('seq', seq.shape)
 
-rh = seq[:, 1]
-rk = seq[:, 2]
+seq = seq[100:500:2]
 
-d = np.mean(la.norm(rh - rk, axis=1))
+# vis.plot(seq, create_video=True, video_fps=12.5)
 
-print('d', d)
+seq_flip = ds.mirror_fn(seq)
+
+vis.plot(seq1=seq, seq2=seq_flip, parallel=True,
+    create_video=True, video_fps=12.5)
 
 exit(1)
 
