@@ -52,9 +52,10 @@ class CMUEval(DataSet):
                 keys.append(fname)
                 seqs.append(seq.astype('float32'))
         
+        # framerate is 60Hz: https://github.com/chaneyddtt/Convolutional-Sequence-to-Sequence-Model-for-Human-Dynamics/issues/4
         super().__init__(
             [seqs], Keys=keys,
-            framerate=120,
+            framerate=60,
             iterate_with_framerate=False,
             iterate_with_keys=False,
             j_root=0, j_left=0, j_right=0,
@@ -233,9 +234,10 @@ class CMUEval3D(DataSet):
                     seq = norm.remove_rotation_and_translation(seq, j_root=-1, j_left=8, j_right=2)
                 seqs.append(seq)
         
+        # framerate is 60Hz: https://github.com/chaneyddtt/Convolutional-Sequence-to-Sequence-Model-for-Human-Dynamics/issues/4
         super().__init__(
             [seqs], Keys=keys,
-            framerate=120,
+            framerate=60,
             iterate_with_framerate=False,
             iterate_with_keys=False,
             j_root=-1, j_left=8, j_right=2,
