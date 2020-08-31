@@ -56,6 +56,23 @@ class Combined(DataSet):
                 (14, 12),
                 (16, 13)
             ]
+        elif dataset.n_joints == 38:  # CMU Eval
+            translate = [
+                (2, 0),
+                (3, 1),
+                (4, 2),
+                (8, 3),
+                (9, 4),
+                (10, 5),
+                (21, 6),
+                (22, 7),
+                (23, 8),
+                (30, 9),
+                (31, 10),
+                (32, 11),
+                (17, 12),
+                (19, 13)
+            ]
         elif dataset.n_joints == 24:  # AMASS
             translate = [
                 (2,  0),
