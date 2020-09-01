@@ -18,8 +18,15 @@ class CustomActivities(DataSet):
   """ Requires a directory where labels are stored based on the key
   """
 
-  def __init__(self, dataset, activity_dir, n_activities, 
+  def __init__(self, dataset, activity_dir, n_activities,
+               key_as_dir_depth=-1,
                data_target=0, prefix='', postfix=''):
+    """
+    :param key_as_dir_depth: {int} some datasets use paths as keys.
+                          We replace '/' with '_' so store all files
+                          in the same dir.
+                          Also, we define the depth of the path.
+    """
     Data = dataset.Data
     Keys = dataset.Keys
     assert isdir(activity_dir), activity_dir
@@ -30,7 +37,12 @@ class CustomActivities(DataSet):
       seq = Data[data_target][sid]
       
       key = Keys[sid]
+      if key_as_dir_depth > 0:
+        assert isinstance(key, str)
       if isinstance(key, str):
+        if key_as_dir_depth > 0:
+          key = '__'.join(key.split('/')[-key_as_dir_depth:])
+        else:
         fname = prefix + key + postfix + '.npy'
       else:
         fname = prefix + '_'.join([str(item) for item in key]) + postfix + '.npy'
