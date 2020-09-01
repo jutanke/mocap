@@ -42,7 +42,6 @@ class CustomActivities(DataSet):
       if isinstance(key, str):
         if key_as_dir_depth > 0:
           key = '__'.join(key.split('/')[-key_as_dir_depth:])
-        else:
         fname = prefix + key + postfix + '.npy'
       else:
         fname = prefix + '_'.join([str(item) for item in key]) + postfix + '.npy'
