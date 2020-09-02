@@ -535,6 +535,31 @@ class H36M_FixedSkeleton_withActivities(DataSet):
                          mirror_fn=mirror_p3d,
                          joints_per_limb=joints_per_limb)
 
+        
+class H36M_ReducedExp(DataSet):
+    """
+    Reduced as at Martinz
+    """
+
+    def __init__(self, actors, actions=ACTIONS,
+                 iterate_with_framerate=False,
+                 iterate_with_keys=False):
+        seqs = []
+        keys = []
+        for actor in actors:
+            for action in actions:
+                for sid in [1, 2]:
+                    seq = get_reduced_expmap(actor, action, sid)
+                    seqs.append(seq)
+                    keys.append((actor, action, sid))
+        super().__init__([seqs], Keys=keys, framerate=50,
+                         iterate_with_framerate=iterate_with_framerate,
+                         iterate_with_keys=iterate_with_keys,
+                         j_root=0, j_left=6, j_right=1,
+                         n_joints=33, name='h36mexpred_sa',
+                         mirror_fn=None,
+                         joints_per_limb=None)
+        
 
 class H36M_ReducedExp_withSimplifiedActivities(DataSet):
     """
