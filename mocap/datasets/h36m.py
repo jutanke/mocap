@@ -556,7 +556,7 @@ class H36M_ReducedExp(DataSet):
                          iterate_with_framerate=iterate_with_framerate,
                          iterate_with_keys=iterate_with_keys,
                          j_root=0, j_left=6, j_right=1,
-                         n_joints=33, name='h36mexpred_sa',
+                         n_joints=33, name='h36mexpred',
                          mirror_fn=None,
                          joints_per_limb=None)
         
