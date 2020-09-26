@@ -637,7 +637,6 @@ class H36M_Exp(DataSet):
                 for sid in [1, 2]:
                     seq = get_expmap(actor, action, sid)
                     seqs.append(seq)
-                    labels.append(label)
                     keys.append((actor, action, sid))
         super().__init__([seqs], Keys=keys, framerate=50,
                          iterate_with_framerate=iterate_with_framerate,
