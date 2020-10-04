@@ -27,7 +27,7 @@ def find_indices_srnn(T1, T2, num_seeds):
     return idx
 
 
-def get(action, DS_class, actor='S5', Wrapper_class=None, Wrapper_fn=None, num_seeds=256, data_cbc=None, remove_global_Rt=True):
+def get(action, DS_class, actor='S5', Wrapper_class=None, Wrapper_fn=None, num_seeds=256, data_cbc=None, remove_global_Rt=True, n_length=150):
     """
     :param action: {String} one of the 15 actions present in the h36m dataset
     :param DS_class: {mocap::datasets::h36m::*DataSet} any h36m dataset defined
@@ -38,6 +38,7 @@ def get(action, DS_class, actor='S5', Wrapper_class=None, Wrapper_fn=None, num_s
     returns:
     Evaluation sequence for Human36M
     """
+    assert n_length > 25 and n_length <= 150, 'n_length: ' + str(n_length)
     if remove_global_Rt:
         ds_test = DS_class(actors=[actor], actions=[action], 
                            remove_global_Rt=True)
@@ -91,10 +92,10 @@ def get(action, DS_class, actor='S5', Wrapper_class=None, Wrapper_fn=None, num_s
         data_cbc(actor, action, np.array(Sids), np.array(Frames))
 
     if ds_test.n_data_entries == 1:
-        return Seq
+        return Seq[:, :n_length]
     else:
         Labels = np.array(Labels)
-        return Seq, Labels
+        return Seq[:, :n_length], Labels[:, :n_length]
 
     
 @nb.njit(nb.float64[:](
