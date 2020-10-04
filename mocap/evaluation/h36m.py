@@ -27,7 +27,7 @@ def find_indices_srnn(T1, T2, num_seeds):
     return idx
 
 
-def get(action, DS_class, actor='S5', Wrapper_class=None, Wrapper_fn=None, num_seeds=256, data_cbc=None):
+def get(action, DS_class, actor='S5', Wrapper_class=None, Wrapper_fn=None, num_seeds=256, data_cbc=None, remove_global_Rt=True):
     """
     :param action: {String} one of the 15 actions present in the h36m dataset
     :param DS_class: {mocap::datasets::h36m::*DataSet} any h36m dataset defined
@@ -38,8 +38,11 @@ def get(action, DS_class, actor='S5', Wrapper_class=None, Wrapper_fn=None, num_s
     returns:
     Evaluation sequence for Human36M
     """
-    ds_test = DS_class(actors=[actor], actions=[action], 
-                       remove_global_Rt=True)
+    if remove_global_Rt:
+        ds_test = DS_class(actors=[actor], actions=[action], 
+                           remove_global_Rt=True)
+    else:
+        ds_test = DS_class(actors=[actor], actions=[action])
     if Wrapper_class is not None:
         ds_test = Wrapper_class(ds_test)
     if Wrapper_fn is not None:
