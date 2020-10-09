@@ -3,10 +3,18 @@ import numpy as np
 # ==============================================
 # NPSS
 # ==============================================
-def NPSS(euler_gt_sequences, euler_pred_sequences):
+def NPSS(euler_gt_sequences, euler_pred_sequences, use_deprecated_version=False):
+    """
+    :param use_deprecated_version: the original code had a bug where the complex numbers
+        are cast to real - resulting in losing the IM part.
+    """
     # computing 1) fourier coeffs 2)power of fft 3) normalizing power of fft dim-wise 4) cumsum over freq. 5) EMD
-    gt_fourier_coeffs = np.zeros(euler_gt_sequences.shape, dtype=np.complex)
-    pred_fourier_coeffs = np.zeros(euler_pred_sequences.shape, dtype=np.complex)
+    if use_deprecated_version:    
+        gt_fourier_coeffs = np.zeros(euler_gt_sequences.shape, dtype=np.float64)
+        pred_fourier_coeffs = np.zeros(euler_pred_sequences.shape, dtype=np.float64)
+    else:
+        gt_fourier_coeffs = np.zeros(euler_gt_sequences.shape, dtype=np.complex)
+        pred_fourier_coeffs = np.zeros(euler_pred_sequences.shape, dtype=np.complex)
 
     # power vars
     gt_power = np.zeros((gt_fourier_coeffs.shape))
