@@ -16,11 +16,16 @@ if not isdir(vis_dir):
     makedirs(vis_dir)
 
 ACTIVITES = ['walking']
-ds = CMUEval3D(ACTIVITES, DataType.TEST)
+ds = CMUEval3D(ACTIVITES, DataType.TEST, remove_global_Rt=True)
 
-seq = remove_duplicate_joints(ds[0][10:160])
-seq = norm.remove_rotation_and_translation(
-    seq, j_root=-1, j_left=6, j_right=1)
+seq = ds[0][10:160]
+print('Seq', seq.shape)
+
+seq2 = MIR.mirror_p3d(seq)
+
+# seq = remove_duplicate_joints(ds[0][10:160])
+# seq = norm.remove_rotation_and_translation(
+#     seq, j_root=-1, j_left=6, j_right=1)
 
 # print('seq', seq.shape)
 
@@ -39,7 +44,7 @@ vis = SequenceVisualizer(vis_dir, 'vis_cmueval',
                          to_file=True,
                          mark_origin=False)
 
-vis.plot(seq, create_video=True,
+vis.plot(seq1=seq, seq2=seq2, parallel=True, create_video=True,
          noaxis=True,
-         plot_jid=False,
+         plot_jid=True,
 )

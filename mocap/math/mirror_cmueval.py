@@ -35,10 +35,12 @@ def mirror_p3d(seq):
     else:
         raise ValueError("incorrect shape:" + str(seq.shape))
     
-    assert n_joints in [28], 'wrong joint number:' + str(n_joints)
+    assert n_joints in [38], 'wrong joint number:' + str(n_joints)
 
-    LS = [6, 7, 8, 9, 10, 22, 23, 24, 25, 26, 27]
-    RS = [1, 2, 3, 4, 5,  16, 17, 18, 19, 20, 21]
+    # LS = [6, 7, 8, 9, 10, 22, 23, 24, 25, 26, 27]
+    # RS = [1, 2, 3, 4, 5,  16, 17, 18, 19, 20, 21]
+    LS = [ 8,  9, 10, 11, 12, 30, 31, 32, 33, 34, 35, 36, 37]
+    RS = [ 2,  3,  4,  5,  6, 21, 22, 23, 24, 25, 26, 27, 28]
 
     lr = np.array(LS + RS)
     rl = np.array(RS + LS)

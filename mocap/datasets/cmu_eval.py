@@ -8,6 +8,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from mocap.math.fk_cmueval import angular2euclidean
 from mocap.datasets.dataset import DataSet, Limb
 import mocap.processing.normalize as norm
+from mocap.math.mirror_cmueval import mirror_p3d
 from enum import IntEnum
 
 class DataType(IntEnum):
@@ -243,9 +244,4 @@ class CMUEval3D(DataSet):
             j_root=-1, j_left=8, j_right=2,
             name='CMUEval3D',
             n_joints=38, joints_per_limb=joints_per_limb,
-            mirror_fn=None)
-
-
-
-
-
+            mirror_fn=mirror_p3d)
