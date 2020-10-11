@@ -108,6 +108,26 @@ def _normalize_sequence_at_frame(seq, frame, j_root, j_left, j_right):
     return result
 
 
+@nb.jit(nb.float32[:, :, :](
+    nb.float32[:, :, :], nb.int64, nb.int64, nb.int64, nb.int64, nb.float32[:, :], nb.float32[:, ]
+), nopython=True, nogil=True)
+def _normalize_sequence_at_frame_return_transforms(seq, frame, j_root, j_left, j_right, R_out, t_out):
+    """ Normalize the sequence at {frame}
+    :param seq: Nx32x3
+    """
+    human = seq[frame]
+    R, t = _get_euclidean_transform(human, j_root, j_left, j_right)
+    for i in range(3):
+        for j in range(3):
+            R_out[i,j] = R[i,j]
+        t_out[i] = t[i]
+    result = np.empty(seq.shape, np.float32)
+    for i in range(len(seq)):
+        human = seq[i]
+        result[i] = apply_euclidean_transform(human, R, t)
+    return result
+
+
 def remove_rotation_and_translation(seq, j_root=0, j_left=6, j_right=1):
     unflattend = False
     if len(seq.shape) == 2:
@@ -186,7 +206,9 @@ def insert_root_node_as_avg(seq, j_left, j_right):
 
 
 def batch_normalize_sequence_at_frame(seqs, frame,
-                                      j_root=0, j_left=6, j_right=1):
+                                      j_root=0, j_left=6, j_right=1,
+                                      return_transforms=False,
+                                      flatten_output=True):
     """
     :param seqs: [bs x n x 54 ]
     :param frame:
@@ -195,10 +217,35 @@ def batch_normalize_sequence_at_frame(seqs, frame,
     :param j_right:
     :return:
     """
-    return _batch_normalize_sequence_at_frame(seqs, frame,
-                                              j_root=j_root,
-                                              j_left=j_left,
-                                              j_right=j_right)
+    n_batch = seqs.shape[0]
+    n_frames = seqs.shape[1]
+    if len(seqs.shape) == 3:
+        n_joints = seqs.shape[2]//3
+        seqs = seqs.reshape((n_batch, n_frames, n_joints, 3))
+    else:
+        n_joints = seqs.shape[2]
+
+    assert len(seqs.shape) == 4, str(seqs.shape)
+
+    if return_transforms:
+        
+        R = np.empty((n_batch, 3, 3), dtype=np.float32)
+        T = np.empty((n_batch, 3), dtype=np.float32)
+        seqs = _batch_normalize_sequence_at_frame_return_transforms(
+            seqs, frame, j_root=j_root, j_left=j_left, j_right=j_right,
+            R_out=R, t_out=T
+        )
+        if flatten_output:
+            seqs = seqs.reshape((n_batch, n_frames, n_joints*3))
+        return seqs, R, T
+    else:
+        seqs = _batch_normalize_sequence_at_frame(seqs, frame,
+                                                  j_root=j_root,
+                                                  j_left=j_left,
+                                                  j_right=j_right)
+        if flatten_output:
+            seqs = seqs.reshape((n_batch, n_frames, n_joints*3))
+        return seqs
 
 
 @nb.njit(nb.float32[:, :, :, :](
@@ -217,5 +264,24 @@ def _batch_normalize_sequence_at_frame(seqs, frame, j_root, j_left, j_right):
     for i in range(bs):
         seqs[i] = _normalize_sequence_at_frame(seqs[i], frame,
                                                j_root, j_left, j_right)
+    return seqs
+
+
+@nb.njit(nb.float32[:, :, :, :](
+    nb.float32[:, :, :, :], nb.int64, nb.int64, nb.int64, nb.int64, nb.float32[:, :, :], nb.float32[:, :]
+), nogil=True)
+def _batch_normalize_sequence_at_frame_return_transforms(seqs, frame, j_root, j_left, j_right, R_out, t_out):
+    """
+    :param seqs: [bs x n x J x 3 ]
+    :param frame:
+    :param j_root:
+    :param j_left:
+    :param j_right:
+    :return:
+    """
+    bs = len(seqs)
+    for i in range(bs):
+        seqs[i] = _normalize_sequence_at_frame_return_transforms(
+            seqs[i], frame, j_root, j_left, j_right, R_out[i], t_out[i])
     return seqs
 
