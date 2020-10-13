@@ -50,6 +50,7 @@ class CMUEval(DataSet):
             for f in files:
                 fname = join(loc, f)
                 seq = np.loadtxt(fname, delimiter=',')
+                seq[:,:6] = 0
                 keys.append(fname)
                 seqs.append(seq.astype('float32'))
         
