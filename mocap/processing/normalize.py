@@ -128,7 +128,7 @@ def _normalize_sequence_at_frame_return_transforms(seq, frame, j_root, j_left, j
     return result
 
 
-def remove_translation(seq, j_root=0):
+def remove_global_translation(seq, j_root=0):
     unflattend = False
     if len(seq.shape) == 2:
         unflattend = True
