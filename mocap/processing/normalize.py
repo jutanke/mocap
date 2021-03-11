@@ -135,9 +135,10 @@ def remove_global_translation(seq, j_root=0):
         n_frames = len(seq)
         seq = seq.reshape((n_frames, -1, 3))
     T = np.expand_dims(seq[:, j_root, :], axis=1)
+    seq = np.ascontiguousarray(seq - T)
     if unflattend:
         seq = seq.reshape((n_frames, -1))
-    return np.ascontiguousarray(seq - T)
+    return seq
 
 
 def remove_rotation_and_translation(seq, j_root=0, j_left=6, j_right=1):
