@@ -439,7 +439,8 @@ class H36M(DataSet):
     def __init__(self, actors, actions=ACTIONS,
                  iterate_with_framerate=False,
                  iterate_with_keys=False,
-                 remove_global_Rt=False):
+                 remove_global_Rt=False,
+                 remove_global_t=False):
         joints_per_limb = {
             Limb.HEAD: [15, 14, 16],
             Limb.LEFT_ARM: [17, 18, 19, 21, 22],
@@ -456,6 +457,8 @@ class H36M(DataSet):
                     seq = get3d(actor, action, sid)
                     if remove_global_Rt:
                         seq = norm.remove_rotation_and_translation(seq, j_root=0, j_left=6, j_right=1)
+                    elif remove_global_t:
+                        seq = norm.remove_translation(seq, j_root=0)
                     seqs.append(seq)
                     keys.append((actor, action, sid))
         super().__init__([seqs], Keys=keys, framerate=50,
@@ -472,7 +475,8 @@ class H36M_FixedSkeleton(DataSet):
     def __init__(self, actors, actions=ACTIONS,
                  iterate_with_framerate=False,
                  iterate_with_keys=False,
-                 remove_global_Rt=False):
+                 remove_global_Rt=False,
+                 remove_global_t=False):
         joints_per_limb = {
             Limb.HEAD: [15, 14, 16],
             Limb.LEFT_ARM: [17, 18, 19, 21, 22],
@@ -489,6 +493,8 @@ class H36M_FixedSkeleton(DataSet):
                     seq = get3d_fixed(actor, action, sid)
                     if remove_global_Rt:
                         seq = norm.remove_rotation_and_translation(seq, j_root=0, j_left=6, j_right=1)
+                    elif remove_global_t:
+                        seq = norm.remove_translation(seq, j_root=0)
                     seqs.append(seq)
                     keys.append((actor, action, sid))
         super().__init__([seqs], Keys=keys, framerate=50, 
