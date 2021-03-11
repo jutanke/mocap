@@ -128,6 +128,16 @@ def _normalize_sequence_at_frame_return_transforms(seq, frame, j_root, j_left, j
     return result
 
 
+def remove_translation(seq, j_root=0):
+    unflattend = False
+    if len(seq.shape) == 2:
+        unflattend = True
+        n_frames = len(seq)
+        seq = seq.reshape((n_frames, -1, 3))
+    T = np.expand_dims(seq[:, j_root, :], axis=1)
+    sreturn np.ascontiguousarray(seq - T)
+
+
 def remove_rotation_and_translation(seq, j_root=0, j_left=6, j_right=1):
     unflattend = False
     if len(seq.shape) == 2:
