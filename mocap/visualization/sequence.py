@@ -67,6 +67,7 @@ class SequenceVisualizer:
              plot_jid=False,
              create_video=False,
              video_fps=25,
+             no_title=False,
              if_video_keep_pngs=False):
         """
         # 002540
@@ -193,8 +194,9 @@ class SequenceVisualizer:
                                 plot_fn2(ax, seq1[t], lcolor=lcolor2, rcolor=rcolor2, plot_jid=plot_jid)
                 else:
                     plot_cbc(ax, seq1, t)
-
-                ax.set_title('frame ' + str(t + 1))
+                
+                if not no_title:
+                    ax.set_title('frame ' + str(t + 1))
 
                 if definite_cbc is not None:
                     definite_cbc(ax, iii, t)
