@@ -5,27 +5,70 @@ from os import makedirs
 import numpy as np
 from subprocess import PIPE, run
 from tqdm import tqdm
+from typing import List
+
+
+from mocap.visualization.sequence import SequenceVisualizer
+
+
+def get_seqs_and_keys(amass_path, datasets, without_hands=False):
+    """"""
+    seqs = []
+    keys = []
+    for dataset in sorted(datasets):
+        path = join(amass_path, dataset)
+        assert isdir(path), path
+        for subdir in [join(path, f) for f in sorted(listdir(path))]:
+            for seq_fname in [join(subdir, f) for f in sorted(listdir(subdir))]:
+                seq = np.load(seq_fname)
+                if without_hands:
+                    seq = seq[:, :22]
+                seqs.append(seq)
+                keys.append(seq_fname)
+    return seqs, keys
 
 
 class AMASS(DataSet):
-    def __init__(self, amass_path: str):
-        """
-        """
+    def __init__(self, amass_path: str, datasets: List[str]):
+        """"""
         assert isdir(amass_path)
+        assert amass_path.split("/")[-1] == "amass2skel"
 
-        # step 1: unpack the folders
-        folders = [f for f in listdir(amass_path) if isdir(join(amass_path, f))]
-        if len(folders) == 0:
-            # unzip all files
-            zipfiles = [f for f in listdir(amass_path) if f.endswith(".tar.bz2")]
-            for f in tqdm(zipfiles):
-                fname = join(amass_path, f)
-                # print(fname)
-                # command = f"tar -xf {fname}"
-                command = ["tar", "-xf", fname, "-C", amass_path]
-                result = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-                print(result.returncode, result.stdout, result.stderr)
+        seqs, keys = get_seqs_and_keys(amass_path, datasets, without_hands=True)
 
-                # subprocess.call(["tar", "-x", fname], shell=True)
+        super().__init__(
+            Data=[seqs],
+            Keys=keys,
+            framerate=60,
+            iterate_with_framerate=False,
+            iterate_with_keys=False,
+            name="amass_new",
+            j_root=0,
+            j_left=1,
+            j_right=2,
+            n_joints=22,
+            joints_per_limb=None,
+        )
 
-        print(folders)
+
+class AMASS_withHands(DataSet):
+    def __init__(self, amass_path: str, datasets: List[str]):
+        """"""
+        assert isdir(amass_path)
+        assert amass_path.split("/")[-1] == "amass2skel"
+
+        seqs, keys = get_seqs_and_keys(amass_path, datasets)
+
+        super().__init__(
+            Data=[seqs],
+            Keys=keys,
+            framerate=60,
+            iterate_with_framerate=False,
+            iterate_with_keys=False,
+            name="amass_new_with_hands",
+            j_root=0,
+            j_left=1,
+            j_right=2,
+            n_joints=52,
+            joints_per_limb=None,
+        )
