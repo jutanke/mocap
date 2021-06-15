@@ -24,6 +24,8 @@ def get_seqs_and_keys(amass_path, datasets, without_hands=False):
                 seq = np.load(seq_fname)
                 if without_hands:
                     seq = seq[:, :22]
+                n_frames = len(seq)
+                seq = seq.reshape(n_frames, -1)
                 seqs.append(seq)
                 keys.append(seq_fname)
     return seqs, keys
@@ -42,6 +44,8 @@ def get_seqs_and_keys_from_exact_fnames(amass_path, exact_fnames, without_hands=
             seq = np.load(seq_fname)
             if without_hands:
                 seq = seq[:, :22]
+            n_frames = len(seq)
+            seq = seq.reshape(n_frames, -1)
             seqs.append(seq)
             keys.append(seq_fname)
     return seqs, keys
