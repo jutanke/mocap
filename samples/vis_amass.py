@@ -2,6 +2,8 @@ import sys
 
 sys.path.insert(0, "../")
 from mocap.datasets.amass import AMASS
+import mocap.datasets.amass_constants.train as AMASS_TRAIN
+import mocap.datasets.amass_constants.test as AMASS_TEST
 from mocap.visualization.sequence import SequenceVisualizer
 from os.path import isdir
 
@@ -9,10 +11,26 @@ datasets = ["BMLhandball"]
 # datasets = ["ACCAD"]
 
 path = "/mnt/Data/Dev/amass2skel/output/amass2skel"
-ds = AMASS(path, datasets)
 
-print("len", len(ds))
+train = AMASS_TRAIN.FILES
+test = AMASS_TEST.FILES
 
+train_leftover_datasets = [
+    "BMLmovi",
+    "EKUT",
+    "KIT",
+    "MPI_mosh",
+    "TCD_handMocap",
+    "SFU",
+    "TotalCapture",
+    "BMLhandball",
+    "DFaust_67",
+]
+
+
+# ds_train = AMASS(path, datasets=train_leftover_datasets, exact_files=train)
+
+ds = AMASS(path, datasets=[], exact_files=test)
 seq = ds[10][::5]
 
 
