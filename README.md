@@ -4,12 +4,10 @@ Helper library to handle mocap data. At the moment, the CMU Mocap dataset as wel
 If this library is helpful to you, please cite the following work:
 ```bibtex
 @article{
-   author        = {Tanke, Julian AND Weber, Andreas AND Gall, Juergen},
-   title         = {Human Motion Anticipation with Symbolic Label},
-   year          = {2019},
-   archivePrefix = {arXiv},
-   eprint        = {1912.06079},
-   primaryClass  = {cs.CV}
+   author        = {Tanke, Julian AND Zaveri, Chintan AND Gall, Juergen},
+   title         = {{Intention-based Long-Term Human Motion Anticipation}},
+   year          = {2021},
+   booktitle     = {International Conference on 3D Vision}
 }
 ```
 
