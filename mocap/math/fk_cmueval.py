@@ -58,7 +58,7 @@ def fkl( angles ):
         r = angles[ expmapInd[i] ]
 
         thisRotation = expmap2rotmat(r)
-        thisPosition = np.array([xangle, yangle, zangle])
+        thisPosition = np.array([zangle, yangle, xangle])
 
         if parent[i] == -1: # Root node
             xyzStruct[i]['rotation'] = thisRotation
